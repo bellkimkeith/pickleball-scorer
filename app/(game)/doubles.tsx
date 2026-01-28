@@ -89,7 +89,12 @@ export default function DoublesScreen() {
           color="green"
         />
 
-        <ScoreButton title="Side Out" icon="swap-horizontal" onPress={sideOut} color="orange" />
+        <ScoreButton
+          title={gameState.serverNumber === 1 ? '2nd Serve' : 'Side Out'}
+          icon="swap-horizontal"
+          onPress={sideOut}
+          color="orange"
+        />
       </View>
 
       {/* Game Controls */}

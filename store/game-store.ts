@@ -175,7 +175,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
             servingTeam: lastEvent.servingTeam,
             serverNumber: lastEvent.serverNumber || 1,
             servingSide: ScoringRules.getServingSide(
-              lastEvent.servingTeam === 1 ? lastEvent.score1 : lastEvent.score2
+              lastEvent.servingTeam === 1 ? lastEvent.score1 : lastEvent.score2,
+              lastEvent.serverNumber || 1
             ),
             scoreHistory: newHistory,
           },

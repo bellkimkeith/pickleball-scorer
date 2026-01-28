@@ -1,14 +1,20 @@
-import { GameState, GameSettings, ServingSide, Player, Team, ScoreEvent, SinglesGameState, DoublesGameState } from '../types/game';
+import { GameState, GameSettings, ServingSide, ServerNumber, Player, Team, ScoreEvent, SinglesGameState, DoublesGameState } from '../types/game';
 
 export class ScoringRules {
   /**
-   * Determines the serving side based on the serving team's score
-   * In pickleball:
-   * - Even score = serve from right side
-   * - Odd score = serve from left side
+   * Determines the serving side based on the serving team's score and server number
+   * In pickleball doubles:
+   * - Server 1: Even score = right, Odd score = left
+   * - Server 2: Even score = left, Odd score = right (opposite of Server 1)
+   * In singles, serverNumber is always treated as 1
    */
-  static getServingSide(servingTeamScore: number): ServingSide {
-    return servingTeamScore % 2 === 0 ? 'right' : 'left';
+  static getServingSide(servingTeamScore: number, serverNumber: ServerNumber = 1): ServingSide {
+    const isEven = servingTeamScore % 2 === 0;
+    if (serverNumber === 1) {
+      return isEven ? 'right' : 'left';
+    } else {
+      return isEven ? 'left' : 'right';
+    }
   }
 
   /**
@@ -37,12 +43,13 @@ export class ScoringRules {
       }
     }
 
-    // Update serving side based on new score
+    // Update serving side based on new score and server number
     const servingTeamScore = gameState.mode === 'singles'
       ? (gameState.servingPlayer === 1 ? newState.score1 : newState.score2)
       : (gameState.servingTeam === 1 ? newState.score1 : newState.score2);
 
-    newState.servingSide = this.getServingSide(servingTeamScore);
+    const serverNumber = gameState.mode === 'doubles' ? gameState.serverNumber : 1;
+    newState.servingSide = this.getServingSide(servingTeamScore, serverNumber);
 
     // Add to history
     const scoreEvent: ScoreEvent = {
@@ -101,12 +108,11 @@ export class ScoringRules {
 
       if (gameState.serverNumber === 1) {
         // Switch to partner (server #2)
+        const servingTeamScore = gameState.servingTeam === 1 ? gameState.score1 : gameState.score2;
         const newState: DoublesGameState = {
           ...gameState,
           serverNumber: 2,
-          servingSide: this.getServingSide(
-            gameState.servingTeam === 1 ? gameState.score1 : gameState.score2
-          ),
+          servingSide: this.getServingSide(servingTeamScore, 2),
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
         return newState;
@@ -119,7 +125,7 @@ export class ScoringRules {
           ...gameState,
           servingTeam: newServingTeam,
           serverNumber: 1,
-          servingSide: this.getServingSide(newServingScore),
+          servingSide: this.getServingSide(newServingScore, 1),
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
         return newState;
