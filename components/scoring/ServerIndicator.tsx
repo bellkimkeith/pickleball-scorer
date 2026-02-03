@@ -6,9 +6,10 @@ import { ServingSide, ServerNumber } from '../../lib/types/game';
 interface ServerIndicatorProps {
   side: ServingSide;
   serverNumber?: ServerNumber;
+  showArrow?: boolean;
 }
 
-export function ServerIndicator({ side, serverNumber }: ServerIndicatorProps) {
+export function ServerIndicator({ side, serverNumber, showArrow = true }: ServerIndicatorProps) {
   const opacity = useSharedValue(1);
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export function ServerIndicator({ side, serverNumber }: ServerIndicatorProps) {
       <Animated.View className="w-3 h-3 bg-accent-yellow rounded-full" style={pulseStyle} />
 
       <Text className="text-white text-sm font-semibold ml-2">
-        Serving {side === 'right' ? 'Right →' : 'Left ←'}
+        Serving {side === 'right' ? 'Right' : 'Left'}{showArrow ? ' →' : ''}
       </Text>
 
       {serverNumber && (

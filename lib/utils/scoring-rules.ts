@@ -2,11 +2,14 @@ import { GameState, GameSettings, ServingSide, ServerNumber, Player, Team, Score
 
 export class ScoringRules {
   /**
-   * Determines the serving side based on the serving team's score and server number
-   * In pickleball doubles:
-   * - Server 1: Even score = right, Odd score = left
-   * - Server 2: Even score = left, Odd score = right (opposite of Server 1)
-   * In singles, serverNumber is always treated as 1
+   * Determines the serving side based on the serving team's score
+   *
+   * NOTE: This method is primarily used for singles mode.
+   * In doubles, serving sides alternate when scoring rather than being calculated from score.
+   *
+   * In singles:
+   * - Even score = right side
+   * - Odd score = left side
    */
   static getServingSide(servingTeamScore: number, serverNumber: ServerNumber = 1): ServingSide {
     const isEven = servingTeamScore % 2 === 0;
@@ -25,46 +28,57 @@ export class ScoringRules {
     gameState: GameState,
     settings: GameSettings
   ): GameState {
-    const newState = { ...gameState };
-
-    // Update score based on who is serving
     if (gameState.mode === 'singles') {
-      if (gameState.servingPlayer === 1) {
-        newState.score1 = gameState.score1 + 1;
-      } else {
-        newState.score2 = gameState.score2 + 1;
-      }
+      // Singles: explicitly create new state to ensure proper updates
+      const newScore1 = gameState.servingPlayer === 1 ? gameState.score1 + 1 : gameState.score1;
+      const newScore2 = gameState.servingPlayer === 2 ? gameState.score2 + 1 : gameState.score2;
+      const servingTeamScore = gameState.servingPlayer === 1 ? newScore1 : newScore2;
+
+      const scoreEvent: ScoreEvent = {
+        timestamp: Date.now(),
+        servingTeam: gameState.servingPlayer,
+        serverNumber: undefined,
+        score1: newScore1,
+        score2: newScore2,
+        pointScored: true,
+        rallyWinner: gameState.servingPlayer,
+      };
+
+      const newState: SinglesGameState = {
+        ...gameState,
+        score1: newScore1,
+        score2: newScore2,
+        servingSide: this.getServingSide(servingTeamScore),
+        scoreHistory: [...gameState.scoreHistory, scoreEvent],
+      };
+
+      return newState;
     } else {
-      // Doubles
-      if (gameState.servingTeam === 1) {
-        newState.score1 = gameState.score1 + 1;
-      } else {
-        newState.score2 = gameState.score2 + 1;
-      }
+      // Doubles: explicitly create new state to ensure proper updates
+      const newScore1 = gameState.servingTeam === 1 ? gameState.score1 + 1 : gameState.score1;
+      const newScore2 = gameState.servingTeam === 2 ? gameState.score2 + 1 : gameState.score2;
+      const servingTeamScore = gameState.servingTeam === 1 ? newScore1 : newScore2;
+
+      const scoreEvent: ScoreEvent = {
+        timestamp: Date.now(),
+        servingTeam: gameState.servingTeam,
+        serverNumber: gameState.serverNumber,
+        score1: newScore1,
+        score2: newScore2,
+        pointScored: true,
+        rallyWinner: gameState.servingTeam,
+      };
+
+      const newState: DoublesGameState = {
+        ...gameState,
+        score1: newScore1,
+        score2: newScore2,
+        servingSide: gameState.servingSide === 'right' ? 'left' : 'right',  // Alternate sides when scoring
+        scoreHistory: [...gameState.scoreHistory, scoreEvent],
+      };
+
+      return newState;
     }
-
-    // Update serving side based on new score and server number
-    const servingTeamScore = gameState.mode === 'singles'
-      ? (gameState.servingPlayer === 1 ? newState.score1 : newState.score2)
-      : (gameState.servingTeam === 1 ? newState.score1 : newState.score2);
-
-    const serverNumber = gameState.mode === 'doubles' ? gameState.serverNumber : 1;
-    newState.servingSide = this.getServingSide(servingTeamScore, serverNumber);
-
-    // Add to history
-    const scoreEvent: ScoreEvent = {
-      timestamp: Date.now(),
-      servingTeam: gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam,
-      serverNumber: gameState.mode === 'doubles' ? gameState.serverNumber : undefined,
-      score1: newState.score1,
-      score2: newState.score2,
-      pointScored: true,
-      rallyWinner: gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam,
-    };
-
-    newState.scoreHistory = [...gameState.scoreHistory, scoreEvent];
-
-    return newState;
   }
 
   /**
@@ -108,24 +122,23 @@ export class ScoringRules {
 
       if (gameState.serverNumber === 1) {
         // Switch to partner (server #2)
-        const servingTeamScore = gameState.servingTeam === 1 ? gameState.score1 : gameState.score2;
         const newState: DoublesGameState = {
           ...gameState,
           serverNumber: 2,
-          servingSide: this.getServingSide(servingTeamScore, 2),
+          servingSide: gameState.servingSide === 'right' ? 'left' : 'right',  // Server 2 serves from opposite side
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
         return newState;
       } else {
         // Switch to other team, server #1
+        // Per pickleball rules: new possession ALWAYS starts with Server 1 on the RIGHT
         const newServingTeam = gameState.servingTeam === 1 ? 2 : 1;
-        const newServingScore = newServingTeam === 1 ? gameState.score1 : gameState.score2;
 
         const newState: DoublesGameState = {
           ...gameState,
           servingTeam: newServingTeam,
           serverNumber: 1,
-          servingSide: this.getServingSide(newServingScore, 1),
+          servingSide: 'right',  // Fixed: new possession always starts right
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
         return newState;

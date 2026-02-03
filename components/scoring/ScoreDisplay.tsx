@@ -19,6 +19,7 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
 
   const servingTeam = gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam;
   const serverNumber = gameState.mode === 'doubles' ? gameState.serverNumber : undefined;
+  const showArrow = gameState.mode === 'doubles';
 
   return (
     <View className="bg-primary-600 rounded-3xl p-6 shadow-2xl">
@@ -35,7 +36,7 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
               {score1}
             </Animated.Text>
             {servingTeam === 1 && (
-              <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} />
+              <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} showArrow={showArrow} />
             )}
           </View>
 
@@ -53,7 +54,7 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
               {score2}
             </Animated.Text>
             {servingTeam === 2 && (
-              <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} />
+              <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} showArrow={showArrow} />
             )}
           </View>
         </View>
