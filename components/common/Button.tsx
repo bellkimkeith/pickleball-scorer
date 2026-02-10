@@ -28,6 +28,9 @@ export function Button({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityLabel={title}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
       className={`rounded-2xl p-4 ${variantClasses[variant]} ${
         disabled ? 'opacity-50' : ''
       } ${className}`}

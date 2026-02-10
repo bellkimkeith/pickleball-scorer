@@ -9,23 +9,35 @@
     "scheme": "pickleball-scorer",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
       "backgroundColor": "#22c55e"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bellkimkeith.pickleballscorer"
+      "bundleIdentifier": "com.bellkimkeith.pickleballscorer",
+      "buildNumber": "1",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#22c55e"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#22c55e"
       },
+      "splash": {
+        "image": "./assets/splash-android.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#22c55e"
+      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.bellkimkeith.pickleballscorer"
+      "package": "com.bellkimkeith.pickleballscorer",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

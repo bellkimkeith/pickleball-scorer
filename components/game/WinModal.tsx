@@ -26,12 +26,15 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
 
   return (
     <Modal visible={visible} onClose={onExit} dismissable={false}>
-      <View className="items-center py-6">
+      <View className="items-center py-6" accessibilityRole="alert">
         <Ionicons name="trophy" size={80} color="#fbbf24" />
 
-        <Text className="text-3xl font-bold text-gray-900 mt-6">Game Over!</Text>
+        <Text accessibilityRole="header" className="text-3xl font-bold text-gray-900 mt-6">Game Over!</Text>
 
-        <Text className="text-xl font-semibold text-primary-600 mt-4">
+        <Text
+          className="text-xl font-semibold text-primary-600 mt-4"
+          accessibilityLabel={`${winnerName} wins with a score of ${finalScore}`}
+        >
           {winnerName} Wins!
         </Text>
 

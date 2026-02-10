@@ -27,6 +27,9 @@ export function IconButton({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityLabel={label || icon}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
       className={`items-center ${disabled ? 'opacity-50' : ''}`}
       style={({ pressed }) => ({
         transform: [{ scale: pressed && !disabled ? 0.9 : 1 }],

@@ -20,6 +20,8 @@ export default function HomeScreen() {
         <Pressable
           onPress={() => router.push('/settings')}
           className="p-2 -mr-2 -mt-1"
+          accessibilityLabel="Open settings"
+          accessibilityRole="button"
         >
           {({ pressed }) => (
             <Ionicons
@@ -36,6 +38,8 @@ export default function HomeScreen() {
         <Pressable
           onPress={() => router.push('/(game)/singles')}
           className="bg-white rounded-3xl p-8 shadow-lg active:scale-95"
+          accessibilityLabel="Start singles match, 1 versus 1"
+          accessibilityRole="button"
         >
           <View className="flex-row items-center">
             <View className="bg-primary-100 w-16 h-16 rounded-2xl items-center justify-center">
@@ -52,6 +56,8 @@ export default function HomeScreen() {
         <Pressable
           onPress={() => router.push('/(game)/doubles')}
           className="bg-white rounded-3xl p-8 shadow-lg active:scale-95"
+          accessibilityLabel="Start doubles match, 2 versus 2"
+          accessibilityRole="button"
         >
           <View className="flex-row items-center">
             <View className="bg-secondary-100 w-16 h-16 rounded-2xl items-center justify-center">

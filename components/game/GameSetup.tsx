@@ -28,11 +28,24 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
   const [team2Player1, setTeam2Player1] = useState('Player 3');
   const [team2Player2, setTeam2Player2] = useState('Player 4');
 
+  const sanitizeName = (name: string, fallback: string): string => {
+    const trimmed = name.trim();
+    return trimmed.length > 0 ? trimmed : fallback;
+  };
+
   const handleStart = () => {
     if (mode === 'singles') {
-      startSinglesGame(player1Name, player2Name);
+      startSinglesGame(
+        sanitizeName(player1Name, 'Player 1'),
+        sanitizeName(player2Name, 'Player 2')
+      );
     } else {
-      startDoublesGame(team1Name, [team1Player1, team1Player2], team2Name, [team2Player1, team2Player2]);
+      startDoublesGame(
+        sanitizeName(team1Name, 'Team 1'),
+        [sanitizeName(team1Player1, 'Player 1'), sanitizeName(team1Player2, 'Player 2')],
+        sanitizeName(team2Name, 'Team 2'),
+        [sanitizeName(team2Player1, 'Player 3'), sanitizeName(team2Player2, 'Player 4')]
+      );
     }
     onComplete();
   };
@@ -52,6 +65,8 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               placeholder="Player 1 name"
               value={player1Name}
               onChangeText={setPlayer1Name}
+              maxLength={20}
+              accessibilityLabel="Player 1 name"
               style={{ textAlignVertical: 'center' }}
             />
 
@@ -61,6 +76,8 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               placeholder="Player 2 name"
               value={player2Name}
               onChangeText={setPlayer2Name}
+              maxLength={20}
+              accessibilityLabel="Player 2 name"
               style={{ textAlignVertical: 'center' }}
             />
           </>
@@ -72,20 +89,26 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               placeholder="Team 1 name"
               value={team1Name}
               onChangeText={setTeam1Name}
+              maxLength={20}
+              accessibilityLabel="Team 1 name"
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
               className="bg-gray-100 rounded-xl px-4 h-14 mb-2 text-base"
-              placeholder="Player 1 name"
+              placeholder="Team 1 Player 1 name"
               value={team1Player1}
               onChangeText={setTeam1Player1}
+              maxLength={20}
+              accessibilityLabel="Team 1 Player 1 name"
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
               className="bg-gray-100 rounded-xl px-4 h-14 mb-4 text-base"
-              placeholder="Player 2 name"
+              placeholder="Team 1 Player 2 name"
               value={team1Player2}
               onChangeText={setTeam1Player2}
+              maxLength={20}
+              accessibilityLabel="Team 1 Player 2 name"
               style={{ textAlignVertical: 'center' }}
             />
 
@@ -95,20 +118,26 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               placeholder="Team 2 name"
               value={team2Name}
               onChangeText={setTeam2Name}
+              maxLength={20}
+              accessibilityLabel="Team 2 name"
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
               className="bg-gray-100 rounded-xl px-4 h-14 mb-2 text-base"
-              placeholder="Player 3 name"
+              placeholder="Team 2 Player 1 name"
               value={team2Player1}
               onChangeText={setTeam2Player1}
+              maxLength={20}
+              accessibilityLabel="Team 2 Player 1 name"
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
               className="bg-gray-100 rounded-xl px-4 h-14 mb-4 text-base"
-              placeholder="Player 4 name"
+              placeholder="Team 2 Player 2 name"
               value={team2Player2}
               onChangeText={setTeam2Player2}
+              maxLength={20}
+              accessibilityLabel="Team 2 Player 2 name"
               style={{ textAlignVertical: 'center' }}
             />
           </>

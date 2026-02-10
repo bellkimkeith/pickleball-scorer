@@ -23,6 +23,7 @@ export interface SinglesGameState {
   score2: number;
   servingPlayer: 1 | 2;
   servingSide: ServingSide;
+  sidesChanged: boolean;
   gameStartTime: number;
   gameEndTime?: number;
   scoreHistory: ScoreEvent[];
@@ -37,6 +38,7 @@ export interface DoublesGameState {
   servingTeam: 1 | 2;
   serverNumber: ServerNumber;
   servingSide: ServingSide;
+  sidesChanged: boolean;
   gameStartTime: number;
   gameEndTime?: number;
   scoreHistory: ScoreEvent[];

@@ -20,6 +20,7 @@ export default function SinglesScreen() {
   const sideOut = useGameStore((state) => state.sideOut);
   const undoLastAction = useGameStore((state) => state.undoLastAction);
   const resetGame = useGameStore((state) => state.resetGame);
+  const markSidesChanged = useGameStore((state) => state.markSidesChanged);
 
   const [showSetup, setShowSetup] = useState(true);
   const [showWinModal, setShowWinModal] = useState(false);
@@ -34,6 +35,27 @@ export default function SinglesScreen() {
       setShowWinModal(true);
     }
   }, [gameState, isGameActive, settings]);
+
+  // Check if sides should change
+  useEffect(() => {
+    if (
+      gameState &&
+      isGameActive &&
+      !gameState.sidesChanged &&
+      ScoringRules.shouldChangeSides(
+        gameState.score1,
+        gameState.score2,
+        settings,
+        gameState.sidesChanged
+      )
+    ) {
+      Alert.alert(
+        'Switch Sides',
+        `Score reached ${settings.sideChangeAt}. Time to switch sides!`,
+        [{ text: 'OK', onPress: () => markSidesChanged() }]
+      );
+    }
+  }, [gameState, isGameActive, markSidesChanged, settings]);
 
   const handleEndGame = () => {
     Alert.alert('End Game', 'Are you sure you want to end this game?', [

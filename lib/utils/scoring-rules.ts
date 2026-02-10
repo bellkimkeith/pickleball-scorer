@@ -177,6 +177,21 @@ export class ScoringRules {
   }
 
   /**
+   * Checks if a side change should happen based on current scores and settings.
+   * In pickleball, teams switch sides when the first team reaches the sideChangeAt score.
+   */
+  static shouldChangeSides(
+    score1: number,
+    score2: number,
+    settings: GameSettings,
+    sidesAlreadyChanged: boolean
+  ): boolean {
+    if (settings.sideChangeAt === 0) return false;
+    if (sidesAlreadyChanged) return false;
+    return score1 >= settings.sideChangeAt || score2 >= settings.sideChangeAt;
+  }
+
+  /**
    * Gets the winning team/player (if game is over)
    */
   static getWinner(gameState: GameState): Player | Team | null {

@@ -23,6 +23,8 @@ export function ScoreButton({ title, icon, onPress, color }: ScoreButtonProps) {
   return (
     <Pressable
       onPress={handlePress}
+      accessibilityLabel={title}
+      accessibilityRole="button"
       className={`rounded-2xl p-6 shadow-lg ${colorClasses[color]}`}
       style={({ pressed }) => ({
         transform: [{ scale: pressed ? 0.95 : 1 }],

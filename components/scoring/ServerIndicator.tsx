@@ -23,7 +23,11 @@ export function ServerIndicator({ side, serverNumber, showArrow = true }: Server
   });
 
   return (
-    <Animated.View entering={SlideInDown} className="flex-row items-center mt-2">
+    <Animated.View
+      entering={SlideInDown}
+      className="flex-row items-center mt-2"
+      accessibilityLabel={`Serving ${side === 'right' ? 'right' : 'left'} side${serverNumber ? `, server ${serverNumber}` : ''}`}
+    >
       {/* Pulsing indicator */}
       <Animated.View className="w-3 h-3 bg-accent-yellow rounded-full" style={pulseStyle} />
 

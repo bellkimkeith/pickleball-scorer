@@ -18,7 +18,12 @@ export default function SettingsScreen() {
 
       {/* Header */}
       <View className="pb-6 px-6 flex-row items-center">
-        <Pressable onPress={() => router.back()} className="mr-4">
+        <Pressable
+          onPress={() => router.back()}
+          className="mr-4"
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+        >
           <Ionicons name="arrow-back" size={28} color="#374151" />
         </Pressable>
         <Text className="text-3xl font-bold text-gray-900">Settings</Text>
@@ -33,6 +38,9 @@ export default function SettingsScreen() {
               <Pressable
                 key={score}
                 onPress={() => updateSettings({ winningScore: score })}
+                accessibilityLabel={`Set winning score to ${score}`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: settings.winningScore === score }}
                 className={`flex-1 py-3 rounded-xl ${
                   settings.winningScore === score ? 'bg-primary-500' : 'bg-gray-100'
                 }`}
@@ -69,6 +77,7 @@ export default function SettingsScreen() {
               onValueChange={(value) => updateSettings({ winByTwo: value })}
               trackColor={{ false: '#d1d5db', true: '#16a34a' }}
               thumbColor="#ffffff"
+              accessibilityLabel="Win by 2 points required"
             />
           </View>
         </View>
@@ -81,6 +90,9 @@ export default function SettingsScreen() {
               <Pressable
                 key={score}
                 onPress={() => updateSettings({ sideChangeAt: score })}
+                accessibilityLabel={score === 0 ? 'Disable side change' : `Change sides at score ${score}`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: settings.sideChangeAt === score }}
                 className={`flex-1 py-3 rounded-xl ${
                   settings.sideChangeAt === score ? 'bg-primary-500' : 'bg-gray-100'
                 }`}
@@ -106,7 +118,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* Info Section */}
-        <View className="bg-blue-50 rounded-2xl p-4 mb-6">
+        <View className="bg-blue-50 rounded-2xl p-4 mb-4">
           <View className="flex-row items-start">
             <Ionicons name="information-circle" size={24} color="#2563eb" />
             <View className="flex-1 ml-3">
@@ -118,6 +130,22 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
+
+        {/* Privacy Policy */}
+        <Pressable
+          onPress={() => router.push('/settings/privacy')}
+          className="bg-white rounded-2xl p-4 mb-6"
+          accessibilityLabel="View Privacy Policy"
+          accessibilityRole="button"
+        >
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <Ionicons name="shield-checkmark-outline" size={24} color="#374151" />
+              <Text className="text-lg font-semibold text-gray-900 ml-3">Privacy Policy</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+          </View>
+        </Pressable>
       </View>
       </ScrollView>
     </SafeAreaView>

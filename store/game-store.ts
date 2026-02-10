@@ -22,6 +22,7 @@ interface GameStore {
   sideOut: () => void;
   undoLastAction: () => void;
   resetGame: () => void;
+  markSidesChanged: () => void;
   endGame: () => void;
   updateSettings: (settings: Partial<GameSettings>) => void;
 }
@@ -43,6 +44,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         score2: 0,
         servingPlayer: 1,
         servingSide: 'right',
+        sidesChanged: false,
         gameStartTime: Date.now(),
         scoreHistory: [],
       },
@@ -77,6 +79,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         servingTeam: 1,
         serverNumber: 1,
         servingSide: 'right',
+        sidesChanged: false,
         gameStartTime: Date.now(),
         scoreHistory: [],
       },
@@ -130,6 +133,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             score2: 0,
             servingPlayer: 1,
             servingSide: 'right',
+            sidesChanged: false,
             scoreHistory: [],
           },
           isGameActive: true,
@@ -143,6 +147,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             servingTeam: 1,
             serverNumber: 1,
             servingSide: 'right',
+            sidesChanged: false,
             scoreHistory: [],
           },
           isGameActive: true,
@@ -151,6 +156,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     } else {
       // Restore previous state from last event
       const lastEvent = newHistory[newHistory.length - 1];
+      const { settings } = get();
+      const restoredSidesChanged = ScoringRules.shouldChangeSides(
+        lastEvent.score1,
+        lastEvent.score2,
+        settings,
+        false
+      );
 
       if (gameState.mode === 'singles') {
         set({
@@ -162,6 +174,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             servingSide: ScoringRules.getServingSide(
               lastEvent.servingTeam === 1 ? lastEvent.score1 : lastEvent.score2
             ),
+            sidesChanged: restoredSidesChanged,
             scoreHistory: newHistory,
           },
           isGameActive: true,
@@ -178,12 +191,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
               lastEvent.servingTeam === 1 ? lastEvent.score1 : lastEvent.score2,
               lastEvent.serverNumber || 1
             ),
+            sidesChanged: restoredSidesChanged,
             scoreHistory: newHistory,
           },
           isGameActive: true,
         });
       }
     }
+  },
+
+  markSidesChanged: () => {
+    const { gameState } = get();
+    if (!gameState) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    set({ gameState: { ...gameState, sidesChanged: true } });
   },
 
   resetGame: () => {

@@ -22,7 +22,11 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
   const showArrow = gameState.mode === 'doubles';
 
   return (
-    <View className="bg-primary-600 rounded-3xl p-6 shadow-2xl">
+    <View
+      className="bg-primary-600 rounded-3xl p-6 shadow-2xl"
+      accessibilityRole="summary"
+      accessibilityLabel={`Score: ${team1Name} ${score1}, ${team2Name} ${score2}`}
+    >
       <Animated.View entering={FadeIn} exiting={FadeOut}>
         <View className="flex-row justify-between items-center">
           {/* Team 1 */}
