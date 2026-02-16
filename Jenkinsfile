@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        // Add Homebrew and rbenv to PATH so Jenkins can find node, npm, ruby, bundle
-        PATH = "/opt/homebrew/bin:/Users/bellkimkeithonggon/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        // Add Node 24 LTS, Homebrew, and rbenv to PATH so Jenkins can find node, npm, ruby, bundle
+        PATH = "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/Users/bellkimkeithonggon/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
         LANG = "en_US.UTF-8"
         LC_ALL = "en_US.UTF-8"
@@ -39,7 +39,7 @@ pipeline {
 
         stage('Install JS Dependencies') {
             steps {
-                sh 'npm ci'
+                sh 'npm ci --legacy-peer-deps'
             }
         }
 
