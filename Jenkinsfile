@@ -2,6 +2,9 @@ pipeline {
     agent any
 
     environment {
+        // Add Homebrew and rbenv to PATH so Jenkins can find node, npm, ruby, bundle
+        PATH = "/opt/homebrew/bin:/Users/bellkimkeithonggon/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
         LANG = "en_US.UTF-8"
         LC_ALL = "en_US.UTF-8"
         FASTLANE_SKIP_UPDATE_CHECK = "1"
