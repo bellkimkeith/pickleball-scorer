@@ -66,7 +66,7 @@ pipeline {
 
         stage('Install Fastlane') {
             steps {
-                sh 'bundle install --path vendor/bundle'
+                sh 'bundle config set --local path vendor/bundle && bundle install'
             }
         }
 
