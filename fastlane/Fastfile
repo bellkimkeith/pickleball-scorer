@@ -1,0 +1,83 @@
+default_platform(:ios)
+
+platform :ios do
+
+  # ── Build for simulator (no signing needed) ──
+  # Use this to test the pipeline without an Apple Developer account
+  desc "Build the iOS app for simulator (no signing needed)"
+  lane :build_sim do
+    cocoapods(
+      podfile: "./ios/Podfile",
+      clean_install: true
+    )
+
+    build_app(
+      workspace: "./ios/PickleballScorer.xcworkspace",
+      scheme: "PickleballScorer",
+      configuration: "Release",
+      destination: "generic/platform=iOS Simulator",
+      skip_codesigning: true,
+      skip_archive: true,
+      derived_data_path: "./build/derived_data"
+    )
+  end
+
+  # ── Build signed .ipa (requires Apple Developer account) ──
+  desc "Build signed .ipa for distribution"
+  lane :build do
+    cocoapods(
+      podfile: "./ios/Podfile",
+      clean_install: true
+    )
+
+    # Uncomment after Apple Developer account setup:
+    # api_key = app_store_connect_api_key(
+    #   key_id: ENV["ASC_KEY_ID"],
+    #   issuer_id: ENV["ASC_ISSUER_ID"],
+    #   key_filepath: ENV["ASC_KEY_FILEPATH"]
+    # )
+
+    increment_build_number(
+      xcodeproj: "./ios/PickleballScorer.xcodeproj",
+      build_number: ENV["BUILD_NUMBER"] || "1"
+    )
+
+    build_app(
+      workspace: "./ios/PickleballScorer.xcworkspace",
+      scheme: "PickleballScorer",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "./build/ios",
+      output_name: "PickleballScorer.ipa",
+      clean: true
+    )
+  end
+
+  # ── Upload to TestFlight ──
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    build
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      api_key_path: "./fastlane/api_key.json"
+    )
+  end
+
+  # ── Submit to App Store ──
+  desc "Build and submit to App Store"
+  lane :release do
+    build
+
+    upload_to_app_store(
+      skip_screenshots: true,
+      skip_metadata: true,
+      submit_for_review: false,
+      api_key_path: "./fastlane/api_key.json"
+    )
+  end
+
+  error do |lane, exception|
+    UI.error("Lane #{lane} failed: #{exception.message}")
+  end
+end

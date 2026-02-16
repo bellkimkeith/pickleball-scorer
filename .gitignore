@@ -39,3 +39,20 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/README.md
+fastlane/api_key.json
+fastlane/*.p8
+
+# Ruby
+vendor/bundle/
+.bundle/
+Gemfile.lock
+
+# Build output
+/build
