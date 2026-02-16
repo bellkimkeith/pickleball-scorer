@@ -11,15 +11,23 @@ platform :ios do
       clean_install: true
     )
 
-    build_app(
-      workspace: "./ios/PickleballScorer.xcworkspace",
-      scheme: "PickleballScorer",
-      configuration: "Release",
-      destination: "generic/platform=iOS Simulator",
-      skip_codesigning: true,
-      skip_archive: true,
-      derived_data_path: "./build/derived_data"
+    # Use xcodebuild directly for simulator builds
+    # gym/build_app is designed for device archives, not simulator .app output
+    sh(
+      "xcodebuild " \
+      "-workspace ../ios/PickleballScorer.xcworkspace " \
+      "-scheme PickleballScorer " \
+      "-configuration Release " \
+      "-sdk iphonesimulator " \
+      "-derivedDataPath ../build/derived_data " \
+      "CODE_SIGNING_ALLOWED=NO " \
+      "build"
     )
+
+    # Copy the .app and zip it for easy download from Jenkins artifacts
+    sh("mkdir -p ../build/simulator")
+    sh("cp -R ../build/derived_data/Build/Products/Release-iphonesimulator/PickleballScorer.app ../build/simulator/")
+    sh("cd ../build/simulator && zip -r ../PickleballScorer-simulator.zip PickleballScorer.app")
   end
 
   # ── Build signed .ipa (requires Apple Developer account) ──
