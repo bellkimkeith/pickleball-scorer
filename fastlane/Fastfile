@@ -24,10 +24,13 @@ platform :ios do
       "build"
     )
 
-    # Copy the .app and zip it for easy download from Jenkins artifacts
+    # Copy the .app and zip it with build number for easy download
+    build_num = ENV["BUILD_NUMBER"] || "local"
+    zip_name = "PickleballScorer-dev-#{build_num}.zip"
+
     sh("mkdir -p ../build/simulator")
     sh("cp -R ../build/derived_data/Build/Products/Release-iphonesimulator/PickleballScorer.app ../build/simulator/")
-    sh("cd ../build/simulator && zip -r ../PickleballScorer-simulator.zip PickleballScorer.app")
+    sh("cd ../build/simulator && zip -r ../#{zip_name} PickleballScorer.app")
   end
 
   # ── Build signed .ipa (requires Apple Developer account) ──

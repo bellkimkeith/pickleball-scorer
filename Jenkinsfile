@@ -80,10 +80,17 @@ pipeline {
     post {
         success {
             echo "Pipeline completed successfully!"
+            sh 'echo "=== Build Output ===" && find build -not -path "*/derived_data/*" | sort'
             archiveArtifacts(
                 artifacts: 'build/**/*',
                 allowEmptyArchive: true
             )
+            script {
+                def buildType = params.BUILD_TARGET == 'build_sim' ? 'dev' : params.BUILD_TARGET
+                def zipName = "PickleballScorer-${buildType}-${env.BUILD_NUMBER}.zip"
+                def artifactUrl = "${env.BUILD_URL}artifact/build/${zipName}"
+                echo "Download build artifact: ${artifactUrl}"
+            }
         }
         failure {
             echo "Pipeline FAILED. Check the logs above."
