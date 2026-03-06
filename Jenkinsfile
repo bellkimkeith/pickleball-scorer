@@ -23,10 +23,20 @@ pipeline {
     }
 
     parameters {
+        string(
+            name: 'BRANCH',
+            defaultValue: 'main',
+            description: 'Git branch to build (e.g., main, develop, feature/my-feature)'
+        )
         choice(
-            name: 'BUILD_TARGET',
-            choices: ['build_sim', 'beta', 'release'],
-            description: 'build_sim = no signing, beta = TestFlight, release = App Store'
+            name: 'BUILD_TYPE',
+            choices: ['development', 'production'],
+            description: 'development = simulator build (no Apple account needed), production = signed build for distribution (requires Apple Developer account)'
+        )
+        choice(
+            name: 'DISTRIBUTION',
+            choices: ['none', 'testflight', 'appstore'],
+            description: 'Distribution target (only applies to production builds)'
         )
     }
 
@@ -34,6 +44,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                sh "git checkout ${params.BRANCH}"
             }
         }
 
@@ -72,7 +83,21 @@ pipeline {
 
         stage('Build iOS') {
             steps {
-                sh "bundle exec fastlane ios ${params.BUILD_TARGET}"
+                script {
+                    if (params.BUILD_TYPE == 'development') {
+                        echo "Building DEVELOPMENT version (simulator, no signing required)"
+                        sh "bundle exec fastlane ios build_sim"
+                    } else {
+                        echo "Building PRODUCTION version (requires Apple Developer account)"
+                        if (params.DISTRIBUTION == 'testflight') {
+                            sh "bundle exec fastlane ios beta"
+                        } else if (params.DISTRIBUTION == 'appstore') {
+                            sh "bundle exec fastlane ios release"
+                        } else {
+                            sh "bundle exec fastlane ios build"
+                        }
+                    }
+                }
             }
         }
     }
@@ -86,10 +111,11 @@ pipeline {
                 allowEmptyArchive: true
             )
             script {
-                def buildType = params.BUILD_TARGET == 'build_sim' ? 'dev' : params.BUILD_TARGET
-                def zipName = "PickleballScorer-${buildType}-${env.BUILD_NUMBER}.zip"
+                def buildLabel = params.BUILD_TYPE == 'development' ? 'dev' : "prod-${params.DISTRIBUTION}"
+                def zipName = "PickleballScorer-${buildLabel}-${env.BUILD_NUMBER}.zip"
                 def artifactUrl = "${env.BUILD_URL}artifact/build/${zipName}"
                 echo "Download build artifact: ${artifactUrl}"
+                echo "Branch: ${params.BRANCH}, Build Type: ${params.BUILD_TYPE}, Distribution: ${params.DISTRIBUTION}"
             }
         }
         failure {
