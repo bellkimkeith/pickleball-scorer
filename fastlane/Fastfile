@@ -49,6 +49,12 @@ platform :ios do
       readonly: true # CI always reads, never writes new certs
     )
 
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      team_id: ENV["APPLE_TEAM_ID"],
+      targets: ["PickleballScorer"]
+    )
+
     increment_build_number(
       xcodeproj: "./ios/PickleballScorer.xcodeproj",
       build_number: ENV["BUILD_NUMBER"] || "1"

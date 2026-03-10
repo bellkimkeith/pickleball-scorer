@@ -17,6 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bellkimkeith.pickleballscorer",
+      "appleTeamId": "F89UG85Z8F",
       "buildNumber": "1",
       "minimumOsVersion": "15.1",
       "config": {
