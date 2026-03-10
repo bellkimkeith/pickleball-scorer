@@ -33,6 +33,7 @@ yarn-error.*
 # local env files
 .env*.local
 .env*
+!.env.example
 
 # typescript
 *.tsbuildinfo
@@ -49,6 +50,8 @@ fastlane/test_output
 fastlane/README.md
 fastlane/api_key.json
 fastlane/*.p8
+fastlane/.env
+!fastlane/.env.example
 
 # Ruby
 vendor/bundle/

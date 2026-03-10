@@ -9,11 +9,16 @@ pipeline {
         LC_ALL = "en_US.UTF-8"
         FASTLANE_SKIP_UPDATE_CHECK = "1"
 
-        // Uncomment after Apple Developer account setup:
-        // ASC_KEY_ID = credentials('asc-key-id')
-        // ASC_ISSUER_ID = credentials('asc-issuer-id')
-        // ASC_KEY_FILEPATH = credentials('asc-api-key-file')
-        // KEYCHAIN_PASSWORD = credentials('keychain-password')
+        // Apple Developer credentials (add these in Jenkins → Manage Jenkins → Credentials → Global)
+        ASC_KEY_ID          = credentials('asc-key-id')
+        ASC_ISSUER_ID       = credentials('asc-issuer-id')
+        ASC_KEY_FILEPATH    = credentials('asc-api-key-file')
+        KEYCHAIN_PASSWORD   = credentials('keychain-password')
+        APPLE_TEAM_ID       = credentials('apple-team-id')
+
+        // Fastlane Match — encrypts/decrypts certs stored in private git repo
+        MATCH_PASSWORD                = credentials('match-password')
+        MATCH_GIT_BASIC_AUTHORIZATION = credentials('match-git-token')
     }
 
     options {
@@ -78,6 +83,13 @@ pipeline {
         stage('Install Fastlane') {
             steps {
                 sh 'bundle config set --local path vendor/bundle && bundle install'
+            }
+        }
+
+        stage('Unlock Keychain') {
+            when { expression { params.BUILD_TYPE == 'production' } }
+            steps {
+                sh 'security unlock-keychain -p "${KEYCHAIN_PASSWORD}" ~/Library/Keychains/login.keychain-db'
             }
         }
 
