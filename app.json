@@ -18,6 +18,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.bellkimkeith.pickleballscorer",
       "buildNumber": "1",
+      "minimumOsVersion": "15.1",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "splash": {
         "image": "./assets/splash.png",
         "resizeMode": "cover",

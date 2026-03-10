@@ -19,6 +19,10 @@ pipeline {
         // Fastlane Match — encrypts/decrypts certs stored in private git repo
         MATCH_PASSWORD                = credentials('match-password')
         MATCH_GIT_BASIC_AUTHORIZATION = credentials('match-git-token')
+        MATCH_GIT_URL                 = credentials('match-git-url')
+
+        // Apple ID email (required by fastlane/Appfile)
+        APPLE_ID                      = credentials('apple-id')
     }
 
     options {
@@ -132,6 +136,11 @@ pipeline {
         }
         failure {
             echo "Pipeline FAILED. Check the logs above."
+            sh 'mkdir -p build && cp ~/Library/Logs/gym/PickleballScorer-PickleballScorer.log build/gym-build.log 2>/dev/null || true'
+            archiveArtifacts(
+                artifacts: 'build/gym-build.log',
+                allowEmptyArchive: true
+            )
         }
     }
 }

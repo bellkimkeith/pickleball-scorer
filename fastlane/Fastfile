@@ -6,10 +6,8 @@ platform :ios do
   # Use this to test the pipeline without an Apple Developer account
   desc "Build the iOS app for simulator (no signing needed)"
   lane :build_sim do
-    cocoapods(
-      podfile: "./ios/Podfile",
-      clean_install: true
-    )
+    # Note: pod install is handled by `expo prebuild --clean` in the Jenkins pipeline.
+    # If running fastlane locally, run `npx expo prebuild` first.
 
     # Use xcodebuild directly for simulator builds
     # gym/build_app is designed for device archives, not simulator .app output
@@ -36,10 +34,8 @@ platform :ios do
   # ── Build signed .ipa (requires Apple Developer account) ──
   desc "Build signed .ipa for distribution"
   lane :build do
-    cocoapods(
-      podfile: "./ios/Podfile",
-      clean_install: true
-    )
+    # Note: pod install is handled by `expo prebuild --clean` in the Jenkins pipeline.
+    # If running fastlane locally, run `npx expo prebuild` first.
 
     api_key = app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
