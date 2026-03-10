@@ -15,7 +15,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.bellkimkeith.pickleballscorer",
       "appleTeamId": "F89UG85Z8F",
       "buildNumber": "1",
