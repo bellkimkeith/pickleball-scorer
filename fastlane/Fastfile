@@ -13,8 +13,8 @@ platform :ios do
     # gym/build_app is designed for device archives, not simulator .app output
     sh(
       "xcodebuild " \
-      "-workspace ../ios/PickleballScorer.xcworkspace " \
-      "-scheme PickleballScorer " \
+      "-workspace ../ios/PickleScore.xcworkspace " \
+      "-scheme PickleScore " \
       "-configuration Release " \
       "-sdk iphonesimulator " \
       "-derivedDataPath ../build/derived_data " \
@@ -24,11 +24,11 @@ platform :ios do
 
     # Copy the .app and zip it with build number for easy download
     build_num = ENV["BUILD_NUMBER"] || "local"
-    zip_name = "PickleballScorer-dev-#{build_num}.zip"
+    zip_name = "PickleScore-dev-#{build_num}.zip"
 
     sh("mkdir -p ../build/simulator")
-    sh("cp -R ../build/derived_data/Build/Products/Release-iphonesimulator/PickleballScorer.app ../build/simulator/")
-    sh("cd ../build/simulator && zip -r ../#{zip_name} PickleballScorer.app")
+    sh("cp -R ../build/derived_data/Build/Products/Release-iphonesimulator/PickleScore.app ../build/simulator/")
+    sh("cd ../build/simulator && zip -r ../#{zip_name} PickleScore.app")
   end
 
   # ── Build signed .ipa (requires Apple Developer account) ──
@@ -52,22 +52,22 @@ platform :ios do
     update_code_signing_settings(
       use_automatic_signing: false,
       team_id: ENV["APPLE_TEAM_ID"],
-      path: "./ios/PickleballScorer.xcodeproj",
-      targets: ["PickleballScorer"]
+      path: "./ios/PickleScore.xcodeproj",
+      targets: ["PickleScore"]
     )
 
     increment_build_number(
-      xcodeproj: "./ios/PickleballScorer.xcodeproj",
+      xcodeproj: "./ios/PickleScore.xcodeproj",
       build_number: ENV["BUILD_NUMBER"] || "1"
     )
 
     build_app(
-      workspace: "./ios/PickleballScorer.xcworkspace",
-      scheme: "PickleballScorer",
+      workspace: "./ios/PickleScore.xcworkspace",
+      scheme: "PickleScore",
       configuration: "Release",
       export_method: "app-store",
       output_directory: "./build/ios",
-      output_name: "PickleballScorer.ipa",
+      output_name: "PickleScore.ipa",
       clean: true,
       xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Manual",
       export_options: {

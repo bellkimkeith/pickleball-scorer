@@ -136,7 +136,7 @@ pipeline {
         }
         failure {
             echo "Pipeline FAILED. Check the logs above."
-            sh 'mkdir -p build && cp ~/Library/Logs/gym/PickleballScorer-PickleballScorer.log build/gym-build.log 2>/dev/null || true'
+            sh 'mkdir -p build && cp ~/Library/Logs/gym/PickleScore-PickleScore.log build/gym-build.log 2>/dev/null || true'
             archiveArtifacts(
                 artifacts: 'build/gym-build.log',
                 allowEmptyArchive: true
