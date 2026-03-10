@@ -53,7 +53,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                sh "git checkout ${params.BRANCH}"
+                sh "git fetch origin && git checkout ${params.BRANCH} && git reset --hard origin/${params.BRANCH}"
             }
         }
 
