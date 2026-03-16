@@ -21,6 +21,9 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
       ? winner.name
       : 'Unknown'
     : 'Tie';
+  
+  const isWinnerTeam1 = gameState.score1 > gameState.score2;
+  const winnerColorClass = isWinnerTeam1 ? 'text-team1' : 'text-team2';
 
   const finalScore = `${gameState.score1} - ${gameState.score2}`;
 
@@ -32,7 +35,7 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
         <Text accessibilityRole="header" className="text-3xl font-bold text-gray-900 mt-6">Game Over!</Text>
 
         <Text
-          className="text-xl font-semibold text-primary-600 mt-4"
+          className={`text-xl font-semibold mt-4 ${winnerColorClass}`}
           accessibilityLabel={`${winnerName} wins with a score of ${finalScore}`}
         >
           {winnerName} Wins!

@@ -21,6 +21,8 @@ module.exports = {
           yellow: '#fbbf24',
           orange: '#f97316',
         },
+        team1: '#16a34a',
+        team2: '#f97316',
       },
     },
   },

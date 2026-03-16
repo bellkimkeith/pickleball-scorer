@@ -23,14 +23,14 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
 
   return (
     <View
-      className="bg-primary-600 rounded-3xl p-6 shadow-2xl"
+      className="rounded-3xl overflow-hidden shadow-2xl"
       accessibilityRole="summary"
       accessibilityLabel={`Score: ${team1Name} ${score1}, ${team2Name} ${score2}`}
     >
       <Animated.View entering={FadeIn} exiting={FadeOut}>
         <View className="flex-row justify-between items-center">
           {/* Team 1 */}
-          <View className="flex-1 items-center">
+          <View className="flex-1 items-center bg-team1 p-6 pb-8">
             <Text className="text-white text-lg font-semibold mb-2">{team1Name}</Text>
             <Animated.Text
               key={`score1-${score1}`}
@@ -39,16 +39,18 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
             >
               {score1}
             </Animated.Text>
-            {servingTeam === 1 && (
+            {servingTeam === 1 ? (
               <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} showArrow={showArrow} />
+            ) : (
+              <View className="h-8" />
             )}
           </View>
 
           {/* Divider */}
-          <View className="w-1 h-32 bg-white/30 mx-4" />
+          <View className="w-1 h-32 bg-white/30" />
 
           {/* Team 2 */}
-          <View className="flex-1 items-center">
+          <View className="flex-1 items-center bg-team2 p-6 pb-8">
             <Text className="text-white text-lg font-semibold mb-2">{team2Name}</Text>
             <Animated.Text
               key={`score2-${score2}`}
@@ -57,8 +59,10 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
             >
               {score2}
             </Animated.Text>
-            {servingTeam === 2 && (
+            {servingTeam === 2 ? (
               <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} showArrow={showArrow} />
+            ) : (
+              <View className="h-8" />
             )}
           </View>
         </View>
