@@ -309,6 +309,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set((state) => {
       const updatedSettings = { ...state.settings, ...newSettings };
       
+      // Ensure theme is valid
+      if (updatedSettings.theme !== 'light' && updatedSettings.theme !== 'dark') {
+        updatedSettings.theme = state.settings.theme; // keep previous
+      }
+      
       // If winningScore changed, update sideChangeAt to the default for that score
       if (newSettings.winningScore && newSettings.winningScore !== state.settings.winningScore) {
         updatedSettings.sideChangeAt = getDefaultSideChangeAt(newSettings.winningScore);

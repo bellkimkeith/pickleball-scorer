@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useMemo, useCallback } from 'react';
 import { useColorScheme as useNativeWindColorScheme } from 'nativewind';
 import { Appearance } from 'react-native';
 import { useGameStore } from '../../store/game-store';
@@ -17,28 +17,35 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const { colorScheme, setColorScheme } = useNativeWindColorScheme();
-  const { theme, updateSettings } = useGameStore((state) => ({
-    theme: state.settings.theme,
-    updateSettings: state.updateSettings,
-  }));
+  const theme = useGameStore((state) => state.settings.theme);
+  const updateSettings = useGameStore((state) => state.updateSettings);
 
   // Determine effective theme: user setting takes precedence over system
-  const effectiveTheme = theme === 'light' || theme === 'dark' ? theme : colorScheme || 'light';
+  const effectiveTheme = useMemo(() => {
+    return theme === 'light' || theme === 'dark' ? theme : colorScheme || 'light';
+  }, [theme, colorScheme]);
 
-  // Sync theme with NativeWind and Appearance API
+  // Sync theme with NativeWind and Appearance API on mount
   useEffect(() => {
-    setColorScheme(effectiveTheme);
-    Appearance.setColorScheme(effectiveTheme);
-  }, [effectiveTheme, setColorScheme]);
+    // Only set if different from current color scheme
+    if (effectiveTheme !== colorScheme) {
+      setColorScheme(effectiveTheme);
+      Appearance.setColorScheme(effectiveTheme);
+    }
+  }, []); // run only on mount
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = effectiveTheme === 'light' ? 'dark' : 'light';
     updateSettings({ theme: newTheme });
-  };
+    setColorScheme(newTheme);
+    Appearance.setColorScheme(newTheme);
+  }, [effectiveTheme, updateSettings, setColorScheme]);
 
-  const setTheme = (newTheme: 'light' | 'dark') => {
+  const setTheme = useCallback((newTheme: 'light' | 'dark') => {
     updateSettings({ theme: newTheme });
-  };
+    setColorScheme(newTheme);
+    Appearance.setColorScheme(newTheme);
+  }, [updateSettings, setColorScheme]);
 
   return (
     <ThemeContext.Provider value={{ theme: effectiveTheme, toggleTheme, setTheme }}>
