@@ -161,11 +161,13 @@ export class ScoringRules {
       timestamp: Date.now(),
       servingTeam: serverResult.server,
       serverNumber: undefined,
+      servingSide: serverResult.servingSide,
       score1: newScores.score1,
       score2: newScores.score2,
       pointScored: true,
       rallyWinner: team,
       scoresSwapped: gameState.scoresSwapped,
+      sidesChanged: gameState.sidesChanged,
     };
 
     return {
@@ -191,11 +193,13 @@ export class ScoringRules {
       timestamp: Date.now(),
       servingTeam: serverResult.server,
       serverNumber: serverResult.serverNumber,
+      servingSide: serverResult.servingSide,
       score1: newScores.score1,
       score2: newScores.score2,
       pointScored: true,
       rallyWinner: team,
       scoresSwapped: gameState.scoresSwapped,
+      sidesChanged: gameState.sidesChanged,
     };
 
     return {
@@ -220,41 +224,53 @@ export class ScoringRules {
       } else {
         newServingScore = newServingPlayer === 1 ? gameState.score1 : gameState.score2;
       }
+      const newServingSide = this.getServingSide(newServingScore);
 
       const scoreEvent: ScoreEvent = {
         timestamp: Date.now(),
         servingTeam: gameState.servingPlayer,
         serverNumber: undefined,
+        servingSide: newServingSide,
         score1: gameState.score1,
         score2: gameState.score2,
         pointScored: false,
         rallyWinner: gameState.servingPlayer === 1 ? 2 : 1,
         scoresSwapped: gameState.scoresSwapped,
+        sidesChanged: gameState.sidesChanged,
       };
 
       return {
         ...gameState,
         servingPlayer: newServingPlayer,
-        servingSide: this.getServingSide(newServingScore),
+        servingSide: newServingSide,
         scoreHistory: [...gameState.scoreHistory, scoreEvent],
       };
     } else {
+      let newServingSide: ServingSide;
+      if (gameState.serverNumber === 1) {
+        newServingSide = gameState.servingSide === 'right' ? 'left' : 'right';
+      } else {
+        newServingSide = 'right';
+      }
+
       const scoreEvent: ScoreEvent = {
         timestamp: Date.now(),
         servingTeam: gameState.servingTeam,
         serverNumber: gameState.serverNumber,
+        servingSide: newServingSide,
         score1: gameState.score1,
         score2: gameState.score2,
         pointScored: false,
         rallyWinner: gameState.servingTeam === 1 ? 2 : 1,
         scoresSwapped: gameState.scoresSwapped,
+        sidesChanged: gameState.sidesChanged,
       };
 
       if (gameState.serverNumber === 1) {
         return {
           ...gameState,
           serverNumber: 2,
-          servingSide: gameState.servingSide === 'right' ? 'left' : 'right',
+          servingSide: newServingSide,
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
       } else {
@@ -263,7 +279,7 @@ export class ScoringRules {
           ...gameState,
           servingTeam: newServingTeam,
           serverNumber: 1,
-          servingSide: 'right',
+          servingSide: newServingSide,
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
       }

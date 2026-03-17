@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { GameState, GameSettings, SinglesGameState, DoublesGameState } from '../lib/types/game';
+import { GameState, GameSettings, SinglesGameState, DoublesGameState, ServingSide, ScoreEvent } from '../lib/types/game';
 import { ScoringRules } from '../lib/utils/scoring-rules';
 import { DEFAULT_GAME_SETTINGS, getDefaultSideChangeAt } from '../lib/constants/game-config';
 import * as Haptics from 'expo-haptics';
@@ -161,12 +161,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       // Restore previous state from last event
       const lastEvent = newHistory[newHistory.length - 1];
       const { settings } = get();
-      const restoredSidesChanged = ScoringRules.shouldChangeSides(
-        lastEvent.score1,
-        lastEvent.score2,
-        settings,
-        false
-      );
+      const restoredSidesChanged = lastEvent.sidesChanged ?? ScoringRules.shouldChangeSides(lastEvent.score1, lastEvent.score2, settings, false);
 
       if (gameState.mode === 'singles') {
         const isSwapped = lastEvent.scoresSwapped || false;
@@ -180,7 +175,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             score1: lastEvent.score1,
             score2: lastEvent.score2,
             servingPlayer: lastEvent.servingTeam as 1 | 2,
-            servingSide: ScoringRules.getServingSide(servingScore),
+            servingSide: lastEvent.servingSide ?? ScoringRules.getServingSide(servingScore),
             sidesChanged: restoredSidesChanged,
             scoresSwapped: isSwapped,
             scoreHistory: newHistory,
@@ -200,10 +195,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             score2: lastEvent.score2,
             servingTeam: lastEvent.servingTeam,
             serverNumber: lastEvent.serverNumber || 1,
-            servingSide: ScoringRules.getServingSide(
-              servingScore,
-              lastEvent.serverNumber || 1
-            ),
+            servingSide: lastEvent.servingSide ?? ScoringRules.getServingSide(servingScore, lastEvent.serverNumber || 1),
             sidesChanged: restoredSidesChanged,
             scoresSwapped: isSwapped,
             scoreHistory: newHistory,
@@ -219,75 +211,82 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!gameState) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     
+    let newScore1 = gameState.score1;
+    let newScore2 = gameState.score2;
+    let newServingSide: ServingSide;
+    let newServingTeam = gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam;
+    let newServerNumber = gameState.mode === 'doubles' ? (gameState as DoublesGameState).serverNumber : undefined;
+
     if (swapScores && settings.swapScoresOnSideChange) {
-      // Actually swap the scores in the game state
-      if (gameState.mode === 'singles') {
-        // For singles: swap score1 and score2, serving player STAYS THE SAME
-        set((state) => {
-          if (!state.gameState) return state;
-          const singlesState = state.gameState as SinglesGameState;
-          // After swap: score1 = old score2, score2 = old score1
-          // If servingPlayer = 1, their score is now in score2
-          const newScore1 = singlesState.score2;
-          const newScore2 = singlesState.score1;
-          const newServingScore = singlesState.servingPlayer === 1 ? newScore2 : newScore1;
-          return {
-            gameState: {
-              ...singlesState,
-              score1: newScore1,
-              score2: newScore2,
-              // servingPlayer stays the same
-              servingSide: ScoringRules.getServingSide(newServingScore),
-              sidesChanged: true,
-              scoresSwapped: true,
-            },
-          };
-        });
+      // Swap the scores
+      newScore1 = gameState.score2;
+      newScore2 = gameState.score1;
+    }
+
+    // Calculate new serving side based on scores
+    const servingScore = newServingTeam === 1 ? newScore2 : newScore1; // Serving team's score is score2 if team 1? 
+    // Wait, if scores are swapped, servingTeam stays same.
+    // If servingTeam is 1, their score is in score2.
+    
+    if (gameState.mode === 'singles') {
+      const singlesState = gameState as SinglesGameState;
+      // Determine if scores are swapped in the new state
+      const newScoresSwapped = swapScores && settings.swapScoresOnSideChange ? true : gameState.scoresSwapped;
+      let servingScoreCalc: number;
+      if (newScoresSwapped) {
+        servingScoreCalc = singlesState.servingPlayer === 1 ? newScore2 : newScore1;
       } else {
-        // For doubles: swap score1 and score2, serving team STAYS THE SAME
-        set((state) => {
-          if (!state.gameState) return state;
-          const doublesState = state.gameState as DoublesGameState;
-          const newScore1 = doublesState.score2;
-          const newScore2 = doublesState.score1;
-          const newServingScore = doublesState.servingTeam === 1 ? newScore2 : newScore1;
-          return {
-            gameState: {
-              ...doublesState,
-              score1: newScore1,
-              score2: newScore2,
-              // servingTeam stays the same
-              servingSide: ScoringRules.getServingSide(newServingScore, doublesState.serverNumber),
-              sidesChanged: true,
-              scoresSwapped: true,
-            },
-          };
-        });
+        servingScoreCalc = singlesState.servingPlayer === 1 ? newScore1 : newScore2;
       }
+      newServingSide = ScoringRules.getServingSide(servingScoreCalc);
     } else {
-      // Don't swap scores, just mark sides as changed
-      // But we need to update the serving side to reflect the new court position
-      if (gameState.mode === 'singles') {
-        const servingScore = gameState.servingPlayer === 1 ? gameState.score1 : gameState.score2;
-        set({ 
-          gameState: { 
-            ...gameState, 
-            servingSide: ScoringRules.getServingSide(servingScore),
-            sidesChanged: true, 
-            scoresSwapped: false 
-          } 
-        });
+      const doublesState = gameState as DoublesGameState;
+      const newScoresSwapped = swapScores && settings.swapScoresOnSideChange ? true : gameState.scoresSwapped;
+      let servingScoreCalc: number;
+      if (newScoresSwapped) {
+        servingScoreCalc = doublesState.servingTeam === 1 ? newScore2 : newScore1;
       } else {
-        const servingScore = gameState.servingTeam === 1 ? gameState.score1 : gameState.score2;
-        set({ 
-          gameState: { 
-            ...gameState, 
-            servingSide: ScoringRules.getServingSide(servingScore, gameState.serverNumber),
-            sidesChanged: true, 
-            scoresSwapped: false 
-          } 
-        });
+        servingScoreCalc = doublesState.servingTeam === 1 ? newScore1 : newScore2;
       }
+      newServingSide = ScoringRules.getServingSide(servingScoreCalc, doublesState.serverNumber);
+    }
+
+    // Create history event
+    const scoreEvent: ScoreEvent = {
+      timestamp: Date.now(),
+      servingTeam: gameState.mode === 'singles' ? (gameState as SinglesGameState).servingPlayer : (gameState as DoublesGameState).servingTeam,
+      serverNumber: gameState.mode === 'doubles' ? (gameState as DoublesGameState).serverNumber : undefined,
+      servingSide: newServingSide,
+      score1: newScore1,
+      score2: newScore2,
+      pointScored: false,
+      scoresSwapped: swapScores && settings.swapScoresOnSideChange ? true : gameState.scoresSwapped,
+    };
+
+    if (gameState.mode === 'singles') {
+      set({
+        gameState: {
+          ...gameState,
+          score1: newScore1,
+          score2: newScore2,
+          servingSide: newServingSide,
+          sidesChanged: true,
+          scoresSwapped: swapScores && settings.swapScoresOnSideChange ? true : gameState.scoresSwapped,
+          scoreHistory: [...gameState.scoreHistory, scoreEvent],
+        },
+      });
+    } else {
+      set({
+        gameState: {
+          ...gameState,
+          score1: newScore1,
+          score2: newScore2,
+          servingSide: newServingSide,
+          sidesChanged: true,
+          scoresSwapped: swapScores && settings.swapScoresOnSideChange ? true : gameState.scoresSwapped,
+          scoreHistory: [...gameState.scoreHistory, scoreEvent],
+        },
+      });
     }
   },
 

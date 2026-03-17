@@ -52,11 +52,13 @@ export interface ScoreEvent {
   timestamp: number;
   servingTeam: 1 | 2;
   serverNumber?: ServerNumber;
+  servingSide?: ServingSide;
   score1: number;
   score2: number;
   pointScored: boolean;
-  rallyWinner: 1 | 2;
+  rallyWinner?: 1 | 2;
   scoresSwapped: boolean;
+  sidesChanged?: boolean;
 }
 
 export type GameType = 'sideout' | 'rally';
