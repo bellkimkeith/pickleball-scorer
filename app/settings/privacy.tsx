@@ -29,7 +29,7 @@ export default function PrivacyPolicyScreen() {
             <Text className="text-lg font-semibold text-gray-900 mb-3">
               Privacy Policy for Pickleball Scorer
             </Text>
-            <Text className="text-sm text-gray-500 mb-4">Last updated: February 9, 2026</Text>
+            <Text className="text-sm text-gray-500 mb-4">Last updated: March 17, 2026</Text>
 
             <Text className="text-base text-gray-700 mb-4">
               Pickleball Scorer is a fully offline application. Your privacy is important to us, and
@@ -58,6 +58,12 @@ export default function PrivacyPolicyScreen() {
             <Text className="text-lg font-semibold text-gray-900 mb-2">Third-Party Services</Text>
             <Text className="text-base text-gray-700 mb-4">
               This app does not integrate with any third-party services that collect user data.
+            </Text>
+
+            <Text className="text-lg font-semibold text-gray-900 mb-2">Device Permissions</Text>
+            <Text className="text-base text-gray-700 mb-4">
+              This app does not request access to your camera, contacts, location, or any other
+              sensitive device features.
             </Text>
 
             <Text className="text-lg font-semibold text-gray-900 mb-2">
