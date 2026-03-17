@@ -124,7 +124,7 @@ export default function SinglesScreen() {
               title={`${(gameState as SinglesGameState).player2.name} Scores`}
               icon="checkmark-circle"
               onPress={() => scorePoint(2)}
-              color="blue"
+              color="orange"
             />
           </>
         ) : (

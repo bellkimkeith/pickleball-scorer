@@ -124,7 +124,7 @@ export default function DoublesScreen() {
               title={`${(gameState as DoublesGameState).team2.name} Scores`}
               icon="checkmark-circle"
               onPress={() => scorePoint(2)}
-              color="blue"
+              color="orange"
             />
           </>
         ) : (

@@ -60,8 +60,8 @@ export default function HomeScreen() {
           accessibilityRole="button"
         >
           <View className="flex-row items-center">
-            <View className="bg-secondary-100 w-16 h-16 rounded-2xl items-center justify-center">
-              <Ionicons name="people" size={32} color="#2563eb" />
+            <View className="bg-orange-100 w-16 h-16 rounded-2xl items-center justify-center">
+              <Ionicons name="people" size={32} color="#ea580c" />
             </View>
             <View className="ml-4 flex-1">
               <Text className="text-2xl font-bold text-gray-900">Doubles</Text>
