@@ -24,6 +24,9 @@ module.exports = {
         },
         team1: '#16a34a',
         team2: '#f97316',
+        // Dark mode backgrounds
+        'bg-dark': '#111827',
+        'bg-light': '#f9fafb',
       },
     },
   },

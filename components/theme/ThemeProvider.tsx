@@ -1,5 +1,6 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
+import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import { useColorScheme as useNativeWindColorScheme } from 'nativewind';
+import { Appearance } from 'react-native';
 import { useGameStore } from '../../store/game-store';
 
 interface ThemeContextType {
@@ -15,16 +16,24 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const colorScheme = useColorScheme();
+  const { colorScheme, setColorScheme } = useNativeWindColorScheme();
   const { theme, updateSettings } = useGameStore((state) => ({
     theme: state.settings.theme,
     updateSettings: state.updateSettings,
   }));
 
+  // Determine effective theme: user setting takes precedence over system
   const effectiveTheme = theme === 'light' || theme === 'dark' ? theme : colorScheme || 'light';
 
+  // Sync theme with NativeWind and Appearance API
+  useEffect(() => {
+    setColorScheme(effectiveTheme);
+    Appearance.setColorScheme(effectiveTheme);
+  }, [effectiveTheme, setColorScheme]);
+
   const toggleTheme = () => {
-    updateSettings({ theme: effectiveTheme === 'light' ? 'dark' : 'light' });
+    const newTheme = effectiveTheme === 'light' ? 'dark' : 'light';
+    updateSettings({ theme: newTheme });
   };
 
   const setTheme = (newTheme: 'light' | 'dark') => {
