@@ -6,7 +6,7 @@ interface ScoreButtonProps {
   title: string;
   icon: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
-  color: 'green' | 'orange';
+  color: 'green' | 'orange' | 'blue';
 }
 
 export function ScoreButton({ title, icon, onPress, color }: ScoreButtonProps) {
@@ -18,6 +18,7 @@ export function ScoreButton({ title, icon, onPress, color }: ScoreButtonProps) {
   const colorClasses = {
     green: 'bg-primary-500 active:bg-primary-600',
     orange: 'bg-accent-orange active:bg-orange-600',
+    blue: 'bg-blue-500 active:bg-blue-600',
   };
 
   return (

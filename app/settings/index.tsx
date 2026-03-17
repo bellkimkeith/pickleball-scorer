@@ -30,6 +30,58 @@ export default function SettingsScreen() {
       </View>
 
       <View className="px-6">
+        {/* Game Type */}
+        <View className="bg-white rounded-2xl p-4 mb-4">
+          <Text className="text-lg font-semibold mb-3 text-gray-900">Scoring Type</Text>
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => updateSettings({ gameType: 'rally' })}
+              accessibilityLabel="Set rally scoring"
+              accessibilityRole="button"
+              accessibilityState={{ selected: settings.gameType === 'rally' }}
+              className={`flex-1 py-3 rounded-xl ${
+                settings.gameType === 'rally' ? 'bg-primary-500' : 'bg-gray-100'
+              }`}
+              style={({ pressed }) => ({
+                transform: [{ scale: pressed ? 0.95 : 1 }],
+              })}
+            >
+              <Text
+                className={`text-center font-semibold ${
+                  settings.gameType === 'rally' ? 'text-white' : 'text-gray-700'
+                }`}
+              >
+                Rally
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => updateSettings({ gameType: 'sideout' })}
+              accessibilityLabel="Set sideout scoring"
+              accessibilityRole="button"
+              accessibilityState={{ selected: settings.gameType === 'sideout' }}
+              className={`flex-1 py-3 rounded-xl ${
+                settings.gameType === 'sideout' ? 'bg-primary-500' : 'bg-gray-100'
+              }`}
+              style={({ pressed }) => ({
+                transform: [{ scale: pressed ? 0.95 : 1 }],
+              })}
+            >
+              <Text
+                className={`text-center font-semibold ${
+                  settings.gameType === 'sideout' ? 'text-white' : 'text-gray-700'
+                }`}
+              >
+                Sideout
+              </Text>
+            </Pressable>
+          </View>
+          <Text className="text-sm text-gray-600 mt-2">
+            {settings.gameType === 'rally'
+              ? 'Point scored by whoever wins the rally'
+              : 'Only serving team can score a point'}
+          </Text>
+        </View>
+
         {/* Winning Score */}
         <View className="bg-white rounded-2xl p-4 mb-4">
           <Text className="text-lg font-semibold mb-3 text-gray-900">Winning Score</Text>

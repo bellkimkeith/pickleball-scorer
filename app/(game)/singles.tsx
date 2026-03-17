@@ -10,6 +10,7 @@ import { GameControls } from '../../components/scoring/GameControls';
 import { GameSetup } from '../../components/game/GameSetup';
 import { WinModal } from '../../components/game/WinModal';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
+import { SinglesGameState } from '../../lib/types/game';
 
 export default function SinglesScreen() {
   const router = useRouter();
@@ -111,14 +112,32 @@ export default function SinglesScreen() {
 
       {/* Action Buttons */}
       <View className="flex-1 px-6 justify-center gap-4">
-        <ScoreButton
-          title="Point Scored"
-          icon="checkmark-circle"
-          onPress={scorePoint}
-          color="green"
-        />
-
-        <ScoreButton title="Side Out" icon="swap-horizontal" onPress={sideOut} color="orange" />
+        {settings.gameType === 'rally' ? (
+          <>
+            <ScoreButton
+              title={`${(gameState as SinglesGameState).player1.name} Scores`}
+              icon="checkmark-circle"
+              onPress={() => scorePoint(1)}
+              color="green"
+            />
+            <ScoreButton
+              title={`${(gameState as SinglesGameState).player2.name} Scores`}
+              icon="checkmark-circle"
+              onPress={() => scorePoint(2)}
+              color="blue"
+            />
+          </>
+        ) : (
+          <>
+            <ScoreButton
+              title="Point Scored"
+              icon="checkmark-circle"
+              onPress={() => scorePoint()}
+              color="green"
+            />
+            <ScoreButton title="Side Out" icon="swap-horizontal" onPress={sideOut} color="orange" />
+          </>
+        )}
       </View>
 
       {/* Game Controls */}

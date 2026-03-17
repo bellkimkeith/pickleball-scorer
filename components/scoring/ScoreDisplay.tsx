@@ -25,9 +25,11 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
 
   // Serving team logic needs to account for swapped scores
   const actualServingTeam = gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam;
-  // When scores are swapped, the serving team is already swapped in the state
-  // So the indicator should be shown for the actual serving team
-  const displayServingTeam = actualServingTeam;
+  // When scores are swapped, Team 1 displays player2's info and Team 2 displays player1's info
+  // So we need to flip which side shows the indicator when scores are swapped
+  const displayServingTeam = gameState.scoresSwapped 
+    ? (actualServingTeam === 1 ? 2 : 1) 
+    : actualServingTeam;
     
   // Swap background colors when scores are swapped
   const team1BgClass = gameState.scoresSwapped ? 'bg-team2' : 'bg-team1';

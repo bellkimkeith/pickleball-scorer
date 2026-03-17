@@ -1,16 +1,126 @@
 import { GameState, GameSettings, ServingSide, ServerNumber, Player, Team, ScoreEvent, SinglesGameState, DoublesGameState } from '../types/game';
 
+interface ServerResult {
+  server: 1 | 2;
+  serverNumber?: ServerNumber;
+  servingSide: ServingSide;
+}
+
+interface ScoreResult {
+  score1: number;
+  score2: number;
+}
+
+interface ScoringBehavior {
+  canScore: (scoringTeam: 1 | 2, gameState: GameState) => boolean;
+  incrementScore: (gameState: GameState, scoringTeam: 1 | 2, scoresSwapped: boolean) => ScoreResult;
+  getNextServer: (gameState: GameState, scoringTeam: 1 | 2, newScores: ScoreResult) => ServerResult;
+}
+
+const SIDE_OUT_BEHAVIOR: ScoringBehavior = {
+  canScore: (scoringTeam, gameState) => {
+    const servingTeam = gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam;
+    return scoringTeam === servingTeam;
+  },
+  incrementScore: (gameState, scoringTeam, scoresSwapped) => {
+    if (scoresSwapped) {
+      return {
+        score1: scoringTeam === 2 ? gameState.score1 + 1 : gameState.score1,
+        score2: scoringTeam === 1 ? gameState.score2 + 1 : gameState.score2,
+      };
+    }
+    return {
+      score1: scoringTeam === 1 ? gameState.score1 + 1 : gameState.score1,
+      score2: scoringTeam === 2 ? gameState.score2 + 1 : gameState.score2,
+    };
+  },
+  getNextServer: (gameState, scoringTeam, newScores) => {
+    if (gameState.mode === 'singles') {
+      let servingScore: number;
+      if (gameState.scoresSwapped) {
+        servingScore = gameState.servingPlayer === 1 ? newScores.score2 : newScores.score1;
+      } else {
+        servingScore = gameState.servingPlayer === 1 ? newScores.score1 : newScores.score2;
+      }
+      return {
+        server: gameState.servingPlayer,
+        servingSide: ScoringRules.getServingSide(servingScore),
+      };
+    } else {
+      let servingTeamScore: number;
+      if (gameState.scoresSwapped) {
+        servingTeamScore = gameState.servingTeam === 1 ? newScores.score2 : newScores.score1;
+      } else {
+        servingTeamScore = gameState.servingTeam === 1 ? newScores.score1 : newScores.score2;
+      }
+      return {
+        server: gameState.servingTeam,
+        serverNumber: gameState.serverNumber,
+        servingSide: ScoringRules.getServingSide(servingTeamScore, gameState.serverNumber),
+      };
+    }
+  },
+};
+
+const RALLY_BEHAVIOR: ScoringBehavior = {
+  canScore: () => true,
+  incrementScore: (gameState, scoringTeam, scoresSwapped) => {
+    if (scoresSwapped) {
+      return {
+        score1: scoringTeam === 2 ? gameState.score1 + 1 : gameState.score1,
+        score2: scoringTeam === 1 ? gameState.score2 + 1 : gameState.score2,
+      };
+    }
+    return {
+      score1: scoringTeam === 1 ? gameState.score1 + 1 : gameState.score1,
+      score2: scoringTeam === 2 ? gameState.score2 + 1 : gameState.score2,
+    };
+  },
+  getNextServer: (gameState, scoringTeam, newScores) => {
+    const actualScoringTeam = scoringTeam;
+    
+    if (gameState.mode === 'singles') {
+      const servingPlayer = gameState.servingPlayer;
+      // Determine which score is the serving team's score based on scoresSwapped
+      // Use the NEW scores after the point was scored
+      let servingTeamScore: number;
+      if (gameState.scoresSwapped) {
+        servingTeamScore = actualScoringTeam === 1 ? newScores.score2 : newScores.score1;
+      } else {
+        servingTeamScore = actualScoringTeam === 1 ? newScores.score1 : newScores.score2;
+      }
+      
+      if (actualScoringTeam !== servingPlayer) {
+        return { server: actualScoringTeam, servingSide: 'right' };
+      }
+      return {
+        server: servingPlayer,
+        servingSide: ScoringRules.getServingSide(servingTeamScore),
+      };
+    } else {
+      const servingTeam = gameState.servingTeam;
+      // Determine which score is the serving team's score based on scoresSwapped
+      // Use the NEW scores after the point was scored
+      let servingTeamScore: number;
+      if (gameState.scoresSwapped) {
+        servingTeamScore = actualScoringTeam === 1 ? newScores.score2 : newScores.score1;
+      } else {
+        servingTeamScore = actualScoringTeam === 1 ? newScores.score1 : newScores.score2;
+      }
+      
+      if (actualScoringTeam !== servingTeam) {
+        return { server: actualScoringTeam, serverNumber: 1, servingSide: 'right' };
+      }
+      return {
+        server: servingTeam,
+        serverNumber: gameState.serverNumber === 1 ? 2 : 1,
+        servingSide: ScoringRules.getServingSide(servingTeamScore, gameState.serverNumber),
+      };
+    }
+  },
+};
+
 export class ScoringRules {
-  /**
-   * Determines the serving side based on the serving team's score
-   *
-   * NOTE: This method is primarily used for singles mode.
-   * In doubles, serving sides alternate when scoring rather than being calculated from score.
-   *
-   * In singles:
-   * - Even score = right side
-   * - Odd score = left side
-   */
   static getServingSide(servingTeamScore: number, serverNumber: ServerNumber = 1): ServingSide {
     const isEven = servingTeamScore % 2 === 0;
     if (serverNumber === 1) {
@@ -20,78 +130,96 @@ export class ScoringRules {
     }
   }
 
-  /**
-   * Handles point scored by serving team
-   * Updates score, checks for side change, maintains server
-   */
   static scorePoint(
     gameState: GameState,
-    settings: GameSettings
+    settings: GameSettings,
+    scoringTeam?: 1 | 2
   ): GameState {
+    const team = scoringTeam ?? (gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam);
+    const behavior = settings.gameType === 'sideout' ? SIDE_OUT_BEHAVIOR : RALLY_BEHAVIOR;
+
+    if (!behavior.canScore(team, gameState)) {
+      return this.handleSideOut(gameState);
+    }
+
     if (gameState.mode === 'singles') {
-      // Singles: explicitly create new state to ensure proper updates
-      const newScore1 = gameState.servingPlayer === 1 ? gameState.score1 + 1 : gameState.score1;
-      const newScore2 = gameState.servingPlayer === 2 ? gameState.score2 + 1 : gameState.score2;
-      const servingTeamScore = gameState.servingPlayer === 1 ? newScore1 : newScore2;
-
-      const scoreEvent: ScoreEvent = {
-        timestamp: Date.now(),
-        servingTeam: gameState.servingPlayer,
-        serverNumber: undefined,
-        score1: newScore1,
-        score2: newScore2,
-        pointScored: true,
-        rallyWinner: gameState.servingPlayer,
-        scoresSwapped: gameState.scoresSwapped,
-      };
-
-      const newState: SinglesGameState = {
-        ...gameState,
-        score1: newScore1,
-        score2: newScore2,
-        servingSide: this.getServingSide(servingTeamScore),
-        scoreHistory: [...gameState.scoreHistory, scoreEvent],
-      };
-
-      return newState;
+      return this.scorePointSingles(gameState, behavior, team);
     } else {
-      // Doubles: explicitly create new state to ensure proper updates
-      const newScore1 = gameState.servingTeam === 1 ? gameState.score1 + 1 : gameState.score1;
-      const newScore2 = gameState.servingTeam === 2 ? gameState.score2 + 1 : gameState.score2;
-      const servingTeamScore = gameState.servingTeam === 1 ? newScore1 : newScore2;
-
-      const scoreEvent: ScoreEvent = {
-        timestamp: Date.now(),
-        servingTeam: gameState.servingTeam,
-        serverNumber: gameState.serverNumber,
-        score1: newScore1,
-        score2: newScore2,
-        pointScored: true,
-        rallyWinner: gameState.servingTeam,
-        scoresSwapped: gameState.scoresSwapped,
-      };
-
-      const newState: DoublesGameState = {
-        ...gameState,
-        score1: newScore1,
-        score2: newScore2,
-        servingSide: gameState.servingSide === 'right' ? 'left' : 'right',  // Alternate sides when scoring
-        scoreHistory: [...gameState.scoreHistory, scoreEvent],
-      };
-
-      return newState;
+      return this.scorePointDoubles(gameState, behavior, team);
     }
   }
 
-  /**
-   * Handles side-out (serving team loses rally)
-   * In doubles: switch to partner or other team
-   * In singles: switch to other player
-   */
+  private static scorePointSingles(
+    gameState: SinglesGameState,
+    behavior: ScoringBehavior,
+    team: 1 | 2
+  ): SinglesGameState {
+    const newScores = behavior.incrementScore(gameState, team, gameState.scoresSwapped);
+    const serverResult = behavior.getNextServer(gameState, team, newScores);
+
+    const scoreEvent: ScoreEvent = {
+      timestamp: Date.now(),
+      servingTeam: serverResult.server,
+      serverNumber: undefined,
+      score1: newScores.score1,
+      score2: newScores.score2,
+      pointScored: true,
+      rallyWinner: team,
+      scoresSwapped: gameState.scoresSwapped,
+    };
+
+    return {
+      ...gameState,
+      servingPlayer: serverResult.server,
+      score1: newScores.score1,
+      score2: newScores.score2,
+      servingSide: serverResult.servingSide,
+      scoresSwapped: gameState.scoresSwapped,
+      scoreHistory: [...gameState.scoreHistory, scoreEvent],
+    };
+  }
+
+  private static scorePointDoubles(
+    gameState: DoublesGameState,
+    behavior: ScoringBehavior,
+    team: 1 | 2
+  ): DoublesGameState {
+    const newScores = behavior.incrementScore(gameState, team, gameState.scoresSwapped);
+    const serverResult = behavior.getNextServer(gameState, team, newScores);
+
+    const scoreEvent: ScoreEvent = {
+      timestamp: Date.now(),
+      servingTeam: serverResult.server,
+      serverNumber: serverResult.serverNumber,
+      score1: newScores.score1,
+      score2: newScores.score2,
+      pointScored: true,
+      rallyWinner: team,
+      scoresSwapped: gameState.scoresSwapped,
+    };
+
+    return {
+      ...gameState,
+      servingTeam: serverResult.server,
+      serverNumber: serverResult.serverNumber!,
+      score1: newScores.score1,
+      score2: newScores.score2,
+      servingSide: serverResult.servingSide,
+      scoresSwapped: gameState.scoresSwapped,
+      scoreHistory: [...gameState.scoreHistory, scoreEvent],
+    };
+  }
+
   static handleSideOut(gameState: GameState): GameState {
     if (gameState.mode === 'singles') {
       const newServingPlayer = gameState.servingPlayer === 1 ? 2 : 1;
-      const newServingScore = newServingPlayer === 1 ? gameState.score1 : gameState.score2;
+      let newServingScore: number;
+      if (gameState.scoresSwapped) {
+        // score1 = player2's score, score2 = player1's score
+        newServingScore = newServingPlayer === 1 ? gameState.score2 : gameState.score1;
+      } else {
+        newServingScore = newServingPlayer === 1 ? gameState.score1 : gameState.score2;
+      }
 
       const scoreEvent: ScoreEvent = {
         timestamp: Date.now(),
@@ -104,60 +232,45 @@ export class ScoringRules {
         scoresSwapped: gameState.scoresSwapped,
       };
 
-      const newState: SinglesGameState = {
+      return {
         ...gameState,
         servingPlayer: newServingPlayer,
         servingSide: this.getServingSide(newServingScore),
         scoreHistory: [...gameState.scoreHistory, scoreEvent],
       };
-
-      return newState;
     } else {
-       const scoreEvent: ScoreEvent = {
-         timestamp: Date.now(),
-         servingTeam: gameState.servingTeam,
-         serverNumber: gameState.serverNumber,
-         score1: gameState.score1,
-         score2: gameState.score2,
-         pointScored: false,
-         rallyWinner: gameState.servingTeam === 1 ? 2 : 1,
-         scoresSwapped: gameState.scoresSwapped,
-       };
+      const scoreEvent: ScoreEvent = {
+        timestamp: Date.now(),
+        servingTeam: gameState.servingTeam,
+        serverNumber: gameState.serverNumber,
+        score1: gameState.score1,
+        score2: gameState.score2,
+        pointScored: false,
+        rallyWinner: gameState.servingTeam === 1 ? 2 : 1,
+        scoresSwapped: gameState.scoresSwapped,
+      };
 
       if (gameState.serverNumber === 1) {
-        // Switch to partner (server #2)
-        const newState: DoublesGameState = {
+        return {
           ...gameState,
           serverNumber: 2,
-          servingSide: gameState.servingSide === 'right' ? 'left' : 'right',  // Server 2 serves from opposite side
+          servingSide: gameState.servingSide === 'right' ? 'left' : 'right',
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
-        return newState;
       } else {
-        // Switch to other team, server #1
-        // Per pickleball rules: new possession ALWAYS starts with Server 1 on the RIGHT
         const newServingTeam = gameState.servingTeam === 1 ? 2 : 1;
-
-        const newState: DoublesGameState = {
+        return {
           ...gameState,
           servingTeam: newServingTeam,
           serverNumber: 1,
-          servingSide: 'right',  // Fixed: new possession always starts right
+          servingSide: 'right',
           scoreHistory: [...gameState.scoreHistory, scoreEvent],
         };
-        return newState;
       }
     }
   }
 
-  /**
-   * Checks if the game is over
-   */
-  static isGameOver(
-    score1: number,
-    score2: number,
-    settings: GameSettings
-  ): boolean {
+  static isGameOver(score1: number, score2: number, settings: GameSettings): boolean {
     const { winningScore, winByTwo } = settings;
     const maxScore = Math.max(score1, score2);
     const scoreDiff = Math.abs(score1 - score2);
@@ -167,23 +280,15 @@ export class ScoringRules {
     return maxScore >= winningScore && scoreDiff >= 2;
   }
 
-  /**
-   * Gets the current server (for display purposes)
-   */
   static getCurrentServer(gameState: GameState): Player {
     if (gameState.mode === 'singles') {
       return gameState.servingPlayer === 1 ? gameState.player1 : gameState.player2;
     } else {
-      // In doubles, get the current server based on server number
       const servingTeam = gameState.servingTeam === 1 ? gameState.team1 : gameState.team2;
       return servingTeam.players[gameState.serverNumber - 1];
     }
   }
 
-  /**
-   * Checks if a side change should happen based on current scores and settings.
-   * In pickleball, teams switch sides when the first team reaches the sideChangeAt score.
-   */
   static shouldChangeSides(
     score1: number,
     score2: number,
@@ -195,15 +300,11 @@ export class ScoringRules {
     return score1 >= settings.sideChangeAt || score2 >= settings.sideChangeAt;
   }
 
-  /**
-   * Gets the winning team/player (if game is over)
-   */
   static getWinner(gameState: GameState): Player | Team | null {
     const scoresSwapped = gameState.scoresSwapped || false;
-    
+
     if (gameState.mode === 'singles') {
       if (scoresSwapped) {
-        // After swapping scores, score1 now holds player2's original score
         if (gameState.score1 > gameState.score2) {
           return gameState.player2;
         } else if (gameState.score2 > gameState.score1) {

@@ -37,4 +37,5 @@ export const DEFAULT_GAME_SETTINGS: GameSettings = {
   winByTwo: true,
   sideChangeAt: getDefaultSideChangeAt(11),
   swapScoresOnSideChange: true,
+  gameType: 'sideout',
 };

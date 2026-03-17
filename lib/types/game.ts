@@ -59,9 +59,12 @@ export interface ScoreEvent {
   scoresSwapped: boolean;
 }
 
+export type GameType = 'sideout' | 'rally';
+
 export interface GameSettings {
   winningScore: 11 | 15 | 21;
   winByTwo: boolean;
-  sideChangeAt: number; // Score to change sides (e.g., 6 for tournament play)
-  swapScoresOnSideChange: boolean; // Swap scores with colors when switching sides
+  sideChangeAt: number;
+  swapScoresOnSideChange: boolean;
+  gameType: GameType;
 }

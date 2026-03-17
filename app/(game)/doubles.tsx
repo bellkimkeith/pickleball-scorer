@@ -10,6 +10,7 @@ import { GameControls } from '../../components/scoring/GameControls';
 import { GameSetup } from '../../components/game/GameSetup';
 import { WinModal } from '../../components/game/WinModal';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
+import { DoublesGameState } from '../../lib/types/game';
 
 export default function DoublesScreen() {
   const router = useRouter();
@@ -111,19 +112,37 @@ export default function DoublesScreen() {
 
       {/* Action Buttons */}
       <View className="flex-1 px-6 justify-center gap-4">
-        <ScoreButton
-          title="Point Scored"
-          icon="checkmark-circle"
-          onPress={scorePoint}
-          color="green"
-        />
-
-        <ScoreButton
-          title={gameState.mode === 'doubles' && gameState.serverNumber === 1 ? '2nd Serve' : 'Side Out'}
-          icon="swap-horizontal"
-          onPress={sideOut}
-          color="orange"
-        />
+        {settings.gameType === 'rally' ? (
+          <>
+            <ScoreButton
+              title={`${(gameState as DoublesGameState).team1.name} Scores`}
+              icon="checkmark-circle"
+              onPress={() => scorePoint(1)}
+              color="green"
+            />
+            <ScoreButton
+              title={`${(gameState as DoublesGameState).team2.name} Scores`}
+              icon="checkmark-circle"
+              onPress={() => scorePoint(2)}
+              color="blue"
+            />
+          </>
+        ) : (
+          <>
+            <ScoreButton
+              title="Point Scored"
+              icon="checkmark-circle"
+              onPress={() => scorePoint()}
+              color="green"
+            />
+            <ScoreButton
+              title={gameState.mode === 'doubles' && gameState.serverNumber === 1 ? '2nd Serve' : 'Side Out'}
+              icon="swap-horizontal"
+              onPress={sideOut}
+              color="orange"
+            />
+          </>
+        )}
       </View>
 
       {/* Game Controls */}

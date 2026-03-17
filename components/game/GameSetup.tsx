@@ -1,4 +1,4 @@
-import { View, Text, TextInput, ScrollView } from 'react-native';
+import { View, Text, TextInput, ScrollView, Pressable } from 'react-native';
 import { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
@@ -15,6 +15,8 @@ interface GameSetupProps {
 export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProps) {
   const startSinglesGame = useGameStore((state) => state.startSinglesGame);
   const startDoublesGame = useGameStore((state) => state.startDoublesGame);
+  const settings = useGameStore((state) => state.settings);
+  const updateSettings = useGameStore((state) => state.updateSettings);
 
   // Singles state
   const [player1Name, setPlayer1Name] = useState('Player 1');
@@ -56,6 +58,39 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
         <Text className="text-2xl font-bold mb-6">
           Setup {mode === 'singles' ? 'Singles' : 'Doubles'} Match
         </Text>
+
+        {/* Game Type Selection */}
+        <Text className="text-sm font-semibold text-gray-700 mb-2">Scoring Type</Text>
+        <View className="flex-row gap-2 mb-4">
+          <Pressable
+            onPress={() => updateSettings({ gameType: 'rally' })}
+            className={`flex-1 py-3 rounded-xl ${
+              settings.gameType === 'rally' ? 'bg-primary-500' : 'bg-gray-100'
+            }`}
+          >
+            <Text
+              className={`text-center font-semibold ${
+                settings.gameType === 'rally' ? 'text-white' : 'text-gray-700'
+              }`}
+            >
+              Rally
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => updateSettings({ gameType: 'sideout' })}
+            className={`flex-1 py-3 rounded-xl ${
+              settings.gameType === 'sideout' ? 'bg-primary-500' : 'bg-gray-100'
+            }`}
+          >
+            <Text
+              className={`text-center font-semibold ${
+                settings.gameType === 'sideout' ? 'text-white' : 'text-gray-700'
+              }`}
+            >
+              Sideout
+            </Text>
+          </Pressable>
+        </View>
 
         {mode === 'singles' ? (
           <>
