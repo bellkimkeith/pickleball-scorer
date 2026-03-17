@@ -4,6 +4,7 @@ import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { useGameStore } from '../../store/game-store';
 import { GameMode } from '../../lib/types/game';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 interface GameSetupProps {
   mode: GameMode;
@@ -17,6 +18,7 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
   const startDoublesGame = useGameStore((state) => state.startDoublesGame);
   const settings = useGameStore((state) => state.settings);
   const updateSettings = useGameStore((state) => state.updateSettings);
+  const { isDarkMode } = useDarkMode();
 
   // Singles state
   const [player1Name, setPlayer1Name] = useState('Player 1');
@@ -55,22 +57,24 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
   return (
     <Modal visible={visible} onClose={onCancel} dismissable={false}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text className="text-2xl font-bold mb-6">
+        <Text className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
           Setup {mode === 'singles' ? 'Singles' : 'Doubles'} Match
         </Text>
 
         {/* Game Type Selection */}
-        <Text className="text-sm font-semibold text-gray-700 mb-2">Scoring Type</Text>
+        <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          Scoring Type
+        </Text>
         <View className="flex-row gap-2 mb-4">
           <Pressable
             onPress={() => updateSettings({ gameType: 'rally' })}
             className={`flex-1 py-3 rounded-xl ${
-              settings.gameType === 'rally' ? 'bg-primary-500' : 'bg-gray-100'
+              settings.gameType === 'rally' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
             }`}
           >
             <Text
               className={`text-center font-semibold ${
-                settings.gameType === 'rally' ? 'text-white' : 'text-gray-700'
+                settings.gameType === 'rally' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
               }`}
             >
               Rally
@@ -79,25 +83,33 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
           <Pressable
             onPress={() => updateSettings({ gameType: 'sideout' })}
             className={`flex-1 py-3 rounded-xl ${
-              settings.gameType === 'sideout' ? 'bg-primary-500' : 'bg-gray-100'
+              settings.gameType === 'sideout' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
             }`}
           >
             <Text
               className={`text-center font-semibold ${
-                settings.gameType === 'sideout' ? 'text-white' : 'text-gray-700'
+                settings.gameType === 'sideout' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
               }`}
             >
               Sideout
             </Text>
           </Pressable>
         </View>
+        <Text className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
+          {settings.gameType === 'rally'
+            ? 'Point scored by whoever wins the rally'
+            : 'Only serving team can score a point'}
+        </Text>
 
         {mode === 'singles' ? (
           <>
-            <Text className="text-sm font-semibold text-gray-700 mb-2">Player 1</Text>
+            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Player 1
+            </Text>
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-4 text-base"
+              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Player 1 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={player1Name}
               onChangeText={setPlayer1Name}
               maxLength={20}
@@ -105,10 +117,13 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               style={{ textAlignVertical: 'center' }}
             />
 
-            <Text className="text-sm font-semibold text-gray-700 mb-2">Player 2</Text>
+            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Player 2
+            </Text>
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-4 text-base"
+              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Player 2 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={player2Name}
               onChangeText={setPlayer2Name}
               maxLength={20}
@@ -118,10 +133,13 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
           </>
         ) : (
           <>
-            <Text className="text-sm font-semibold text-gray-700 mb-2">Team 1</Text>
+            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Team 1
+            </Text>
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-2 text-base"
+              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Team 1 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={team1Name}
               onChangeText={setTeam1Name}
               maxLength={20}
@@ -129,8 +147,9 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-2 text-base"
+              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Team 1 Player 1 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={team1Player1}
               onChangeText={setTeam1Player1}
               maxLength={20}
@@ -138,8 +157,9 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-4 text-base"
+              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Team 1 Player 2 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={team1Player2}
               onChangeText={setTeam1Player2}
               maxLength={20}
@@ -147,10 +167,13 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               style={{ textAlignVertical: 'center' }}
             />
 
-            <Text className="text-sm font-semibold text-gray-700 mb-2">Team 2</Text>
+            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Team 2
+            </Text>
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-2 text-base"
+              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Team 2 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={team2Name}
               onChangeText={setTeam2Name}
               maxLength={20}
@@ -158,8 +181,9 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-2 text-base"
+              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Team 2 Player 1 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={team2Player1}
               onChangeText={setTeam2Player1}
               maxLength={20}
@@ -167,8 +191,9 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
               style={{ textAlignVertical: 'center' }}
             />
             <TextInput
-              className="bg-gray-100 rounded-xl px-4 h-14 mb-4 text-base"
+              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
               placeholder="Team 2 Player 2 name"
+              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
               value={team2Player2}
               onChangeText={setTeam2Player2}
               maxLength={20}

@@ -11,6 +11,7 @@ import { GameSetup } from '../../components/game/GameSetup';
 import { WinModal } from '../../components/game/WinModal';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { SinglesGameState } from '../../lib/types/game';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 export default function SinglesScreen() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function SinglesScreen() {
   const undoLastAction = useGameStore((state) => state.undoLastAction);
   const resetGame = useGameStore((state) => state.resetGame);
   const markSidesChanged = useGameStore((state) => state.markSidesChanged);
+  const { isDarkMode } = useDarkMode();
 
   const [showSetup, setShowSetup] = useState(true);
   const [showWinModal, setShowWinModal] = useState(false);
@@ -102,8 +104,8 @@ export default function SinglesScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <StatusBar style="light" />
+    <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
 
       {/* Score Display */}
       <View className="px-6 pb-8">

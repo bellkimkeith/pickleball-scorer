@@ -1,5 +1,6 @@
 import { Modal as RNModal, View, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { ReactNode } from 'react';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 interface ModalProps {
   visible: boolean;
@@ -9,6 +10,8 @@ interface ModalProps {
 }
 
 export function Modal({ visible, onClose, children, dismissable = true }: ModalProps) {
+  const { isDarkMode } = useDarkMode();
+  
   return (
     <RNModal transparent visible={visible} animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
@@ -20,7 +23,9 @@ export function Modal({ visible, onClose, children, dismissable = true }: ModalP
             className="flex-1"
             onPress={dismissable ? onClose : undefined}
           />
-          <View className="bg-white rounded-t-3xl p-6 max-h-[80%]">{children}</View>
+          <View className={`rounded-t-3xl p-6 max-h-[80%] ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            {children}
+          </View>
         </View>
       </KeyboardAvoidingView>
     </RNModal>

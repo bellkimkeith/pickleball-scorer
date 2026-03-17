@@ -4,6 +4,7 @@ import { Button } from '../common/Button';
 import { GameState } from '../../lib/types/game';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { Ionicons } from '@expo/vector-icons';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 interface WinModalProps {
   visible: boolean;
@@ -13,6 +14,8 @@ interface WinModalProps {
 }
 
 export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalProps) {
+  const { isDarkMode } = useDarkMode();
+  
   if (!gameState) return null;
 
   const winner = ScoringRules.getWinner(gameState);
@@ -35,7 +38,9 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
       <View className="items-center py-6" accessibilityRole="alert">
         <Ionicons name="trophy" size={80} color="#fbbf24" />
 
-        <Text accessibilityRole="header" className="text-3xl font-bold text-gray-900 mt-6">Game Over!</Text>
+        <Text accessibilityRole="header" className={`text-3xl font-bold mt-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          Game Over!
+        </Text>
 
         <Text
           className={`text-xl font-semibold mt-4 ${winnerColorClass}`}
@@ -44,17 +49,17 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
           {winnerName} Wins!
         </Text>
 
-        <View className="bg-gray-100 rounded-2xl p-6 mt-6 w-full">
-          <Text className="text-center text-gray-600 text-sm font-semibold mb-2">
+        <View className={`rounded-2xl p-6 mt-6 w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+          <Text className={`text-center text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Final Score
           </Text>
-          <Text className="text-center text-4xl font-bold text-gray-900">
+          <Text className={`text-center text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             {finalScore}
           </Text>
         </View>
 
         {gameState.gameEndTime && gameState.gameStartTime && (
-          <Text className="text-gray-600 mt-4">
+          <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-4`}>
             Duration: {Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 60000)} min
           </Text>
         )}

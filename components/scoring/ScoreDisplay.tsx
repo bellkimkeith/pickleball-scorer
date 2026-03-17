@@ -2,23 +2,26 @@ import { View, Text } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { GameState } from '../../lib/types/game';
 import { ServerIndicator } from './ServerIndicator';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 interface ScoreDisplayProps {
   gameState: GameState | null;
 }
 
 export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
+  const { isDarkMode } = useDarkMode();
+  
   if (!gameState) return null;
 
   // When scores are swapped, the actual score values in state have already been exchanged
   // So we just use them directly. Team names also need to be swapped to match.
   const displayScore1 = gameState.score1;
   const displayScore2 = gameState.score2;
-   
+    
   const displayTeam1Name = gameState.scoresSwapped 
     ? (gameState.mode === 'singles' ? gameState.player2.name : gameState.team2.name)
     : (gameState.mode === 'singles' ? gameState.player1.name : gameState.team1.name);
-    
+     
   const displayTeam2Name = gameState.scoresSwapped 
     ? (gameState.mode === 'singles' ? gameState.player1.name : gameState.team1.name)
     : (gameState.mode === 'singles' ? gameState.player2.name : gameState.team2.name);
@@ -40,7 +43,7 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
 
   return (
     <View
-      className="rounded-3xl overflow-hidden shadow-2xl"
+      className={`rounded-3xl overflow-hidden shadow-2xl ${isDarkMode ? 'border border-gray-700' : ''}`}
       accessibilityRole="summary"
       accessibilityLabel={`Score: ${displayTeam1Name} ${displayScore1}, ${displayTeam2Name} ${displayScore2}`}
     >

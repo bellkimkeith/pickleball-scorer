@@ -3,19 +3,25 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { isDarkMode } = useDarkMode();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <StatusBar style="dark" />
+    <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} edges={['top']}>
+      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
 
       {/* Header */}
       <View className="pb-8 px-6 flex-row justify-between items-start">
         <View>
-          <Text className="text-4xl font-bold text-gray-900">Pickleball Scorer</Text>
-          <Text className="text-base text-gray-400 mt-1">Start a new match</Text>
+          <Text className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            Pickleball Scorer
+          </Text>
+          <Text className={`text-base ${isDarkMode ? 'text-gray-400' : 'text-gray-400'} mt-1`}>
+            Start a new match
+          </Text>
         </View>
         <Pressable
           onPress={() => router.push('/settings')}
@@ -37,7 +43,7 @@ export default function HomeScreen() {
       <View className="px-6 gap-4">
         <Pressable
           onPress={() => router.push('/(game)/singles')}
-          className="bg-white rounded-3xl p-8 shadow-lg active:scale-95"
+          className={`rounded-3xl p-8 shadow-lg active:scale-95 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
           accessibilityLabel="Start singles match, 1 versus 1"
           accessibilityRole="button"
         >
@@ -46,8 +52,10 @@ export default function HomeScreen() {
               <Ionicons name="person" size={32} color="#16a34a" />
             </View>
             <View className="ml-4 flex-1">
-              <Text className="text-2xl font-bold text-gray-900">Singles</Text>
-              <Text className="text-gray-600">1v1 Match</Text>
+              <Text className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Singles
+              </Text>
+              <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>1v1 Match</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </View>
@@ -55,7 +63,7 @@ export default function HomeScreen() {
 
         <Pressable
           onPress={() => router.push('/(game)/doubles')}
-          className="bg-white rounded-3xl p-8 shadow-lg active:scale-95"
+          className={`rounded-3xl p-8 shadow-lg active:scale-95 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
           accessibilityLabel="Start doubles match, 2 versus 2"
           accessibilityRole="button"
         >
@@ -64,14 +72,15 @@ export default function HomeScreen() {
               <Ionicons name="people" size={32} color="#ea580c" />
             </View>
             <View className="ml-4 flex-1">
-              <Text className="text-2xl font-bold text-gray-900">Doubles</Text>
-              <Text className="text-gray-600">2v2 Match</Text>
+              <Text className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Doubles
+              </Text>
+              <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>2v2 Match</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </View>
         </Pressable>
       </View>
-
     </SafeAreaView>
   );
 }

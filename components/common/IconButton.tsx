@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 interface IconButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -16,8 +17,10 @@ export function IconButton({
   color = 'gray',
   disabled = false,
 }: IconButtonProps) {
+  const { isDarkMode } = useDarkMode();
+  
   const colorClasses = {
-    gray: 'text-gray-700',
+    gray: isDarkMode ? 'text-gray-300' : 'text-gray-700',
     red: 'text-red-500',
     green: 'text-primary-600',
     blue: 'text-secondary-600',
@@ -41,7 +44,7 @@ export function IconButton({
           size={28}
           color={
             color === 'gray'
-              ? '#374151'
+              ? isDarkMode ? '#d1d5db' : '#374151'
               : color === 'red'
               ? '#ef4444'
               : color === 'green'

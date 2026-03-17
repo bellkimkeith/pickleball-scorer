@@ -63,10 +63,13 @@ export interface ScoreEvent {
 
 export type GameType = 'sideout' | 'rally';
 
+export type ThemeMode = 'light' | 'dark';
+
 export interface GameSettings {
   winningScore: 11 | 15 | 21;
   winByTwo: boolean;
   sideChangeAt: number;
   swapScoresOnSideChange: boolean;
   gameType: GameType;
+  theme: ThemeMode;
 }
