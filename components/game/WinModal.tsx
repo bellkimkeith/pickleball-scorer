@@ -22,7 +22,10 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
       : 'Unknown'
     : 'Tie';
   
-  const isWinnerTeam1 = gameState.score1 > gameState.score2;
+  const scoresSwapped = gameState.scoresSwapped || false;
+  const isWinnerTeam1 = scoresSwapped 
+    ? gameState.score2 > gameState.score1 
+    : gameState.score1 > gameState.score2;
   const winnerColorClass = isWinnerTeam1 ? 'text-team1' : 'text-team2';
 
   const finalScore = `${gameState.score1} - ${gameState.score2}`;

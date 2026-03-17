@@ -14,7 +14,7 @@ export function ServerIndicator({ side, serverNumber, showArrow = true }: Server
 
   useEffect(() => {
     opacity.value = withRepeat(withTiming(0.5, { duration: 1000 }), -1, true);
-  }, []);
+  }, [opacity]);
 
   const pulseStyle = useAnimatedStyle(() => {
     return {

@@ -42,6 +42,7 @@ export class ScoringRules {
         score2: newScore2,
         pointScored: true,
         rallyWinner: gameState.servingPlayer,
+        scoresSwapped: gameState.scoresSwapped,
       };
 
       const newState: SinglesGameState = {
@@ -67,6 +68,7 @@ export class ScoringRules {
         score2: newScore2,
         pointScored: true,
         rallyWinner: gameState.servingTeam,
+        scoresSwapped: gameState.scoresSwapped,
       };
 
       const newState: DoublesGameState = {
@@ -99,6 +101,7 @@ export class ScoringRules {
         score2: gameState.score2,
         pointScored: false,
         rallyWinner: gameState.servingPlayer === 1 ? 2 : 1,
+        scoresSwapped: gameState.scoresSwapped,
       };
 
       const newState: SinglesGameState = {
@@ -110,15 +113,16 @@ export class ScoringRules {
 
       return newState;
     } else {
-      const scoreEvent: ScoreEvent = {
-        timestamp: Date.now(),
-        servingTeam: gameState.servingTeam,
-        serverNumber: gameState.serverNumber,
-        score1: gameState.score1,
-        score2: gameState.score2,
-        pointScored: false,
-        rallyWinner: gameState.servingTeam === 1 ? 2 : 1,
-      };
+       const scoreEvent: ScoreEvent = {
+         timestamp: Date.now(),
+         servingTeam: gameState.servingTeam,
+         serverNumber: gameState.serverNumber,
+         score1: gameState.score1,
+         score2: gameState.score2,
+         pointScored: false,
+         rallyWinner: gameState.servingTeam === 1 ? 2 : 1,
+         scoresSwapped: gameState.scoresSwapped,
+       };
 
       if (gameState.serverNumber === 1) {
         // Switch to partner (server #2)
@@ -195,17 +199,36 @@ export class ScoringRules {
    * Gets the winning team/player (if game is over)
    */
   static getWinner(gameState: GameState): Player | Team | null {
+    const scoresSwapped = gameState.scoresSwapped || false;
+    
     if (gameState.mode === 'singles') {
-      if (gameState.score1 > gameState.score2) {
-        return gameState.player1;
-      } else if (gameState.score2 > gameState.score1) {
-        return gameState.player2;
+      if (scoresSwapped) {
+        // After swapping scores, score1 now holds player2's original score
+        if (gameState.score1 > gameState.score2) {
+          return gameState.player2;
+        } else if (gameState.score2 > gameState.score1) {
+          return gameState.player1;
+        }
+      } else {
+        if (gameState.score1 > gameState.score2) {
+          return gameState.player1;
+        } else if (gameState.score2 > gameState.score1) {
+          return gameState.player2;
+        }
       }
     } else {
-      if (gameState.score1 > gameState.score2) {
-        return gameState.team1;
-      } else if (gameState.score2 > gameState.score1) {
-        return gameState.team2;
+      if (scoresSwapped) {
+        if (gameState.score1 > gameState.score2) {
+          return gameState.team2;
+        } else if (gameState.score2 > gameState.score1) {
+          return gameState.team1;
+        }
+      } else {
+        if (gameState.score1 > gameState.score2) {
+          return gameState.team1;
+        } else if (gameState.score2 > gameState.score1) {
+          return gameState.team2;
+        }
       }
     }
     return null;

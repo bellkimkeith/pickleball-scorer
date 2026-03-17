@@ -24,6 +24,7 @@ export interface SinglesGameState {
   servingPlayer: 1 | 2;
   servingSide: ServingSide;
   sidesChanged: boolean;
+  scoresSwapped: boolean;
   gameStartTime: number;
   gameEndTime?: number;
   scoreHistory: ScoreEvent[];
@@ -39,6 +40,7 @@ export interface DoublesGameState {
   serverNumber: ServerNumber;
   servingSide: ServingSide;
   sidesChanged: boolean;
+  scoresSwapped: boolean;
   gameStartTime: number;
   gameEndTime?: number;
   scoreHistory: ScoreEvent[];
@@ -54,10 +56,12 @@ export interface ScoreEvent {
   score2: number;
   pointScored: boolean;
   rallyWinner: 1 | 2;
+  scoresSwapped: boolean;
 }
 
 export interface GameSettings {
   winningScore: 11 | 15 | 21;
   winByTwo: boolean;
   sideChangeAt: number; // Score to change sides (e.g., 6 for tournament play)
+  swapScoresOnSideChange: boolean; // Swap scores with colors when switching sides
 }

@@ -49,11 +49,18 @@ export default function SinglesScreen() {
         gameState.sidesChanged
       )
     ) {
-      Alert.alert(
-        'Switch Sides',
-        `Score reached ${settings.sideChangeAt}. Time to switch sides!`,
-        [{ text: 'OK', onPress: () => markSidesChanged() }]
-      );
+      if (settings.swapScoresOnSideChange) {
+        Alert.alert(
+          'Switch Sides',
+          `Score reached ${settings.sideChangeAt}. Time to switch sides!`,
+          [
+            { text: 'Switch', onPress: () => markSidesChanged(true) },
+            { text: "Don't Switch", onPress: () => markSidesChanged(false) },
+          ]
+        );
+      } else {
+        markSidesChanged(false);
+      }
     }
   }, [gameState, isGameActive, markSidesChanged, settings]);
 

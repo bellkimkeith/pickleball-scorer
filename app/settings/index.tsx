@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useGameStore } from '../../store/game-store';
-import { AVAILABLE_WINNING_SCORES } from '../../lib/constants/game-config';
+import { AVAILABLE_WINNING_SCORES, getAvailableSideChangeOptions } from '../../lib/constants/game-config';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -86,7 +86,7 @@ export default function SettingsScreen() {
         <View className="bg-white rounded-2xl p-4 mb-4">
           <Text className="text-lg font-semibold mb-3 text-gray-900">Side Change At Score</Text>
           <View className="flex-row gap-2">
-            {[0, 6, 11].map((score) => (
+            {getAvailableSideChangeOptions(settings.winningScore).map((score) => (
               <Pressable
                 key={score}
                 onPress={() => updateSettings({ sideChangeAt: score })}
@@ -115,6 +115,25 @@ export default function SettingsScreen() {
               ? 'No automatic side change'
               : `Players change sides at ${settings.sideChangeAt} points`}
           </Text>
+        </View>
+
+        {/* Swap Scores on Side Change Toggle */}
+        <View className="bg-white rounded-2xl p-4 mb-4">
+          <View className="flex-row justify-between items-center">
+            <View className="flex-1">
+              <Text className="text-lg font-semibold text-gray-900">Swap Scores on Side Change</Text>
+              <Text className="text-sm text-gray-600 mt-1">
+                Swap scores with colors when switching sides
+              </Text>
+            </View>
+            <Switch
+              value={settings.swapScoresOnSideChange}
+              onValueChange={(value) => updateSettings({ swapScoresOnSideChange: value })}
+              trackColor={{ false: '#d1d5db', true: '#16a34a' }}
+              thumbColor="#ffffff"
+              accessibilityLabel="Swap scores on side change"
+            />
+          </View>
         </View>
 
         {/* Info Section */}

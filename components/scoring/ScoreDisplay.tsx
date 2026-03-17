@@ -10,14 +10,29 @@ interface ScoreDisplayProps {
 export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
   if (!gameState) return null;
 
-  const { score1, score2 } = gameState;
+  // When scores are swapped, the actual score values in state have already been exchanged
+  // So we just use them directly. Team names also need to be swapped to match.
+  const displayScore1 = gameState.score1;
+  const displayScore2 = gameState.score2;
+   
+  const displayTeam1Name = gameState.scoresSwapped 
+    ? (gameState.mode === 'singles' ? gameState.player2.name : gameState.team2.name)
+    : (gameState.mode === 'singles' ? gameState.player1.name : gameState.team1.name);
+    
+  const displayTeam2Name = gameState.scoresSwapped 
+    ? (gameState.mode === 'singles' ? gameState.player1.name : gameState.team1.name)
+    : (gameState.mode === 'singles' ? gameState.player2.name : gameState.team2.name);
 
-  const team1Name =
-    gameState.mode === 'singles' ? gameState.player1.name : gameState.team1.name;
-  const team2Name =
-    gameState.mode === 'singles' ? gameState.player2.name : gameState.team2.name;
-
-  const servingTeam = gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam;
+  // Serving team logic needs to account for swapped scores
+  const actualServingTeam = gameState.mode === 'singles' ? gameState.servingPlayer : gameState.servingTeam;
+  // When scores are swapped, the serving team is already swapped in the state
+  // So the indicator should be shown for the actual serving team
+  const displayServingTeam = actualServingTeam;
+    
+  // Swap background colors when scores are swapped
+  const team1BgClass = gameState.scoresSwapped ? 'bg-team2' : 'bg-team1';
+  const team2BgClass = gameState.scoresSwapped ? 'bg-team1' : 'bg-team2';
+    
   const serverNumber = gameState.mode === 'doubles' ? gameState.serverNumber : undefined;
   const showArrow = gameState.mode === 'doubles';
 
@@ -25,21 +40,21 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
     <View
       className="rounded-3xl overflow-hidden shadow-2xl"
       accessibilityRole="summary"
-      accessibilityLabel={`Score: ${team1Name} ${score1}, ${team2Name} ${score2}`}
+      accessibilityLabel={`Score: ${displayTeam1Name} ${displayScore1}, ${displayTeam2Name} ${displayScore2}`}
     >
       <Animated.View entering={FadeIn} exiting={FadeOut}>
         <View className="flex-row justify-between items-center">
-          {/* Team 1 */}
-          <View className="flex-1 items-center bg-team1 p-6 pb-8">
-            <Text className="text-white text-lg font-semibold mb-2">{team1Name}</Text>
+          {/* Team 1 (display) */}
+          <View className={`flex-1 items-center ${team1BgClass} p-6 pb-8`}>
+            <Text className="text-white text-lg font-semibold mb-2">{displayTeam1Name}</Text>
             <Animated.Text
-              key={`score1-${score1}`}
+              key={`score1-${displayScore1}`}
               entering={FadeIn}
               className="text-white text-8xl font-bold"
             >
-              {score1}
+              {displayScore1}
             </Animated.Text>
-            {servingTeam === 1 ? (
+            {displayServingTeam === 1 ? (
               <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} showArrow={showArrow} />
             ) : (
               <View className="h-8" />
@@ -49,17 +64,17 @@ export function ScoreDisplay({ gameState }: ScoreDisplayProps) {
           {/* Divider */}
           <View className="w-1 h-32 bg-white/30" />
 
-          {/* Team 2 */}
-          <View className="flex-1 items-center bg-team2 p-6 pb-8">
-            <Text className="text-white text-lg font-semibold mb-2">{team2Name}</Text>
+          {/* Team 2 (display) */}
+          <View className={`flex-1 items-center ${team2BgClass} p-6 pb-8`}>
+            <Text className="text-white text-lg font-semibold mb-2">{displayTeam2Name}</Text>
             <Animated.Text
-              key={`score2-${score2}`}
+              key={`score2-${displayScore2}`}
               entering={FadeIn}
               className="text-white text-8xl font-bold"
             >
-              {score2}
+              {displayScore2}
             </Animated.Text>
-            {servingTeam === 2 ? (
+            {displayServingTeam === 2 ? (
               <ServerIndicator side={gameState.servingSide} serverNumber={serverNumber} showArrow={showArrow} />
             ) : (
               <View className="h-8" />
