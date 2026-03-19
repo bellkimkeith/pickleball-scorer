@@ -35,7 +35,7 @@ pipeline {
         string(
             name: 'BRANCH',
             defaultValue: 'main',
-            description: 'Git branch to build (e.g., main, develop, feature/my-feature)'
+            description: 'Git branch to build. For production: build from main (version auto-detected from git tag). For dev: use develop or feature/*.'
         )
         choice(
             name: 'BUILD_TYPE',
@@ -53,7 +53,49 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                sh "git fetch origin && git checkout ${params.BRANCH} && git reset --hard origin/${params.BRANCH}"
+                sh "git fetch origin --tags && git checkout ${params.BRANCH} && git reset --hard origin/${params.BRANCH}"
+            }
+        }
+
+        stage('Set Version from Git Tag') {
+            when { expression { params.BUILD_TYPE == 'production' && params.DISTRIBUTION != 'none' } }
+            steps {
+                script {
+                    def gitTag = sh(script: 'git describe --tags --exact-match 2>/dev/null || echo ""', returnStdout: true).trim()
+                    def version = ""
+                    if (gitTag && gitTag.startsWith('v')) {
+                        version = gitTag.substring(1)
+                        echo "Detected git tag: ${gitTag} -> version: ${version}"
+                    } else {
+                        def tagMatch = gitTag =~ /(\d+\.\d+\.\d+)/
+                        if (tagMatch) {
+                            version = tagMatch[0][1]
+                            echo "Detected version from tag: ${version}"
+                        } else {
+                            echo "No version tag found. Checking CHANGELOG..."
+                            def changelogVersion = sh(script: 'head -1 app.json | grep -oP \'"version": "\\K[^"]+\'', returnStdout: true).trim()
+                            version = changelogVersion ?: "1.0.0"
+                            echo "Using existing app.json version: ${version}"
+                        }
+                    }
+
+                    def patch = version.split('\\.').last().toInteger()
+                    def minor = version.split('\\.')[1].toInteger()
+                    def major = version.split('\\.')[0].toInteger()
+                    def newVersionCode = major * 10000 + minor * 100 + patch
+
+                    sh """
+                        node -e "
+                            const fs = require('fs');
+                            const pkg = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+                            pkg.expo.version = '${version}';
+                            pkg.expo.ios.buildNumber = '1';
+                            pkg.expo.android.versionCode = ${newVersionCode};
+                            fs.writeFileSync('app.json', JSON.stringify(pkg, null, 2) + '\\n');
+                        "
+                    """
+                    echo "Updated app.json: version=${version}, buildNumber=1, versionCode=${newVersionCode}"
+                }
             }
         }
 

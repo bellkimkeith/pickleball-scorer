@@ -37,24 +37,23 @@ git checkout -b release/v1.2.0
 
 ### 2. Final testing and fixes on release branch
 
-### 3. Update version in package.json manually:
-```json
-"version": "1.2.0"
-```
+### 3. Jenkins auto-detects version from git tag (must exist on commit):
+- Tag format: `v1.2.0`
+- Jenkins parses tag, updates `app.json`: `version`, `ios.buildNumber=1`, `android.versionCode`
 
-### 4. Merge to main and tag:
+### 4. Build with Jenkins:
+- Go to Jenkins → New Build
+- BRANCH: `main` (version from git tag, not branch)
+- BUILD_TYPE: `production`
+- DISTRIBUTION: `appstore` (or `testflight` for testing)
+
+### 5. After successful build, merge to main and tag:
 ```bash
 git checkout main
 git merge --no-ff release/v1.2.0
 git tag -a v1.2.0 -m "Release v1.2.0 - Your release notes"
 git push origin main --tags
 ```
-
-### 5. Build with Jenkins:
-- Go to Jenkins → New Build
-- BRANCH: `main`
-- BUILD_TYPE: `production`
-- DISTRIBUTION: `appstore` (or `testflight` for testing)
 
 ### 6. Sync develop:
 ```bash
