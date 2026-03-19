@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
-import { GameState } from '../../lib/types/game';
+import { GameState, DoublesGameState } from '../../lib/types/game';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { Ionicons } from '@expo/vector-icons';
 import { useDarkMode } from '../../hooks/useDarkMode';
@@ -24,7 +24,7 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
       ? winner.name
       : 'Unknown'
     : 'Tie';
-  
+
   const scoresSwapped = gameState.scoresSwapped || false;
   const isWinnerTeam1 = scoresSwapped 
     ? gameState.score2 > gameState.score1 
@@ -32,6 +32,12 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
   const winnerColorClass = isWinnerTeam1 ? 'text-team1' : 'text-team2';
 
   const finalScore = `${gameState.score1} - ${gameState.score2}`;
+
+  const isDoubles = gameState.mode === 'doubles';
+  const doublesState = isDoubles ? (gameState as DoublesGameState) : null;
+  const winningPlayers = isDoubles && doublesState
+    ? (isWinnerTeam1 ? doublesState.team1.players : doublesState.team2.players)
+    : null;
 
   return (
     <Modal visible={visible} onClose={onExit} dismissable={false}>
@@ -48,6 +54,12 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
         >
           {winnerName} Wins!
         </Text>
+
+        {winningPlayers && (
+          <Text className={`text-base font-medium mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            {winningPlayers[0].name} & {winningPlayers[1].name}
+          </Text>
+        )}
 
         <View className={`rounded-2xl p-6 mt-6 w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
           <Text className={`text-center text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
