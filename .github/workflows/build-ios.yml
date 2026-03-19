@@ -1,0 +1,35 @@
+name: Build iOS for App Store
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install CocoaPods
+        run: cd ios && pod install && cd ..
+
+      - name: Build iOS
+        run: |
+          cd ios
+          xcodebuild -workspace *.xcworkspace -scheme pickleball-scorer -configuration Release -archivePath ../build.xcarchive archive
+          xcodebuild -exportArchive -archivePath ../build.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ../dist
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: dist/*.ipa
