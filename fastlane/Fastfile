@@ -113,7 +113,8 @@ platform :ios do
     upload_to_app_store(
       skip_screenshots: true,
       skip_metadata: true,
-      submit_for_review: false, # You manually submit for review from App Store Connect
+      skip_precheck: true,
+      submit_for_review: false,
       api_key: api_key
     )
   end
