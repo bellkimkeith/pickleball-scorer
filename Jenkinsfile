@@ -63,38 +63,39 @@ pipeline {
                 script {
                     def gitTag = sh(script: 'git describe --tags --exact-match 2>/dev/null || echo ""', returnStdout: true).trim()
                     def version = ""
+
                     if (gitTag && gitTag.startsWith('v')) {
                         version = gitTag.substring(1)
                         echo "Detected git tag: ${gitTag} -> version: ${version}"
-                    } else {
-                        def tagMatch = gitTag =~ /(\d+\.\d+\.\d+)/
+                    } else if (gitTag) {
+                        def tagMatch = sh(script: 'echo "' + gitTag + '" | grep -oE "[0-9]+\\\\.[0-9]+\\\\.[0-9]+" || echo ""', returnStdout: true).trim()
                         if (tagMatch) {
-                            version = tagMatch[0][1]
+                            version = tagMatch
                             echo "Detected version from tag: ${version}"
-                        } else {
-                            echo "No version tag found. Checking CHANGELOG..."
-                            def changelogVersion = sh(script: 'head -1 app.json | grep -oP \'"version": "\\K[^"]+\'', returnStdout: true).trim()
-                            version = changelogVersion ?: "1.0.0"
-                            echo "Using existing app.json version: ${version}"
                         }
                     }
 
-                    def patch = version.split('\\.').last().toInteger()
-                    def minor = version.split('\\.')[1].toInteger()
-                    def major = version.split('\\.')[0].toInteger()
-                    def newVersionCode = major * 10000 + minor * 100 + patch
+                    if (!version) {
+                        echo "No version tag found. Using existing app.json version."
+                    } else {
+                        def parts = version.split('\\.')
+                        def major = parts[0].toInteger()
+                        def minor = parts[1].toInteger()
+                        def patch = parts[2].toInteger()
+                        def newVersionCode = major * 10000 + minor * 100 + patch
 
-                    sh """
-                        node -e "
-                            const fs = require('fs');
-                            const pkg = JSON.parse(fs.readFileSync('app.json', 'utf8'));
-                            pkg.expo.version = '${version}';
-                            pkg.expo.ios.buildNumber = '1';
-                            pkg.expo.android.versionCode = ${newVersionCode};
-                            fs.writeFileSync('app.json', JSON.stringify(pkg, null, 2) + '\\n');
-                        "
-                    """
-                    echo "Updated app.json: version=${version}, buildNumber=1, versionCode=${newVersionCode}"
+                        sh """
+                            node -e "
+                                const fs = require('fs');
+                                const pkg = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+                                pkg.expo.version = '${version}';
+                                pkg.expo.ios.buildNumber = '1';
+                                pkg.expo.android.versionCode = ${newVersionCode};
+                                fs.writeFileSync('app.json', JSON.stringify(pkg, null, 2) + '\\n');
+                            "
+                        """
+                        echo "Updated app.json: version=${version}, buildNumber=1, versionCode=${newVersionCode}"
+                    }
                 }
             }
         }
