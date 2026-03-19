@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### New Features
 - **Team/Player Color Indicator** - Visual colors to distinguish teams
 - **Rally or Sideout Scoring** - Choose between rally scoring (any point) or sideout (only serving team scores)
+- **Doubles Player Names on Win** - Winning players shown in doubles game win modal
 
 ### Improvements
 - Dark mode enhancements and bug fixes
