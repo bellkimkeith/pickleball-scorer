@@ -50,6 +50,19 @@ git tag -a v1.2.0 -m "Release v1.2.0 - Your release notes"
 git push origin main --tags
 ```
 
+### 5. Build with Jenkins:
+- Go to Jenkins → New Build
+- BRANCH: `main`
+- BUILD_TYPE: `production`
+- DISTRIBUTION: `appstore` (or `testflight` for testing)
+
+### 6. Sync develop:
+```bash
+git checkout develop
+git merge --no-ff release/v1.2.0
+git push origin develop
+```
+
 ## Version Numbering (Semantic Versioning)
 - **MAJOR**: Breaking changes (new API, removed features)
 - **MINOR**: New features (backward compatible)
