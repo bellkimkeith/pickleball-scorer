@@ -1,6 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { getLocales } from 'expo-localization';
 
 import en from './en';
 import es from './es';
@@ -19,6 +18,17 @@ const resources = {
 
 let isInitialized = false;
 
+async function getDeviceLanguage(): Promise<string> {
+  try {
+    const { getLocales } = require('expo-localization');
+    const locales = getLocales();
+    return locales[0]?.languageCode ?? 'en';
+  } catch (e) {
+    console.warn('expo-localization not available, using default language');
+    return 'en';
+  }
+}
+
 export const initI18n = async (language?: string): Promise<typeof i18n> => {
   if (isInitialized) {
     return i18n;
@@ -27,13 +37,12 @@ export const initI18n = async (language?: string): Promise<typeof i18n> => {
   let defaultLanguage = 'en';
   
   try {
-    const locales = getLocales();
-    const deviceLanguage = locales[0]?.languageCode ?? 'en';
-    defaultLanguage = SUPPORTED_LANGUAGES.includes(deviceLanguage as SupportedLanguage) 
-      ? deviceLanguage 
-      : 'en';
+    defaultLanguage = await getDeviceLanguage();
+    if (!SUPPORTED_LANGUAGES.includes(defaultLanguage as SupportedLanguage)) {
+      defaultLanguage = 'en';
+    }
   } catch (e) {
-    console.warn('expo-localization not available, using default language');
+    console.warn('Could not detect device language');
   }
 
   await i18n
