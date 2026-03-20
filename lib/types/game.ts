@@ -65,6 +65,8 @@ export type GameType = 'sideout' | 'rally';
 
 export type ThemeMode = 'light' | 'dark';
 
+export type Language = 'en' | 'es' | 'fr' | 'de';
+
 export interface GameSettings {
   winningScore: 11 | 15 | 21;
   winByTwo: boolean;
@@ -72,4 +74,5 @@ export interface GameSettings {
   swapScoresOnSideChange: boolean;
   gameType: GameType;
   theme: ThemeMode;
+  language: Language;
 }

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../../store/game-store';
 import { ScoreDisplay } from '../../components/scoring/ScoreDisplay';
 import { ScoreButton } from '../../components/scoring/ScoreButton';
@@ -24,6 +25,7 @@ export default function SinglesScreen() {
   const resetGame = useGameStore((state) => state.resetGame);
   const markSidesChanged = useGameStore((state) => state.markSidesChanged);
   const { isDarkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   const [showSetup, setShowSetup] = useState(true);
   const [showWinModal, setShowWinModal] = useState(false);
@@ -54,24 +56,24 @@ export default function SinglesScreen() {
     ) {
       if (settings.swapScoresOnSideChange) {
         Alert.alert(
-          'Switch Sides',
-          `Score reached ${settings.sideChangeAt}. Time to switch sides!`,
+          t('game.switchSides'),
+          t('game.switchSidesMessage', { score: settings.sideChangeAt }),
           [
-            { text: 'Switch', onPress: () => markSidesChanged(true) },
-            { text: "Don't Switch", onPress: () => markSidesChanged(false) },
+            { text: t('game.switch'), onPress: () => markSidesChanged(true) },
+            { text: t('game.dontSwitch'), onPress: () => markSidesChanged(false) },
           ]
         );
       } else {
         markSidesChanged(false);
       }
     }
-  }, [gameState, isGameActive, markSidesChanged, settings]);
+  }, [gameState, isGameActive, markSidesChanged, settings, t]);
 
   const handleEndGame = () => {
-    Alert.alert('End Game', 'Are you sure you want to end this game?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('game.endGameConfirm'), t('game.endGameMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'End Game',
+        text: t('game.endGame'),
         style: 'destructive',
         onPress: () => {
           resetGame();
@@ -117,13 +119,13 @@ export default function SinglesScreen() {
         {settings.gameType === 'rally' ? (
           <>
             <ScoreButton
-              title={`${(gameState as SinglesGameState).player1.name} Scores`}
+              title={`${(gameState as SinglesGameState).player1.name} ${t('game.scores')}`}
               icon="checkmark-circle"
               onPress={() => scorePoint(1)}
               color="green"
             />
             <ScoreButton
-              title={`${(gameState as SinglesGameState).player2.name} Scores`}
+              title={`${(gameState as SinglesGameState).player2.name} ${t('game.scores')}`}
               icon="checkmark-circle"
               onPress={() => scorePoint(2)}
               color="orange"
@@ -132,12 +134,12 @@ export default function SinglesScreen() {
         ) : (
           <>
             <ScoreButton
-              title="Point Scored"
+              title={t('game.pointScored')}
               icon="checkmark-circle"
               onPress={() => scorePoint()}
               color="green"
             />
-            <ScoreButton title="Side Out" icon="swap-horizontal" onPress={sideOut} color="orange" />
+            <ScoreButton title={t('game.sideOut')} icon="swap-horizontal" onPress={sideOut} color="orange" />
           </>
         )}
       </View>

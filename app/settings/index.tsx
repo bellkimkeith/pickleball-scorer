@@ -3,15 +3,24 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../../store/game-store';
 import { AVAILABLE_WINNING_SCORES, getAvailableSideChangeOptions } from '../../lib/constants/game-config';
 import { useDarkMode } from '../../hooks/useDarkMode';
+import { Language } from '../../lib/types/game';
+import { changeLanguage, SUPPORTED_LANGUAGES } from '../../i18n';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const settings = useGameStore((state) => state.settings);
   const updateSettings = useGameStore((state) => state.updateSettings);
   const { isDarkMode } = useDarkMode();
+  const { t } = useTranslation();
+
+  const handleLanguageChange = async (language: Language) => {
+    await changeLanguage(language);
+    updateSettings({ language });
+  };
 
   return (
     <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} edges={['top']}>
@@ -29,7 +38,7 @@ export default function SettingsScreen() {
           <Ionicons name="arrow-back" size={28} color="#374151" />
         </Pressable>
         <Text className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Settings
+          {t('settings.title')}
         </Text>
       </View>
 
@@ -39,10 +48,10 @@ export default function SettingsScreen() {
           <View className="flex-row justify-between items-center">
             <View className="flex-1">
               <Text className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Dark Mode
+                {t('settings.darkMode')}
               </Text>
               <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Use dark theme for the app
+                {t('settings.darkModeDesc')}
               </Text>
             </View>
             <Switch
@@ -55,10 +64,42 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Language Selection */}
+        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            {t('settings.language')}
+          </Text>
+          <View className="flex-row gap-2">
+            {SUPPORTED_LANGUAGES.map((lang) => (
+              <Pressable
+                key={lang}
+                onPress={() => handleLanguageChange(lang)}
+                accessibilityLabel={`Set language to ${lang}`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: settings.language === lang }}
+                className={`flex-1 py-3 rounded-xl ${
+                  settings.language === lang ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                }`}
+                style={({ pressed }) => ({
+                  transform: [{ scale: pressed ? 0.95 : 1 }],
+                })}
+              >
+                <Text
+                  className={`text-center font-semibold ${
+                    settings.language === lang ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}
+                >
+                  {t(`languages.${lang}`)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
         {/* Game Type */}
         <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Scoring Type
+            {t('settings.scoringType')}
           </Text>
           <View className="flex-row gap-2">
             <Pressable
@@ -78,7 +119,7 @@ export default function SettingsScreen() {
                   settings.gameType === 'rally' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}
               >
-                Rally
+                {t('game.rally')}
               </Text>
             </Pressable>
             <Pressable
@@ -98,21 +139,19 @@ export default function SettingsScreen() {
                   settings.gameType === 'sideout' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}
               >
-                Sideout
+                {t('game.sideout')}
               </Text>
             </Pressable>
           </View>
           <Text className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            {settings.gameType === 'rally'
-              ? 'Point scored by whoever wins the rally'
-              : 'Only serving team can score a point'}
+            {settings.gameType === 'rally' ? t('game.rallyDesc') : t('game.sideoutDesc')}
           </Text>
         </View>
 
         {/* Winning Score */}
         <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Winning Score
+            {t('settings.winningScore')}
           </Text>
           <View className="flex-row gap-2">
             {AVAILABLE_WINNING_SCORES.map((score) => (
@@ -140,7 +179,7 @@ export default function SettingsScreen() {
             ))}
           </View>
           <Text className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Set the score needed to win the game
+            {t('settings.winningScoreDesc')}
           </Text>
         </View>
 
@@ -149,10 +188,10 @@ export default function SettingsScreen() {
           <View className="flex-row justify-between items-center">
             <View className="flex-1">
               <Text className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Win by 2
+                {t('settings.winByTwo')}
               </Text>
               <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Require a 2-point margin to win
+                {t('settings.winByTwoDesc')}
               </Text>
             </View>
             <Switch
@@ -168,7 +207,7 @@ export default function SettingsScreen() {
         {/* Side Change At */}
         <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Side Change At Score
+            {t('settings.sideChangeAt')}
           </Text>
           <View className="flex-row gap-2">
             {getAvailableSideChangeOptions(settings.winningScore).map((score) => (
@@ -190,15 +229,15 @@ export default function SettingsScreen() {
                     settings.sideChangeAt === score ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}
                 >
-                  {score === 0 ? 'Off' : score}
+                  {score === 0 ? t('common.off') : score}
                 </Text>
               </Pressable>
             ))}
           </View>
           <Text className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             {settings.sideChangeAt === 0
-              ? 'No automatic side change'
-              : `Players change sides at ${settings.sideChangeAt} points`}
+              ? t('settings.sideChangeAtDesc.off')
+              : t('settings.sideChangeAtDesc.at', { score: settings.sideChangeAt })}
           </Text>
         </View>
 
@@ -207,10 +246,10 @@ export default function SettingsScreen() {
           <View className="flex-row justify-between items-center">
             <View className="flex-1">
               <Text className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Swap Scores on Side Change
+                {t('settings.swapScores')}
               </Text>
               <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Swap scores with colors when switching sides
+                {t('settings.swapScoresDesc')}
               </Text>
             </View>
             <Switch
@@ -229,11 +268,10 @@ export default function SettingsScreen() {
             <Ionicons name="information-circle" size={24} color={isDarkMode ? '#60a5fa' : '#2563eb'} />
             <View className="flex-1 ml-3">
               <Text className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-blue-200' : 'text-blue-900'}`}>
-                Pickleball Rules
+                {t('settings.rules')}
               </Text>
               <Text className={`text-sm ${isDarkMode ? 'text-blue-300' : 'text-blue-800'}`}>
-                Official pickleball scoring: Only the serving team can score. In doubles, both
-                partners serve before side-out (except at start of game).
+                {t('settings.rulesDesc')}
               </Text>
             </View>
           </View>
@@ -250,7 +288,7 @@ export default function SettingsScreen() {
             <View className="flex-row items-center">
               <Ionicons name="shield-checkmark-outline" size={24} color="#374151" />
               <Text className={`text-lg font-semibold ml-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Privacy Policy
+                {t('settings.privacyPolicy')}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#9ca3af" />

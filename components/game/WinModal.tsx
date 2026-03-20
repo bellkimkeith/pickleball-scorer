@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { GameState, DoublesGameState } from '../../lib/types/game';
@@ -15,6 +16,7 @@ interface WinModalProps {
 
 export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalProps) {
   const { isDarkMode } = useDarkMode();
+  const { t } = useTranslation();
   
   if (!gameState) return null;
 
@@ -45,14 +47,14 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
         <Ionicons name="trophy" size={80} color="#fbbf24" />
 
         <Text accessibilityRole="header" className={`text-3xl font-bold mt-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Game Over!
+          {t('winModal.gameOver')}
         </Text>
 
         <Text
           className={`text-xl font-semibold mt-4 ${winnerColorClass}`}
           accessibilityLabel={`${winnerName} wins with a score of ${finalScore}`}
         >
-          {winnerName} Wins!
+          {t('winModal.wins', { name: winnerName })}
         </Text>
 
         {winningPlayers && (
@@ -63,7 +65,7 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
 
         <View className={`rounded-2xl p-6 mt-6 w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
           <Text className={`text-center text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Final Score
+            {t('winModal.finalScore')}
           </Text>
           <Text className={`text-center text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             {finalScore}
@@ -72,16 +74,16 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
 
         {gameState.gameEndTime && gameState.gameStartTime && (
           <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-4`}>
-            Duration: {Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 60000)} min
+            {t('winModal.duration', { minutes: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 60000) })}
           </Text>
         )}
 
         <View className="flex-row gap-3 mt-8 w-full">
           <View className="flex-1">
-            <Button title="Exit" onPress={onExit} variant="secondary" />
+            <Button title={t('common.exit')} onPress={onExit} variant="secondary" />
           </View>
           <View className="flex-1">
-            <Button title="Play Again" onPress={onPlayAgain} variant="primary" />
+            <Button title={t('winModal.playAgain')} onPress={onPlayAgain} variant="primary" />
           </View>
         </View>
       </View>

@@ -3,11 +3,13 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useDarkMode } from '../hooks/useDarkMode';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { isDarkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} edges={['top']}>
@@ -17,10 +19,10 @@ export default function HomeScreen() {
       <View className="pb-8 px-6 flex-row justify-between items-start">
         <View>
           <Text className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Pickleball Scorer
+            {t('home.title')}
           </Text>
           <Text className={`text-base ${isDarkMode ? 'text-gray-400' : 'text-gray-400'} mt-1`}>
-            Start a new match
+            {t('home.subtitle')}
           </Text>
         </View>
         <Pressable
@@ -53,9 +55,9 @@ export default function HomeScreen() {
             </View>
             <View className="ml-4 flex-1">
               <Text className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Singles
+                {t('home.singles')}
               </Text>
-              <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>1v1 Match</Text>
+              <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{t('home.singlesDesc')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </View>
@@ -73,9 +75,9 @@ export default function HomeScreen() {
             </View>
             <View className="ml-4 flex-1">
               <Text className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Doubles
+                {t('home.doubles')}
               </Text>
-              <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>2v2 Match</Text>
+              <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{t('home.doublesDesc')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
           </View>
