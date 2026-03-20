@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization';
+import { getLocales } from 'expo-localization';
 
 import en from './en';
 import es from './es';
@@ -17,12 +17,24 @@ const resources = {
   de: { translation: de },
 };
 
+let isInitialized = false;
+
 export const initI18n = async (language?: string): Promise<typeof i18n> => {
-  const locales = Localization.getLocales();
-  const deviceLanguage = locales[0]?.languageCode ?? 'en';
-  const defaultLanguage = SUPPORTED_LANGUAGES.includes(deviceLanguage as SupportedLanguage) 
-    ? deviceLanguage 
-    : 'en';
+  if (isInitialized) {
+    return i18n;
+  }
+
+  let defaultLanguage = 'en';
+  
+  try {
+    const locales = getLocales();
+    const deviceLanguage = locales[0]?.languageCode ?? 'en';
+    defaultLanguage = SUPPORTED_LANGUAGES.includes(deviceLanguage as SupportedLanguage) 
+      ? deviceLanguage 
+      : 'en';
+  } catch (e) {
+    console.warn('expo-localization not available, using default language');
+  }
 
   await i18n
     .use(initReactI18next)
@@ -36,6 +48,7 @@ export const initI18n = async (language?: string): Promise<typeof i18n> => {
       compatibilityJSON: 'v4',
     });
 
+  isInitialized = true;
   return i18n;
 };
 
