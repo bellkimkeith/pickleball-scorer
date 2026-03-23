@@ -74,5 +74,5 @@ export interface GameSettings {
   swapScoresOnSideChange: boolean;
   gameType: GameType;
   theme: ThemeMode;
-  language: Language;
+  language?: Language;
 }

@@ -15,7 +15,8 @@ export default function SettingsScreen() {
   const settings = useGameStore((state) => state.settings);
   const updateSettings = useGameStore((state) => state.updateSettings);
   const { isDarkMode } = useDarkMode();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const effectiveLanguage = settings.language ?? i18n.language;
 
   const handleLanguageChange = async (language: Language) => {
     await changeLanguage(language);
@@ -76,9 +77,9 @@ export default function SettingsScreen() {
                 onPress={() => handleLanguageChange(lang)}
                 accessibilityLabel={`Set language to ${lang}`}
                 accessibilityRole="button"
-                accessibilityState={{ selected: settings.language === lang }}
+                accessibilityState={{ selected: effectiveLanguage === lang }}
                 className={`flex-1 py-3 rounded-xl ${
-                  settings.language === lang ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                  effectiveLanguage === lang ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                 }`}
                 style={({ pressed }) => ({
                   transform: [{ scale: pressed ? 0.95 : 1 }],
@@ -86,7 +87,7 @@ export default function SettingsScreen() {
               >
                 <Text
                   className={`text-center font-semibold ${
-                    settings.language === lang ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    effectiveLanguage === lang ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}
                 >
                   {t(`languages.${lang}`)}

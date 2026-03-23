@@ -45,11 +45,13 @@ export const initI18n = async (language?: string): Promise<typeof i18n> => {
     console.warn('Could not detect device language');
   }
 
+  const lng = language || defaultLanguage;
+
   await i18n
     .use(initReactI18next)
     .init({
       resources,
-      lng: language || defaultLanguage,
+      lng,
       fallbackLng: 'en',
       interpolation: {
         escapeValue: false,
