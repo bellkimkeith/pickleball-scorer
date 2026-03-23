@@ -18,12 +18,32 @@ const resources = {
 
 let isInitialized = false;
 
+async function getDeviceLanguage(): Promise<string> {
+  try {
+    const { getLocales } = await import('expo-localization');
+    const locales = getLocales();
+    return locales[0]?.languageCode ?? 'en';
+  } catch (e) {
+    console.warn('expo-localization not available, using default language');
+    return 'en';
+  }
+}
+
 export const initI18n = async (language?: string): Promise<typeof i18n> => {
   if (isInitialized) {
     return i18n;
   }
 
-  const defaultLanguage = 'en';
+  let defaultLanguage = 'en';
+  
+  try {
+    defaultLanguage = await getDeviceLanguage();
+    if (!SUPPORTED_LANGUAGES.includes(defaultLanguage as SupportedLanguage)) {
+      defaultLanguage = 'en';
+    }
+  } catch (e) {
+    console.warn('Could not detect device language');
+  }
 
   await i18n
     .use(initReactI18next)

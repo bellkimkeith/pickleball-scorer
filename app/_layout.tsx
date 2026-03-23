@@ -7,6 +7,7 @@ import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import { ThemeProvider } from '../components/theme/ThemeProvider';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useGameStore } from '../store/game-store';
+import { initI18n, changeLanguage } from '../i18n';
 import '../global.css';
 
 LogBox.ignoreLogs(['SafeAreaView has been deprecated']);
@@ -16,24 +17,14 @@ export default function RootLayout() {
   const settings = useGameStore((state) => state.settings);
 
   useEffect(() => {
-    const initI18n = async () => {
-      try {
-        const { initI18n: init, changeLanguage: change } = await import('../i18n');
-        await init(settings.language);
-        setI18nReady(true);
-      } catch (e) {
-        console.error('Failed to initialize i18n:', e);
-        setI18nReady(true);
-      }
-    };
-    initI18n();
+    initI18n(settings.language).then(() => {
+      setI18nReady(true);
+    });
   }, []);
 
   useEffect(() => {
     if (i18nReady && settings.language) {
-      import('../i18n').then(({ changeLanguage }) => {
-        changeLanguage(settings.language);
-      });
+      changeLanguage(settings.language);
     }
   }, [settings.language, i18nReady]);
 
