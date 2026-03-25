@@ -75,4 +75,8 @@ export interface GameSettings {
   gameType: GameType;
   theme: ThemeMode;
   language?: Language;
+  autoSoundsEnabled?: boolean;
+  autoSoundsOnSideOut?: boolean;
+  team1Sound?: string;
+  team2Sound?: string;
 }

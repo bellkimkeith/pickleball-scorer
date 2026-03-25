@@ -1,11 +1,16 @@
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
+import { ShareCard } from './ShareCard';
 import { GameState, DoublesGameState } from '../../lib/types/game';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { Ionicons } from '@expo/vector-icons';
 import { useDarkMode } from '../../hooks/useDarkMode';
+import { useSubscriptionStore } from '../../store/subscription-store';
+import { useEffect } from 'react';
+import { useStatsStore } from '../../store/stats-store';
+import { GameRecord } from '../../lib/storage/game-history';
 
 interface WinModalProps {
   visible: boolean;
@@ -17,6 +22,33 @@ interface WinModalProps {
 export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalProps) {
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
+  const isPro = useSubscriptionStore((state) => state.isPro);
+  const { saveGameRecord, loadHistory } = useStatsStore();
+  
+  useEffect(() => {
+    if (visible && gameState && gameState.gameStartTime && gameState.gameEndTime) {
+      const winner = ScoringRules.getWinner(gameState);
+      if (winner) {
+        const record: GameRecord = {
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          date: Date.now(),
+          mode: gameState.mode,
+          player1: gameState.mode === 'singles' 
+            ? (gameState as any).player1.name 
+            : (gameState as any).team1.name,
+          player2: gameState.mode === 'singles' 
+            ? (gameState as any).player2.name 
+            : (gameState as any).team2.name,
+          score1: gameState.score1,
+          score2: gameState.score2,
+          winner: gameState.score1 > gameState.score2 ? 1 : 2,
+          duration: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 1000),
+        };
+        
+        saveGameRecord(record).then(() => loadHistory());
+      }
+    }
+  }, [visible, gameState, saveGameRecord, loadHistory]);
   
   if (!gameState) return null;
 
@@ -41,52 +73,63 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
     ? (isWinnerTeam1 ? doublesState.team1.players : doublesState.team2.players)
     : null;
 
+  const winnerValue = isWinnerTeam1 ? 1 : 2;
+
   return (
     <Modal visible={visible} onClose={onExit} dismissable={false}>
-      <View className="items-center py-6" accessibilityRole="alert">
-        <Ionicons name="trophy" size={80} color="#fbbf24" />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="items-center py-6" accessibilityRole="alert">
+          <Ionicons name="trophy" size={80} color="#fbbf24" />
 
-        <Text accessibilityRole="header" className={`text-3xl font-bold mt-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          {t('winModal.gameOver')}
-        </Text>
-
-        <Text
-          className={`text-xl font-semibold mt-4 ${winnerColorClass}`}
-          accessibilityLabel={`${winnerName} wins with a score of ${finalScore}`}
-        >
-          {t('winModal.wins', { name: winnerName })}
-        </Text>
-
-        {winningPlayers && (
-          <Text className={`text-base font-medium mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            {winningPlayers[0].name} & {winningPlayers[1].name}
+          <Text accessibilityRole="header" className={`text-3xl font-bold mt-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            {t('winModal.gameOver')}
           </Text>
-        )}
 
-        <View className={`rounded-2xl p-6 mt-6 w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-          <Text className={`text-center text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            {t('winModal.finalScore')}
+          <Text
+            className={`text-xl font-semibold mt-4 ${winnerColorClass}`}
+            accessibilityLabel={`${winnerName} wins with a score of ${finalScore}`}
+          >
+            {t('winModal.wins', { name: winnerName })}
           </Text>
-          <Text className={`text-center text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            {finalScore}
-          </Text>
-        </View>
 
-        {gameState.gameEndTime && gameState.gameStartTime && (
-          <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-4`}>
-            {t('winModal.duration', { minutes: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 60000) })}
-          </Text>
-        )}
+          {winningPlayers && (
+            <Text className={`text-base font-medium mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              {winningPlayers[0].name} & {winningPlayers[1].name}
+            </Text>
+          )}
 
-        <View className="flex-row gap-3 mt-8 w-full">
-          <View className="flex-1">
-            <Button title={t('common.exit')} onPress={onExit} variant="secondary" />
+          <View className={`rounded-2xl p-6 mt-6 w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+            <Text className={`text-center text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              {t('winModal.finalScore')}
+            </Text>
+            <Text className={`text-center text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              {finalScore}
+            </Text>
           </View>
-          <View className="flex-1">
-            <Button title={t('winModal.playAgain')} onPress={onPlayAgain} variant="primary" />
+
+          {gameState.gameEndTime && gameState.gameStartTime && (
+            <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-4`}>
+              {t('winModal.duration', { minutes: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 60000) })}
+            </Text>
+          )}
+
+          {/* Share Card */}
+          <ShareCard
+            gameState={gameState}
+            winner={winnerValue}
+            isPro={isPro}
+          />
+
+          <View className="flex-row gap-3 mt-8 w-full">
+            <View className="flex-1">
+              <Button title={t('common.exit')} onPress={onExit} variant="secondary" />
+            </View>
+            <View className="flex-1">
+              <Button title={t('winModal.playAgain')} onPress={onPlayAgain} variant="primary" />
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </Modal>
   );
 }

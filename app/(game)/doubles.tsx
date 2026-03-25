@@ -10,9 +10,11 @@ import { ScoreButton } from '../../components/scoring/ScoreButton';
 import { GameControls } from '../../components/scoring/GameControls';
 import { GameSetup } from '../../components/game/GameSetup';
 import { WinModal } from '../../components/game/WinModal';
+import { SoundboardModal } from '../../components/sounds/SoundboardModal';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { DoublesGameState } from '../../lib/types/game';
 import { useDarkMode } from '../../hooks/useDarkMode';
+import { useSubscriptionStore } from '../../store/subscription-store';
 
 export default function DoublesScreen() {
   const router = useRouter();
@@ -26,9 +28,11 @@ export default function DoublesScreen() {
   const markSidesChanged = useGameStore((state) => state.markSidesChanged);
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
+  const isPro = useSubscriptionStore((state) => state.isPro);
 
   const [showSetup, setShowSetup] = useState(true);
   const [showWinModal, setShowWinModal] = useState(false);
+  const [showSoundboard, setShowSoundboard] = useState(false);
 
   // Check if game is over
   useEffect(() => {
@@ -94,6 +98,11 @@ export default function DoublesScreen() {
     router.back();
   };
 
+  const handleUpgradePress = () => {
+    setShowSoundboard(false);
+    router.push('/settings');
+  };
+
   if (showSetup || !gameState) {
     return (
       <GameSetup
@@ -154,6 +163,7 @@ export default function DoublesScreen() {
         onUndo={undoLastAction}
         onSettings={() => router.push('/settings')}
         onEndGame={handleEndGame}
+        onSoundboard={() => setShowSoundboard(true)}
         canUndo={gameState.scoreHistory.length > 0}
       />
 
@@ -163,6 +173,13 @@ export default function DoublesScreen() {
         gameState={gameState}
         onPlayAgain={handlePlayAgain}
         onExit={handleExit}
+      />
+
+      <SoundboardModal
+        visible={showSoundboard}
+        onClose={() => setShowSoundboard(false)}
+        isPro={isPro}
+        onUpgradePress={handleUpgradePress}
       />
     </SafeAreaView>
   );

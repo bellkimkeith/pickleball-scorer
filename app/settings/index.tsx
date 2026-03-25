@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, Pressable, Switch } from 'react-native';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +10,8 @@ import { AVAILABLE_WINNING_SCORES, getAvailableSideChangeOptions } from '../../l
 import { useDarkMode } from '../../hooks/useDarkMode';
 import { Language } from '../../lib/types/game';
 import { changeLanguage, SUPPORTED_LANGUAGES } from '../../i18n';
+import { useSubscriptionStore } from '../../store/subscription-store';
+import { PaywallModal } from '../../components/paywall/PaywallModal';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -16,6 +19,8 @@ export default function SettingsScreen() {
   const updateSettings = useGameStore((state) => state.updateSettings);
   const { isDarkMode } = useDarkMode();
   const { t, i18n } = useTranslation();
+  const isPro = useSubscriptionStore((state) => state.isPro);
+  const [showPaywall, setShowPaywall] = useState(false);
   const effectiveLanguage = settings.language ?? i18n.language;
 
   const handleLanguageChange = async (language: Language) => {
@@ -44,6 +49,89 @@ export default function SettingsScreen() {
       </View>
 
       <View className="px-6">
+        {/* Pro Upgrade Section */}
+        {!isPro && (
+          <Pressable
+            onPress={() => setShowPaywall(true)}
+            className="rounded-2xl p-5 mb-4 bg-amber-500"
+            accessibilityLabel="Upgrade to Pro"
+            accessibilityRole="button"
+          >
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-3">
+                <Ionicons name="star" size={28} color="#ffffff" />
+                <View>
+                  <Text className="text-white text-lg font-bold">Upgrade to Pro</Text>
+                  <Text className="text-white/80 text-sm">Unlock all features & remove limits</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#ffffff" />
+            </View>
+          </Pressable>
+        )}
+
+        {/* Current Plan (if Pro) */}
+        {isPro && (
+          <View className={`rounded-2xl p-5 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <View className="flex-row items-center gap-3">
+              <View className="bg-amber-500 w-10 h-10 rounded-xl items-center justify-center">
+                <Ionicons name="star" size={24} color="#ffffff" />
+              </View>
+              <View className="flex-1">
+                <Text className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Pro Active
+                </Text>
+                <Text className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Thank you for supporting us!
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Sound Settings */}
+        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            Sound Settings
+          </Text>
+          
+          <View className="flex-row justify-between items-center mb-4">
+            <View className="flex-1">
+              <Text className={`text-base font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Auto-sounds on Score
+              </Text>
+              <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Play sound when point is scored
+              </Text>
+            </View>
+            <Switch
+              value={settings.autoSoundsEnabled ?? false}
+              onValueChange={(value) => updateSettings({ autoSoundsEnabled: value })}
+              trackColor={{ false: '#d1d5db', true: '#16a34a' }}
+              thumbColor="#ffffff"
+              accessibilityLabel="Toggle auto-sounds on score"
+            />
+          </View>
+
+          <View className="flex-row justify-between items-center">
+            <View className="flex-1">
+              <Text className={`text-base font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Auto-sounds on Side Out
+              </Text>
+              <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Play sound on side out
+              </Text>
+            </View>
+            <Switch
+              value={settings.autoSoundsOnSideOut ?? false}
+              onValueChange={(value) => updateSettings({ autoSoundsOnSideOut: value })}
+              trackColor={{ false: '#d1d5db', true: '#16a34a' }}
+              thumbColor="#ffffff"
+              accessibilityLabel="Toggle auto-sounds on side out"
+            />
+          </View>
+        </View>
+
         {/* Dark Mode Toggle */}
         <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <View className="flex-row justify-between items-center">
@@ -79,7 +167,7 @@ export default function SettingsScreen() {
                 accessibilityRole="button"
                 accessibilityState={{ selected: effectiveLanguage === lang }}
                 className={`flex-1 py-3 rounded-xl ${
-                  effectiveLanguage === lang ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                  effectiveLanguage === lang ? 'bg-green-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                 }`}
                 style={({ pressed }) => ({
                   transform: [{ scale: pressed ? 0.95 : 1 }],
@@ -109,7 +197,7 @@ export default function SettingsScreen() {
               accessibilityRole="button"
               accessibilityState={{ selected: settings.gameType === 'rally' }}
               className={`flex-1 py-3 rounded-xl ${
-                settings.gameType === 'rally' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                settings.gameType === 'rally' ? 'bg-green-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
               }`}
               style={({ pressed }) => ({
                 transform: [{ scale: pressed ? 0.95 : 1 }],
@@ -129,7 +217,7 @@ export default function SettingsScreen() {
               accessibilityRole="button"
               accessibilityState={{ selected: settings.gameType === 'sideout' }}
               className={`flex-1 py-3 rounded-xl ${
-                settings.gameType === 'sideout' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                settings.gameType === 'sideout' ? 'bg-green-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
               }`}
               style={({ pressed }) => ({
                 transform: [{ scale: pressed ? 0.95 : 1 }],
@@ -163,7 +251,7 @@ export default function SettingsScreen() {
                 accessibilityRole="button"
                 accessibilityState={{ selected: settings.winningScore === score }}
                 className={`flex-1 py-3 rounded-xl ${
-                  settings.winningScore === score ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                  settings.winningScore === score ? 'bg-green-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                 }`}
                 style={({ pressed }) => ({
                   transform: [{ scale: pressed ? 0.95 : 1 }],
@@ -219,7 +307,7 @@ export default function SettingsScreen() {
                 accessibilityRole="button"
                 accessibilityState={{ selected: settings.sideChangeAt === score }}
                 className={`flex-1 py-3 rounded-xl ${
-                  settings.sideChangeAt === score ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                  settings.sideChangeAt === score ? 'bg-green-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                 }`}
                 style={({ pressed }) => ({
                   transform: [{ scale: pressed ? 0.95 : 1 }],
@@ -297,6 +385,12 @@ export default function SettingsScreen() {
         </Pressable>
       </View>
       </ScrollView>
+
+      {/* Paywall Modal */}
+      <PaywallModal 
+        visible={showPaywall} 
+        onClose={() => setShowPaywall(false)} 
+      />
     </SafeAreaView>
   );
 }

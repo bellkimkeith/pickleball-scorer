@@ -10,9 +10,11 @@ import { ScoreButton } from '../../components/scoring/ScoreButton';
 import { GameControls } from '../../components/scoring/GameControls';
 import { GameSetup } from '../../components/game/GameSetup';
 import { WinModal } from '../../components/game/WinModal';
+import { SoundboardModal } from '../../components/sounds/SoundboardModal';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { SinglesGameState } from '../../lib/types/game';
 import { useDarkMode } from '../../hooks/useDarkMode';
+import { useSubscriptionStore } from '../../store/subscription-store';
 
 export default function SinglesScreen() {
   const router = useRouter();
@@ -26,11 +28,12 @@ export default function SinglesScreen() {
   const markSidesChanged = useGameStore((state) => state.markSidesChanged);
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
+  const isPro = useSubscriptionStore((state) => state.isPro);
 
   const [showSetup, setShowSetup] = useState(true);
   const [showWinModal, setShowWinModal] = useState(false);
+  const [showSoundboard, setShowSoundboard] = useState(false);
 
-  // Check if game is over
   useEffect(() => {
     if (
       gameState &&
@@ -41,7 +44,6 @@ export default function SinglesScreen() {
     }
   }, [gameState, isGameActive, settings]);
 
-  // Check if sides should change
   useEffect(() => {
     if (
       gameState &&
@@ -94,6 +96,11 @@ export default function SinglesScreen() {
     router.back();
   };
 
+  const handleUpgradePress = () => {
+    setShowSoundboard(false);
+    router.push('/settings');
+  };
+
   if (showSetup || !gameState) {
     return (
       <GameSetup
@@ -109,12 +116,10 @@ export default function SinglesScreen() {
     <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <StatusBar style={isDarkMode ? 'light' : 'dark'} />
 
-      {/* Score Display */}
       <View className="px-6 pb-8">
         <ScoreDisplay gameState={gameState} />
       </View>
 
-      {/* Action Buttons */}
       <View className="flex-1 px-6 justify-center gap-4">
         {settings.gameType === 'rally' ? (
           <>
@@ -144,20 +149,26 @@ export default function SinglesScreen() {
         )}
       </View>
 
-      {/* Game Controls */}
       <GameControls
         onUndo={undoLastAction}
         onSettings={() => router.push('/settings')}
         onEndGame={handleEndGame}
+        onSoundboard={() => setShowSoundboard(true)}
         canUndo={gameState.scoreHistory.length > 0}
       />
 
-      {/* Win Modal */}
       <WinModal
         visible={showWinModal}
         gameState={gameState}
         onPlayAgain={handlePlayAgain}
         onExit={handleExit}
+      />
+
+      <SoundboardModal
+        visible={showSoundboard}
+        onClose={() => setShowSoundboard(false)}
+        isPro={isPro}
+        onUpgradePress={handleUpgradePress}
       />
     </SafeAreaView>
   );
