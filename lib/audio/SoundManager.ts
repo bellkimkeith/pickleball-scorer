@@ -45,6 +45,15 @@ export const PRO_SOUNDS: SoundItem[] = [
 
 export const ALL_SOUNDS: SoundItem[] = [...FREE_SOUNDS, ...PRO_SOUNDS];
 
+const SOUND_FILES: Record<string, number> = {
+  airhorn: require('../../assets/sounds/airhorn.mp3'),
+  cheer: require('../../assets/sounds/cheer.mp3'),
+  whistle: require('../../assets/sounds/whistle.mp3'),
+  meme1: require('../../assets/sounds/meme1.mp3'),
+  meme2: require('../../assets/sounds/meme2.mp3'),
+  meme3: require('../../assets/sounds/meme3.mp3'),
+};
+
 class SoundManagerClass {
   private loadedSounds: Map<string, Audio.Sound> = new Map();
   private isInitialized = false;
@@ -79,9 +88,14 @@ class SoundManagerClass {
   }
 
   private async loadSound(soundId: string): Promise<void> {
+    const file = SOUND_FILES[soundId];
+    if (!file) {
+      console.warn(`No sound file found for "${soundId}"`);
+      return;
+    }
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require(`../../assets/sounds/${soundId}.mp3`),
+        file,
         { shouldPlay: false, volume: 1.0 }
       );
       this.loadedSounds.set(soundId, sound);
