@@ -1,5 +1,5 @@
 import { Pressable, Text, View, StyleSheet } from 'react-native';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { SoundItem } from '../../lib/audio/SoundManager';
 import { useDarkMode } from '../../hooks/useDarkMode';
@@ -13,7 +13,7 @@ interface SoundButtonProps {
   isSelected?: boolean;
 }
 
-const AnimatedPressable = Pressable;
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SOUND_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   airhorn: 'megaphone',
@@ -62,18 +62,18 @@ function SoundButtonComponent({
   }, [isLocked, onLockPress, onPress, sound.id]);
 
   const handlePressIn = useCallback(() => {
-    pressed.set(1);
+    pressed.set(withTiming(1, { duration: 100 }));
     scale.set(withSpring(0.9, { damping: 15, stiffness: 400 }));
   }, [pressed, scale]);
 
   const handlePressOut = useCallback(() => {
-    pressed.set(0);
+    pressed.set(withTiming(0, { duration: 100 }));
     scale.set(withSpring(1, { damping: 15, stiffness: 400 }));
   }, [pressed, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.get() }],
-    opacity: withTiming(pressed.get() ? 0.8 : 1, { duration: 100 }),
+    opacity: 1 - pressed.get() * 0.2,
   }));
 
   const iconName = SOUND_ICONS[sound.id] || 'musical-note';

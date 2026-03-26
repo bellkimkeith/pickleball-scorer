@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { createAudioPlayer, setAudioModeAsync, AudioPlayer } from 'expo-audio';
 
 export interface SoundItem {
   id: string;
@@ -17,12 +17,6 @@ export const FREE_SOUNDS: SoundItem[] = [
 ];
 
 export const PRO_SOUNDS: SoundItem[] = [
-  { id: 'airhorn', name: 'Air Horn', category: 'hype', isPro: true },
-  { id: 'cheer', name: 'Cheer', category: 'hype', isPro: true },
-  { id: 'whistle', name: 'Whistle', category: 'classic', isPro: true },
-  { id: 'meme1', name: 'Meme 1', category: 'meme', isPro: true },
-  { id: 'meme2', name: 'Meme 2', category: 'meme', isPro: true },
-  { id: 'meme3', name: 'Meme 3', category: 'meme', isPro: true },
   { id: 'crowd', name: 'Crowd', category: 'hype', isPro: true },
   { id: 'applause', name: 'Applause', category: 'hype', isPro: true },
   { id: 'boom', name: 'Boom', category: 'hype', isPro: true },
@@ -55,19 +49,20 @@ const SOUND_FILES: Record<string, number> = {
 };
 
 class SoundManagerClass {
-  private loadedSounds: Map<string, Audio.Sound> = new Map();
+  private loadedSounds: Map<string, AudioPlayer> = new Map();
   private isInitialized = false;
   private team1Sound: string = 'airhorn';
   private team2Sound: string = 'cheer';
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     try {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        shouldPlayInBackground: false,
+        interruptionMode: 'duckOthers',
+        shouldRouteThroughEarpiece: false,
       });
       this.isInitialized = true;
     } catch (error) {
@@ -77,14 +72,14 @@ class SoundManagerClass {
 
   async preloadSounds(soundIds: string[]): Promise<void> {
     await this.initialize();
-    
-    const unloadPromises: Promise<void>[] = [];
+
+    const loadPromises: Promise<void>[] = [];
     for (const id of soundIds) {
       if (!this.loadedSounds.has(id)) {
-        unloadPromises.push(this.loadSound(id));
+        loadPromises.push(this.loadSound(id));
       }
     }
-    await Promise.all(unloadPromises);
+    await Promise.all(loadPromises);
   }
 
   private async loadSound(soundId: string): Promise<void> {
@@ -94,11 +89,9 @@ class SoundManagerClass {
       return;
     }
     try {
-      const { sound } = await Audio.Sound.createAsync(
-        file,
-        { shouldPlay: false, volume: 1.0 }
-      );
-      this.loadedSounds.set(soundId, sound);
+      const player = createAudioPlayer(file);
+      player.volume = 1.0;
+      this.loadedSounds.set(soundId, player);
     } catch (error) {
       console.warn(`Failed to load sound ${soundId}:`, error);
     }
@@ -116,18 +109,18 @@ class SoundManagerClass {
 
   async play(soundId: string): Promise<void> {
     await this.initialize();
-    
-    let sound = this.loadedSounds.get(soundId);
-    
-    if (!sound) {
+
+    let player = this.loadedSounds.get(soundId);
+
+    if (!player) {
       await this.loadSound(soundId);
-      sound = this.loadedSounds.get(soundId);
+      player = this.loadedSounds.get(soundId);
     }
-    
-    if (sound) {
+
+    if (player) {
       try {
-        await sound.setPositionAsync(0);
-        await sound.playAsync();
+        player.seekTo(0);
+        player.play();
       } catch (error) {
         console.warn(`Failed to play sound ${soundId}:`, error);
       }
@@ -152,11 +145,9 @@ class SoundManagerClass {
   }
 
   async unloadAll(): Promise<void> {
-    const unloadPromises: Promise<unknown>[] = [];
-    for (const sound of this.loadedSounds.values()) {
-      unloadPromises.push(sound.unloadAsync() as Promise<unknown>);
+    for (const player of this.loadedSounds.values()) {
+      player.release();
     }
-    await Promise.all(unloadPromises);
     this.loadedSounds.clear();
   }
 

@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, Pressable, Switch } from 'react-native';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,7 +22,12 @@ export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
   const isPro = useSubscriptionStore((state) => state.isPro);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [switchKey, setSwitchKey] = useState(0);
   const effectiveLanguage = settings.language ?? i18n.language;
+
+  useFocusEffect(useCallback(() => {
+    setSwitchKey((k) => k + 1);
+  }, []));
 
   const handleLanguageChange = async (language: Language) => {
     await changeLanguage(language);
@@ -105,6 +111,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              key={switchKey}
               value={settings.autoSoundsEnabled ?? false}
               onValueChange={(value) => updateSettings({ autoSoundsEnabled: value })}
               trackColor={{ false: '#d1d5db', true: '#16a34a' }}
@@ -123,6 +130,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              key={switchKey}
               value={settings.autoSoundsOnSideOut ?? false}
               onValueChange={(value) => updateSettings({ autoSoundsOnSideOut: value })}
               trackColor={{ false: '#d1d5db', true: '#16a34a' }}
@@ -144,6 +152,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              key={switchKey}
               value={isDarkMode}
               onValueChange={(value) => updateSettings({ theme: value ? 'dark' : 'light' })}
               trackColor={{ false: '#d1d5db', true: '#f97316' }}
@@ -284,6 +293,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              key={switchKey}
               value={settings.winByTwo}
               onValueChange={(value) => updateSettings({ winByTwo: value })}
               trackColor={{ false: '#d1d5db', true: '#16a34a' }}
@@ -342,6 +352,7 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              key={switchKey}
               value={settings.swapScoresOnSideChange}
               onValueChange={(value) => updateSettings({ swapScoresOnSideChange: value })}
               trackColor={{ false: '#d1d5db', true: '#16a34a' }}

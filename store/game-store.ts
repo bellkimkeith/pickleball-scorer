@@ -3,6 +3,7 @@ import { GameState, GameSettings, SinglesGameState, DoublesGameState, ServingSid
 import { ScoringRules } from '../lib/utils/scoring-rules';
 import { DEFAULT_GAME_SETTINGS, getDefaultSideChangeAt } from '../lib/constants/game-config';
 import * as Haptics from 'expo-haptics';
+import { SoundManager } from '../lib/audio/SoundManager';
 
 interface GameStore {
   // State
@@ -97,6 +98,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const newState = ScoringRules.scorePoint(gameState, settings, scoringTeam);
 
+    // Play auto-sound for the scoring team
+    if (settings.autoSoundsEnabled) {
+      const team = scoringTeam
+        ?? (newState.score1 > gameState.score1 ? 1
+          : newState.score2 > gameState.score2 ? 2
+          : undefined);
+      if (team) {
+        SoundManager.playTeamSound(team);
+      }
+    }
+
     // Check for game over
     if (ScoringRules.isGameOver(newState.score1, newState.score2, settings)) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -107,10 +119,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   sideOut: () => {
-    const { gameState } = get();
+    const { gameState, settings } = get();
     if (!gameState) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    // Play auto-sound on side out for the team that just lost the serve
+    if (settings.autoSoundsOnSideOut) {
+      const losingTeam = gameState.mode === 'singles'
+        ? gameState.servingPlayer
+        : gameState.servingTeam;
+      SoundManager.playTeamSound(losingTeam);
+    }
 
     const newState = ScoringRules.handleSideOut(gameState);
     set({ gameState: newState });
