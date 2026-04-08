@@ -54,17 +54,20 @@ function ShareCardComponent({ gameState, winner, isPro = false }: ShareCardProps
 
   return (
     <View style={[styles.container, isDarkMode ? styles.containerDark : styles.containerLight]}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Ionicons name="tennisball" size={24} color="#16a34a" />
-          <Text style={[styles.appName, isDarkMode ? styles.appNameDark : styles.appNameLight]}>
-            Pickle & Score
-          </Text>
+          <View style={[styles.iconContainer, isDarkMode ? styles.iconContainerDark : styles.iconContainerLight]}>
+            <Ionicons name="tennisball" size={18} color={isDarkMode ? '#22c55e' : '#16a34a'} />
+          </View>
+          <View>
+            <Text style={[styles.appName, isDarkMode ? styles.appNameDark : styles.appNameLight]}>
+              Pickle & Score
+            </Text>
+            <Text style={[styles.date, isDarkMode ? styles.dateDark : styles.dateLight]}>
+              {formatDate()}
+            </Text>
+          </View>
         </View>
-        <Text style={[styles.date, isDarkMode ? styles.dateDark : styles.dateLight]}>
-          {formatDate()}
-        </Text>
       </View>
 
       {/* Match Info */}
@@ -87,11 +90,13 @@ function ShareCardComponent({ gameState, winner, isPro = false }: ShareCardProps
               color={winner === 1 ? '#ffffff' : isDarkMode ? '#f3f4f6' : '#1f2937'} 
             />
           </View>
-          <Text style={[
-            styles.playerName, 
-            winner === 1 && styles.playerNameWinner,
-            isDarkMode ? styles.playerNameDark : styles.playerNameLight
-          ]}>
+          <Text 
+            style={[
+              styles.playerName, 
+              winner === 1 && styles.playerNameWinner,
+              isDarkMode ? styles.playerNameDark : styles.playerNameLight
+            ]}
+          >
             {getPlayer1Name()}
           </Text>
         </View>
@@ -119,22 +124,26 @@ function ShareCardComponent({ gameState, winner, isPro = false }: ShareCardProps
               color={winner === 2 ? '#ffffff' : isDarkMode ? '#f3f4f6' : '#1f2937'} 
             />
           </View>
-          <Text style={[
-            styles.playerName, 
-            winner === 2 && styles.playerNameWinner,
-            isDarkMode ? styles.playerNameDark : styles.playerNameLight
-          ]}>
+          <Text 
+            style={[
+              styles.playerName, 
+              winner === 2 && styles.playerNameWinner,
+              isDarkMode ? styles.playerNameDark : styles.playerNameLight
+            ]}
+          >
             {getPlayer2Name()}
           </Text>
         </View>
       </View>
 
       {/* Winner Banner */}
-      <View style={styles.winnerBanner}>
-        <Ionicons name="trophy" size={20} color="#f59e0b" />
-        <Text style={styles.winnerText}>
-          {getWinnerName()} Wins!
-        </Text>
+      <View style={[styles.winnerBanner, isDarkMode ? styles.winnerBannerDark : styles.winnerBannerLight]}>
+        <View style={[styles.winnerBannerContent, isDarkMode ? styles.winnerBannerContentDark : styles.winnerBannerContentLight]}>
+          <Ionicons name="trophy" size={18} color={isDarkMode ? '#fbbf24' : '#d97706'} />
+          <Text style={[styles.winnerText, isDarkMode ? styles.winnerTextDark : styles.winnerTextLight]}>
+            {getWinnerName()} Wins!
+          </Text>
+        </View>
       </View>
 
       {/* Share Button */}
@@ -145,8 +154,10 @@ function ShareCardComponent({ gameState, winner, isPro = false }: ShareCardProps
           pressed && styles.shareButtonPressed
         ]}
       >
-        <Ionicons name="share-outline" size={20} color="#ffffff" />
-        <Text style={styles.shareButtonText}>Share Match</Text>
+        <View style={styles.shareButtonContent}>
+          <Ionicons name="share-outline" size={20} color="#ffffff" />
+          <Text style={styles.shareButtonText}>Share Match</Text>
+        </View>
       </Pressable>
     </View>
   );
@@ -155,25 +166,43 @@ function ShareCardComponent({ gameState, winner, isPro = false }: ShareCardProps
 const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
-    padding: 20,
+    padding: 16,
     marginTop: 16,
+    borderWidth: 1,
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 320,
   },
   containerLight: {
-    backgroundColor: '#ffffff',
+    borderColor: '#e5e7eb',
   },
   containerDark: {
-    backgroundColor: '#1f2937',
+    borderColor: '#4b5563',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
+    width: '100%',
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconContainerLight: {
+    backgroundColor: '#dcfce7',
+  },
+  iconContainerDark: {
+    backgroundColor: '#14532d',
   },
   appName: {
     fontSize: 16,
@@ -197,7 +226,7 @@ const styles = StyleSheet.create({
   },
   matchInfo: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 12,
   },
   matchType: {
     fontSize: 14,
@@ -214,20 +243,21 @@ const styles = StyleSheet.create({
   scoreContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    justifyContent: 'center',
+    marginBottom: 8,
   },
   playerSection: {
     alignItems: 'center',
     flex: 1,
+    minWidth: 80,
   },
   playerAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   playerAvatarLight: {
     backgroundColor: '#f3f4f6',
@@ -239,7 +269,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#16a34a',
   },
   playerName: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -258,7 +288,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   score: {
-    fontSize: 48,
+    fontSize: 36,
     fontWeight: '800',
   },
   scoreLight: {
@@ -271,7 +301,7 @@ const styles = StyleSheet.create({
     color: '#16a34a',
   },
   scoreDivider: {
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: '500',
   },
   scoreDividerLight: {
@@ -281,38 +311,66 @@ const styles = StyleSheet.create({
     color: '#4b5563',
   },
   winnerBanner: {
+    borderRadius: 16,
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  winnerBannerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  winnerBannerContentLight: {
     backgroundColor: '#fef3c7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    marginBottom: 16,
+  },
+  winnerBannerContentDark: {
+    backgroundColor: '#78350f',
+  },
+  winnerBannerLight: {
+    backgroundColor: '#fef3c7',
+  },
+  winnerBannerDark: {
+    backgroundColor: '#451a03',
   },
   winnerText: {
     fontSize: 16,
     fontWeight: '700',
+  },
+  winnerTextLight: {
     color: '#92400e',
   },
+  winnerTextDark: {
+    color: '#fef3c7',
+  },
   shareButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
     backgroundColor: '#16a34a',
     paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 16,
+    borderRadius: 12,
+    marginTop: 16,
+    minWidth: 200,
+    alignSelf: 'center',
+  },
+  shareButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
   },
   shareButtonPressed: {
-    backgroundColor: '#15803d',
+    opacity: 0.7,
+  },
+  shareButtonIcon: {
+    marginRight: 10,
   },
   shareButtonText: {
     color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 17,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

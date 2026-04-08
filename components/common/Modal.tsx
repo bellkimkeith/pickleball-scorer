@@ -23,7 +23,7 @@ export function Modal({ visible, onClose, children, dismissable = true }: ModalP
             className="flex-1"
             onPress={dismissable ? onClose : undefined}
           />
-          <View className={`rounded-t-3xl p-6 max-h-[80%] ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <View className={`rounded-t-3xl p-4 max-h-[95%] ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
             {children}
           </View>
         </View>

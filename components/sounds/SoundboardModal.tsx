@@ -95,10 +95,14 @@ function SoundboardModalComponent({
               style={[
                 styles.teamButton,
                 selectedTeam === 1 && styles.teamButtonActive,
+                selectedTeam === 1 && (isDarkMode ? styles.teamButtonActiveBorderDark : styles.teamButtonActiveBorderLight),
                 isDarkMode ? styles.teamButtonDark : styles.teamButtonLight,
               ]}
             >
-              <Text style={[styles.teamButtonText, selectedTeam === 1 && styles.teamButtonTextActive]}>
+              <Text style={[
+                styles.teamButtonText,
+                selectedTeam === 1 && (isDarkMode ? styles.teamButtonTextActiveDark : styles.teamButtonTextActiveLight)
+              ]}>
                 Team 1
               </Text>
             </Pressable>
@@ -107,10 +111,14 @@ function SoundboardModalComponent({
               style={[
                 styles.teamButton,
                 selectedTeam === 2 && styles.teamButtonActive,
+                selectedTeam === 2 && (isDarkMode ? styles.teamButtonActiveBorderDark : styles.teamButtonActiveBorderLight),
                 isDarkMode ? styles.teamButtonDark : styles.teamButtonLight,
               ]}
             >
-              <Text style={[styles.teamButtonText, selectedTeam === 2 && styles.teamButtonTextActive]}>
+              <Text style={[
+                styles.teamButtonText,
+                selectedTeam === 2 && (isDarkMode ? styles.teamButtonTextActiveDark : styles.teamButtonTextActiveLight)
+              ]}>
                 Team 2
               </Text>
             </Pressable>
@@ -135,14 +143,17 @@ function SoundboardModalComponent({
               onPress={() => setActiveCategory(cat.key)}
               style={[
                 styles.categoryTab,
-                activeCategory === cat.key && styles.categoryTabActive,
-                isDarkMode ? styles.categoryTabDark : styles.categoryTabLight,
+                activeCategory === cat.key 
+                  ? styles.categoryTabActive 
+                  : (isDarkMode ? styles.categoryTabDark : styles.categoryTabLight),
               ]}
             >
               <Text
                 style={[
                   styles.categoryText,
-                  activeCategory === cat.key && styles.categoryTextActive,
+                  activeCategory === cat.key 
+                    ? styles.categoryTextActive 
+                    : (isDarkMode ? styles.categoryTextDark : styles.categoryTextLight),
                 ]}
               >
                 {cat.label}
@@ -158,55 +169,79 @@ function SoundboardModalComponent({
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.soundRow}>
-            {filteredSounds().slice(0, 3).map(sound => (
-              <SoundButton
-                key={sound.id}
-                sound={sound}
-                onPress={selectedTeam ? handleAssignSound : handleSoundPress}
-                isLocked={!isPro && sound.isPro}
-                onLockPress={handleLockPress}
-                isSelected={selectedTeam ? SoundManager.getTeamSound(selectedTeam) === sound.id : false}
-              />
-            ))}
-          </View>
-          <View style={styles.soundRow}>
-            {filteredSounds().slice(3, 6).map(sound => (
-              <SoundButton
-                key={sound.id}
-                sound={sound}
-                onPress={selectedTeam ? handleAssignSound : handleSoundPress}
-                isLocked={!isPro && sound.isPro}
-                onLockPress={handleLockPress}
-                isSelected={selectedTeam ? SoundManager.getTeamSound(selectedTeam) === sound.id : false}
-              />
-            ))}
-          </View>
-          {filteredSounds().length > 6 && (
-            <View style={styles.soundRow}>
-              {filteredSounds().slice(6, 9).map(sound => (
+            {filteredSounds().slice(0, 3).map(sound => {
+              const assignedTeam = SoundManager.getTeamSound(1) === sound.id ? 1 : (SoundManager.getTeamSound(2) === sound.id ? 2 : undefined);
+              return (
                 <SoundButton
                   key={sound.id}
                   sound={sound}
                   onPress={selectedTeam ? handleAssignSound : handleSoundPress}
                   isLocked={!isPro && sound.isPro}
                   onLockPress={handleLockPress}
-                  isSelected={selectedTeam ? SoundManager.getTeamSound(selectedTeam) === sound.id : false}
+                  isSelected={selectedTeam 
+                    ? SoundManager.getTeamSound(selectedTeam) === sound.id 
+                    : assignedTeam !== undefined}
+                  teamNumber={assignedTeam}
                 />
-              ))}
+              );
+            })}
+          </View>
+          <View style={styles.soundRow}>
+            {filteredSounds().slice(3, 6).map(sound => {
+              const assignedTeam = SoundManager.getTeamSound(1) === sound.id ? 1 : (SoundManager.getTeamSound(2) === sound.id ? 2 : undefined);
+              return (
+                <SoundButton
+                  key={sound.id}
+                  sound={sound}
+                  onPress={selectedTeam ? handleAssignSound : handleSoundPress}
+                  isLocked={!isPro && sound.isPro}
+                  onLockPress={handleLockPress}
+                  isSelected={selectedTeam 
+                    ? SoundManager.getTeamSound(selectedTeam) === sound.id 
+                    : assignedTeam !== undefined}
+                  teamNumber={assignedTeam}
+                />
+              );
+            })}
+          </View>
+          {filteredSounds().length > 6 && (
+            <View style={styles.soundRow}>
+              {filteredSounds().slice(6, 9).map(sound => {
+                const assignedTeam = SoundManager.getTeamSound(1) === sound.id ? 1 : (SoundManager.getTeamSound(2) === sound.id ? 2 : undefined);
+                return (
+                  <SoundButton
+                    key={sound.id}
+                    sound={sound}
+                    onPress={selectedTeam ? handleAssignSound : handleSoundPress}
+                    isLocked={!isPro && sound.isPro}
+                    onLockPress={handleLockPress}
+                    isSelected={selectedTeam 
+                      ? SoundManager.getTeamSound(selectedTeam) === sound.id 
+                      : assignedTeam !== undefined}
+                    teamNumber={assignedTeam}
+                  />
+                );
+              })}
             </View>
           )}
           {filteredSounds().length > 9 && (
             <View style={styles.soundRow}>
-              {filteredSounds().slice(9, 12).map(sound => (
-                <SoundButton
-                  key={sound.id}
-                  sound={sound}
-                  onPress={selectedTeam ? handleAssignSound : handleSoundPress}
-                  isLocked={!isPro && sound.isPro}
-                  onLockPress={handleLockPress}
-                  isSelected={selectedTeam ? SoundManager.getTeamSound(selectedTeam) === sound.id : false}
-                />
-              ))}
+              {filteredSounds().slice(9, 12).map(sound => {
+                const assignedTeam = SoundManager.getTeamSound(1) === sound.id ? 1 : (SoundManager.getTeamSound(2) === sound.id ? 2 : undefined);
+                return (
+                  <SoundButton
+                    key={sound.id}
+                    sound={sound}
+                    onPress={selectedTeam ? handleAssignSound : handleSoundPress}
+                    isLocked={!isPro && sound.isPro}
+                    onLockPress={handleLockPress}
+                    isSelected={selectedTeam 
+                      ? SoundManager.getTeamSound(selectedTeam) === sound.id 
+                      : assignedTeam !== undefined}
+                    teamNumber={assignedTeam}
+                  />
+                );
+              })}
             </View>
           )}
         </ScrollView>
@@ -288,11 +323,22 @@ const styles = StyleSheet.create({
   teamButtonActive: {
     backgroundColor: '#16a34a',
   },
+  teamButtonActiveBorderLight: {
+    borderWidth: 2,
+    borderColor: '#16a34a',
+  },
+  teamButtonActiveBorderDark: {
+    borderWidth: 2,
+    borderColor: '#16a34a',
+  },
   teamButtonText: {
     fontSize: 14,
     fontWeight: '600',
   },
-  teamButtonTextActive: {
+  teamButtonTextActiveLight: {
+    color: '#1f2937',
+  },
+  teamButtonTextActiveDark: {
     color: '#ffffff',
   },
   helperText: {
@@ -326,14 +372,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#374151',
   },
   categoryTabActive: {
-    backgroundColor: '#16a34a',
+    backgroundColor: '#15803d',
   },
   categoryText: {
     fontSize: 14,
     fontWeight: '600',
   },
+  categoryTextLight: {
+    color: '#374151',
+  },
+  categoryTextDark: {
+    color: '#d1d5db',
+  },
   categoryTextActive: {
     color: '#ffffff',
+    fontWeight: '700',
   },
   soundGrid: {
     maxHeight: 320,
@@ -343,7 +396,8 @@ const styles = StyleSheet.create({
   },
   soundRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    gap: 8,
     paddingHorizontal: 4,
   },
   proBanner: {

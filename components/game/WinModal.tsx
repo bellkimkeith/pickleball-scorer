@@ -78,18 +78,11 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
   return (
     <Modal visible={visible} onClose={onExit} dismissable={false}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="items-center py-6" accessibilityRole="alert">
-          <Ionicons name="trophy" size={80} color="#fbbf24" />
+        <View className="items-center py-4" accessibilityRole="alert">
+          <Ionicons name="trophy" size={60} color="#fbbf24" />
 
-          <Text accessibilityRole="header" className={`text-3xl font-bold mt-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <Text accessibilityRole="header" className={`text-2xl font-bold mt-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             {t('winModal.gameOver')}
-          </Text>
-
-          <Text
-            className={`text-xl font-semibold mt-4 ${winnerColorClass}`}
-            accessibilityLabel={`${winnerName} wins with a score of ${finalScore}`}
-          >
-            {t('winModal.wins', { name: winnerName })}
           </Text>
 
           {winningPlayers && (
@@ -98,15 +91,6 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
             </Text>
           )}
 
-          <View className={`rounded-2xl p-6 mt-6 w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-            <Text className={`text-center text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              {t('winModal.finalScore')}
-            </Text>
-            <Text className={`text-center text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              {finalScore}
-            </Text>
-          </View>
-
           {gameState.gameEndTime && gameState.gameStartTime && (
             <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-4`}>
               {t('winModal.duration', { minutes: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 60000) })}
@@ -114,11 +98,13 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
           )}
 
           {/* Share Card */}
-          <ShareCard
-            gameState={gameState}
-            winner={winnerValue}
-            isPro={isPro}
-          />
+          <View className="mt-4">
+            <ShareCard
+              gameState={gameState}
+              winner={winnerValue}
+              isPro={isPro}
+            />
+          </View>
 
           <View className="flex-row gap-3 mt-8 w-full">
             <View className="flex-1">

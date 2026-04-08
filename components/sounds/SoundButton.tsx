@@ -11,6 +11,7 @@ interface SoundButtonProps {
   isLocked?: boolean;
   onLockPress?: () => void;
   isSelected?: boolean;
+  teamNumber?: 1 | 2;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -48,10 +49,16 @@ function SoundButtonComponent({
   isLocked = false,
   onLockPress,
   isSelected = false,
+  teamNumber,
 }: SoundButtonProps) {
   const { isDarkMode } = useDarkMode();
   const pressed = useSharedValue(0);
   const scale = useSharedValue(1);
+
+  const teamColors: Record<1 | 2, string> = {
+    1: '#3b82f6',
+    2: '#ef4444',
+  };
 
   const handlePress = useCallback(() => {
     if (isLocked && onLockPress) {
@@ -82,7 +89,7 @@ function SoundButtonComponent({
     classic: '#3b82f6',
     meme: '#a855f7',
   };
-  const accentColor = categoryColors[sound.category] || '#16a34a';
+  const accentColor = teamNumber ? teamColors[teamNumber] : (categoryColors[sound.category] || '#16a34a');
 
   return (
     <AnimatedPressable
