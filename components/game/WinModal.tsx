@@ -7,7 +7,6 @@ import { GameState, DoublesGameState } from '../../lib/types/game';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { Ionicons } from '@expo/vector-icons';
 import { useDarkMode } from '../../hooks/useDarkMode';
-import { useSubscriptionStore } from '../../store/subscription-store';
 import { useEffect } from 'react';
 import { useStatsStore } from '../../store/stats-store';
 import { GameRecord } from '../../lib/storage/game-history';
@@ -22,7 +21,6 @@ interface WinModalProps {
 export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalProps) {
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
-  const isPro = useSubscriptionStore((state) => state.isPro);
   const { saveGameRecord, loadHistory } = useStatsStore();
   
   useEffect(() => {
@@ -102,7 +100,6 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
             <ShareCard
               gameState={gameState}
               winner={winnerValue}
-              isPro={isPro}
             />
           </View>
 

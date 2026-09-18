@@ -3,15 +3,13 @@ import { memo, useState, useCallback, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal } from '../common/Modal';
 import { SoundButton } from './SoundButton';
-import { SoundManager, FREE_SOUNDS, PRO_SOUNDS, SoundItem } from '../../lib/audio/SoundManager';
+import { SoundManager, SOUNDS, SoundItem } from '../../lib/audio/SoundManager';
 import { useDarkMode } from '../../hooks/useDarkMode';
 import { useTranslation } from 'react-i18next';
 
 interface SoundboardModalProps {
   visible: boolean;
   onClose: () => void;
-  isPro?: boolean;
-  onUpgradePress?: () => void;
 }
 
 type Category = 'all' | 'hype' | 'classic' | 'meme';
@@ -26,8 +24,6 @@ const CATEGORIES: { key: Category; label: string }[] = [
 function SoundboardModalComponent({
   visible,
   onClose,
-  isPro = false,
-  onUpgradePress,
 }: SoundboardModalProps) {
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
@@ -36,29 +32,20 @@ function SoundboardModalComponent({
 
   useEffect(() => {
     if (visible) {
-      const soundsToLoad = isPro ? [...FREE_SOUNDS, ...PRO_SOUNDS] : FREE_SOUNDS;
-      SoundManager.preloadSounds(soundsToLoad.map(s => s.id));
+      SoundManager.preloadAll();
     }
-  }, [visible, isPro]);
+  }, [visible]);
 
   const handleSoundPress = useCallback(async (soundId: string) => {
     await SoundManager.play(soundId);
   }, []);
 
-  const handleLockPress = useCallback(() => {
-    onClose();
-    if (onUpgradePress) {
-      onUpgradePress();
-    }
-  }, [onClose, onUpgradePress]);
-
   const filteredSounds = useCallback((): SoundItem[] => {
-    const allSounds = isPro ? [...FREE_SOUNDS, ...PRO_SOUNDS] : FREE_SOUNDS;
     if (activeCategory === 'all') {
-      return allSounds;
+      return SOUNDS;
     }
-    return allSounds.filter(s => s.category === activeCategory);
-  }, [activeCategory, isPro]);
+    return SOUNDS.filter(s => s.category === activeCategory);
+  }, [activeCategory]);
 
   const handleTeamSelect = useCallback((team: 1 | 2) => {
     setSelectedTeam(prev => prev === team ? null : team);
@@ -176,8 +163,6 @@ function SoundboardModalComponent({
                   key={sound.id}
                   sound={sound}
                   onPress={selectedTeam ? handleAssignSound : handleSoundPress}
-                  isLocked={!isPro && sound.isPro}
-                  onLockPress={handleLockPress}
                   isSelected={selectedTeam 
                     ? SoundManager.getTeamSound(selectedTeam) === sound.id 
                     : assignedTeam !== undefined}
@@ -194,8 +179,6 @@ function SoundboardModalComponent({
                   key={sound.id}
                   sound={sound}
                   onPress={selectedTeam ? handleAssignSound : handleSoundPress}
-                  isLocked={!isPro && sound.isPro}
-                  onLockPress={handleLockPress}
                   isSelected={selectedTeam 
                     ? SoundManager.getTeamSound(selectedTeam) === sound.id 
                     : assignedTeam !== undefined}
@@ -213,8 +196,6 @@ function SoundboardModalComponent({
                     key={sound.id}
                     sound={sound}
                     onPress={selectedTeam ? handleAssignSound : handleSoundPress}
-                    isLocked={!isPro && sound.isPro}
-                    onLockPress={handleLockPress}
                     isSelected={selectedTeam 
                       ? SoundManager.getTeamSound(selectedTeam) === sound.id 
                       : assignedTeam !== undefined}
@@ -233,8 +214,6 @@ function SoundboardModalComponent({
                     key={sound.id}
                     sound={sound}
                     onPress={selectedTeam ? handleAssignSound : handleSoundPress}
-                    isLocked={!isPro && sound.isPro}
-                    onLockPress={handleLockPress}
                     isSelected={selectedTeam 
                       ? SoundManager.getTeamSound(selectedTeam) === sound.id 
                       : assignedTeam !== undefined}
@@ -245,22 +224,6 @@ function SoundboardModalComponent({
             </View>
           )}
         </ScrollView>
-
-        {/* Pro Upgrade Banner */}
-        {!isPro && (
-          <Pressable
-            onPress={onUpgradePress}
-            style={styles.proBanner}
-          >
-            <View style={styles.proBannerContent}>
-              <Ionicons name="star" size={20} color="#ffffff" />
-              <Text style={styles.proBannerText}>
-                {t('soundboard.upgrade', 'Upgrade to Pro for 30+ sounds!')}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#ffffff" />
-          </Pressable>
-        )}
       </View>
     </Modal>
   );
@@ -399,26 +362,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     gap: 8,
     paddingHorizontal: 4,
-  },
-  proBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#f59e0b',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginTop: 16,
-  },
-  proBannerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  proBannerText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
   },
 });
 

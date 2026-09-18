@@ -14,7 +14,6 @@ import { SoundboardModal } from '../../components/sounds/SoundboardModal';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { DoublesGameState } from '../../lib/types/game';
 import { useDarkMode } from '../../hooks/useDarkMode';
-import { useSubscriptionStore } from '../../store/subscription-store';
 
 export default function DoublesScreen() {
   const router = useRouter();
@@ -28,7 +27,6 @@ export default function DoublesScreen() {
   const markSidesChanged = useGameStore((state) => state.markSidesChanged);
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
-  const isPro = useSubscriptionStore((state) => state.isPro);
 
   const [showSetup, setShowSetup] = useState(true);
   const [showWinModal, setShowWinModal] = useState(false);
@@ -96,11 +94,6 @@ export default function DoublesScreen() {
   const handleExit = () => {
     resetGame();
     router.back();
-  };
-
-  const handleUpgradePress = () => {
-    setShowSoundboard(false);
-    router.push('/settings');
   };
 
   if (showSetup || !gameState) {
@@ -178,8 +171,6 @@ export default function DoublesScreen() {
       <SoundboardModal
         visible={showSoundboard}
         onClose={() => setShowSoundboard(false)}
-        isPro={isPro}
-        onUpgradePress={handleUpgradePress}
       />
     </SafeAreaView>
   );

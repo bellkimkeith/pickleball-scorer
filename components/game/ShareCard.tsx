@@ -7,10 +7,9 @@ import { GameState, SinglesGameState, DoublesGameState } from '../../lib/types/g
 interface ShareCardProps {
   gameState: GameState;
   winner: 1 | 2;
-  isPro?: boolean;
 }
 
-function ShareCardComponent({ gameState, winner, isPro = false }: ShareCardProps) {
+function ShareCardComponent({ gameState, winner }: ShareCardProps) {
   const { isDarkMode } = useDarkMode();
 
   const getPlayer1Name = () => {

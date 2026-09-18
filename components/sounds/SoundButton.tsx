@@ -8,8 +8,6 @@ import { memo, useCallback } from 'react';
 interface SoundButtonProps {
   sound: SoundItem;
   onPress: (soundId: string) => void;
-  isLocked?: boolean;
-  onLockPress?: () => void;
   isSelected?: boolean;
   teamNumber?: 1 | 2;
 }
@@ -23,31 +21,11 @@ const SOUND_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   meme1: 'game-controller',
   meme2: 'musical-notes',
   meme3: 'sparkles',
-  crowd: 'people',
-  applause: 'hand-left',
-  boom: 'flash',
-  bell: 'notifications',
-  horn: 'car',
-  buzzer: 'alert-circle',
-  laugh1: 'happy-outline',
-  laugh2: 'happy-outline',
-  wow: 'star',
-  noice: 'thumbs-up',
-  yeet: 'arrow-forward-circle',
-  fail: 'close-circle',
-  trombone: 'musical-note',
-  rimshot: 'musical-notes',
-  sad: 'sad',
-  village: 'home',
-  taco: 'restaurant',
-  viking: 'shield',
 };
 
 function SoundButtonComponent({
   sound,
   onPress,
-  isLocked = false,
-  onLockPress,
   isSelected = false,
   teamNumber,
 }: SoundButtonProps) {
@@ -61,12 +39,8 @@ function SoundButtonComponent({
   };
 
   const handlePress = useCallback(() => {
-    if (isLocked && onLockPress) {
-      onLockPress();
-    } else {
-      onPress(sound.id);
-    }
-  }, [isLocked, onLockPress, onPress, sound.id]);
+    onPress(sound.id);
+  }, [onPress, sound.id]);
 
   const handlePressIn = useCallback(() => {
     pressed.set(withTiming(1, { duration: 100 }));
@@ -106,11 +80,11 @@ function SoundButtonComponent({
       <View
         style={[
           styles.iconContainer,
-          { backgroundColor: isLocked ? '#6b7280' : accentColor },
+          { backgroundColor: accentColor },
         ]}
       >
         <Ionicons
-          name={isLocked ? 'lock-closed' : iconName}
+          name={iconName}
           size={28}
           color="#ffffff"
         />
@@ -119,17 +93,11 @@ function SoundButtonComponent({
         style={[
           styles.label,
           isDarkMode ? styles.labelDark : styles.labelLight,
-          isLocked && styles.labelLocked,
         ]}
         numberOfLines={1}
       >
         {sound.name}
       </Text>
-      {isLocked && (
-        <View style={styles.proBadge}>
-          <Text style={styles.proBadgeText}>PRO</Text>
-        </View>
-      )}
     </AnimatedPressable>
   );
 }
@@ -178,23 +146,6 @@ const styles = StyleSheet.create({
   },
   labelDark: {
     color: '#f3f4f6',
-  },
-  labelLocked: {
-    color: '#9ca3af',
-  },
-  proBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    backgroundColor: '#f59e0b',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  proBadgeText: {
-    fontSize: 8,
-    fontWeight: 'bold',
-    color: '#ffffff',
   },
 });
 

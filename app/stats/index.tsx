@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { useStatsStore } from '../../store/stats-store';
 import { StatsCard } from '../../components/stats/StatsCard';
 import { useDarkMode } from '../../hooks/useDarkMode';
-import { useSubscriptionStore } from '../../store/subscription-store';
 import { GameRecord } from '../../lib/storage/game-history';
 
 export default function StatsScreen() {
@@ -26,7 +25,6 @@ export default function StatsScreen() {
     loadHistory,
   } = useStatsStore();
   
-  const isPro = useSubscriptionStore((state) => state.isPro);
 
   useEffect(() => {
     loadHistory();
@@ -123,11 +121,6 @@ export default function StatsScreen() {
           <Text style={[styles.sectionTitle, isDarkMode ? styles.sectionTitleDark : styles.sectionTitleLight]}>
             {t('stats.recentGames', 'Recent Games')}
           </Text>
-          {!isPro && (
-            <Pressable onPress={() => router.push('/settings')}>
-              <Text style={styles.upgradeLink}>Upgrade</Text>
-            </Pressable>
-          )}
         </View>
 
         {recentGames.length === 0 ? (
@@ -142,25 +135,10 @@ export default function StatsScreen() {
           </View>
         ) : (
           <View style={styles.gamesList}>
-            {recentGames.slice(0, isPro ? undefined : 5).map((game, index) => 
+            {recentGames.map((game, index) => 
               renderGameItem(game, index)
             )}
           </View>
-        )}
-
-        {!isPro && recentGames.length > 5 && (
-          <Pressable 
-            style={styles.upgradeBanner}
-            onPress={() => router.push('/settings')}
-          >
-            <View style={styles.upgradeBannerContent}>
-              <Ionicons name="star" size={20} color="#ffffff" />
-              <Text style={styles.upgradeBannerText}>
-                Upgrade to Pro for unlimited history
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#ffffff" />
-          </Pressable>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -208,11 +186,6 @@ const styles = StyleSheet.create({
   },
   sectionTitleDark: {
     color: '#f3f4f6',
-  },
-  upgradeLink: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#16a34a',
   },
   gamesList: {
     gap: 12,
@@ -345,25 +318,5 @@ const styles = StyleSheet.create({
   },
   emptySubtextDark: {
     color: '#9ca3af',
-  },
-  upgradeBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#f59e0b',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    marginTop: 16,
-  },
-  upgradeBannerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  upgradeBannerText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
   },
 });

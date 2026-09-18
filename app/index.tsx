@@ -1,20 +1,15 @@
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { useSubscriptionStore } from '../store/subscription-store';
-import { PaywallModal } from '../components/paywall/PaywallModal';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
-  const isPro = useSubscriptionStore((state) => state.isPro);
-  const [showPaywall, setShowPaywall] = useState(false);
 
   return (
     <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} edges={['top']}>
@@ -51,23 +46,6 @@ export default function HomeScreen() {
             </Pressable>
           </View>
         </View>
-
-        {/* Pro Badge - if not Pro */}
-        {!isPro && (
-          <Pressable
-            onPress={() => setShowPaywall(true)}
-            className="mx-6 mb-4 p-4 rounded-2xl bg-amber-500 flex-row items-center justify-between"
-          >
-            <View className="flex-row items-center gap-3">
-              <Ionicons name="star" size={24} color="#ffffff" />
-              <View>
-                <Text className="text-white font-bold text-base">Upgrade to Pro</Text>
-                <Text className="text-white/80 text-sm">Unlock all features</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#ffffff" />
-          </Pressable>
-        )}
 
         {/* Mode Selection */}
         <View className="px-6 gap-4">
@@ -159,11 +137,6 @@ export default function HomeScreen() {
                   Add hype sounds to your matches
                 </Text>
               </View>
-              {!isPro && (
-                <View className="bg-amber-500 px-2 py-1 rounded-md">
-                  <Text className="text-white text-xs font-bold">PRO</Text>
-                </View>
-              )}
             </View>
 
             {/* Stats Feature */}
@@ -198,12 +171,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-
-      {/* Paywall Modal */}
-      <PaywallModal 
-        visible={showPaywall} 
-        onClose={() => setShowPaywall(false)} 
-      />
     </SafeAreaView>
   );
 }
