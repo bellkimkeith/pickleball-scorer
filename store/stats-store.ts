@@ -1,6 +1,9 @@
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
   GameRecord, 
+  GAME_HISTORY_KEY,
+  MAX_STORED_GAMES,
   getRecentGames, 
   clearGameHistory,
   getWinLossStats,
@@ -33,7 +36,7 @@ export const useStatsStore = create<StatsStore>((set, get) => ({
   loadHistory: async () => {
     set({ isLoading: true });
     try {
-      const games = await getRecentGames(10);
+      const games = await getRecentGames(MAX_STORED_GAMES);
       const stats = await getWinLossStats(games);
       const streak = await getCurrentStreak(games);
 
@@ -54,14 +57,9 @@ export const useStatsStore = create<StatsStore>((set, get) => ({
 
   saveGameRecord: async (record: GameRecord) => {
     try {
-      const existing = await getRecentGames(10);
-      const games = [record, ...existing];
-      
-      const gamesToSave = games.slice(0, 10);
-      const GAME_HISTORY_KEY = '@pickleball_game_history';
-      const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+      const existing = await getRecentGames(MAX_STORED_GAMES);
+      const gamesToSave = [record, ...existing].slice(0, MAX_STORED_GAMES);
       await AsyncStorage.setItem(GAME_HISTORY_KEY, JSON.stringify(gamesToSave));
-      
       await get().loadHistory();
     } catch (error) {
       console.error('Failed to save game record:', error);

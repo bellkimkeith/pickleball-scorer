@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GameState } from '../types/game';
 
-const GAME_HISTORY_KEY = '@pickleball_game_history';
-const MAX_FREE_GAMES = 10;
+export const GAME_HISTORY_KEY = '@pickleball_game_history';
+export const MAX_STORED_GAMES = 500;
 
 export interface GameRecord {
   id: string;
@@ -36,10 +36,10 @@ export async function saveGame(gameState: GameState): Promise<GameRecord> {
   };
 
   try {
-    const existing = await getRecentGames(MAX_FREE_GAMES + 1);
+    const existing = await getRecentGames(MAX_STORED_GAMES);
     const games = [record, ...existing];
     
-    const gamesToSave = games.slice(0, MAX_FREE_GAMES);
+    const gamesToSave = games.slice(0, MAX_STORED_GAMES);
     await AsyncStorage.setItem(GAME_HISTORY_KEY, JSON.stringify(gamesToSave));
     
     return record;
@@ -49,7 +49,7 @@ export async function saveGame(gameState: GameState): Promise<GameRecord> {
   }
 }
 
-export async function getRecentGames(limit: number = MAX_FREE_GAMES): Promise<GameRecord[]> {
+export async function getRecentGames(limit: number = MAX_STORED_GAMES): Promise<GameRecord[]> {
   try {
     const data = await AsyncStorage.getItem(GAME_HISTORY_KEY);
     if (!data) return [];
