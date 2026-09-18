@@ -63,3 +63,7 @@ Gemfile.lock
 
 # Build output
 /build
+
+# Brainstorm mockups
+.superpowers/
+.impeccable/questions/
