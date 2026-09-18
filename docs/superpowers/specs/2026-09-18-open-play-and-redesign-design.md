@@ -244,7 +244,13 @@ Every screen keeps its current behavior unless noted.
 - **Switch sides:** an in-world `Dialog` with a court diagram showing the change of ends. "Switched" / "Not this game" map to the existing `markSidesChanged` choices.
 - **Game over** (replaces `WinModal`): a full screen with the winner, the final score, duration, and player chips. Buttons: Share, Play again, and "Back to Open Play" when launched from a session.
 - **Share card** (restyles `ShareCard`): a portrait court seen from above, with the score on the net, the date and mode, the teams and duration, and the app name. Text sits on court-colored plates so lines never cross it. Save image and Share.
-- **Soundboard:** a sheet with an All/Hype/Classic/Meme segmented control, sounds as paddle-face tiles, and per-team point sound rows (existing `team1Sound` / `team2Sound` settings).
+- **Soundboard:** a sheet with an All/Hype/Classic/Meme/Mine segmented control, sounds as paddle-face tiles, and per-team point sound rows (existing `team1Sound` / `team2Sound` settings, which can point to built-in or custom sounds).
+- **Custom sounds ("Mine"):**
+  - **Adding.** An "Add sound" tile opens the system file picker (`expo-document-picker`, audio types). The file is copied into the app's own document storage (`expo-file-system`), so it keeps working if the original is moved or deleted. The user names it (default: the file name without extension, max 20 characters).
+  - **Limits:** at most 10 seconds long, at most 2 MB, formats mp3 / m4a / aac / wav, and at most 24 custom sounds. Duration is read by loading the file with `expo-audio` before it's saved. A file that breaks a limit is rejected with a message naming the limit ("That clip is 14 seconds. Sounds can be up to 10 seconds."). Nothing is trimmed automatically.
+  - **Managing.** Long-press a custom tile to rename or delete it. Deleting a sound that's assigned to a team resets that team's sound to none.
+  - **Storage.** Metadata (`id`, `name`, `fileUri`, `durationMs`) is kept in the persisted settings. Custom sounds stay on the device, are never uploaded, and aren't included in share images.
+  - **Playback** uses the same `SoundManager` path as built-in sounds. A missing or unreadable file shows the tile as unavailable instead of crashing.
 - **Stats:**
   - A sentence summary ("You've won 12 of your last 20", with the current streak).
   - A strip of the last 20 results (filled = win).
