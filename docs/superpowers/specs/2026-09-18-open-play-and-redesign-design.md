@@ -117,13 +117,13 @@ Pure functions with no React or storage, so they can be unit tested:
 2. **Order.** Sort players by `(queueCount, waitingSince, id)` ascending. That index is each player's rank.
 3. **Shortlist.** Take units in order until at least 8 players are included, or everyone if fewer.
 4. **Candidates.** Every combination of shortlist units that totals exactly 4 players, split into two teams in every valid way. A locked pair is always on one team, and two pairs play each other.
-5. **Cost.** For each candidate, add up:
-   - `1000 × Σ(queueCount − minimum shortlist queueCount)`: fairness always wins.
+5. **Fairness first.** Keep only the candidates with the smallest `Σ queueCount`. This is a strict filter, not a weight, so no amount of partner history can outrank fairness.
+6. **Cost.** For each remaining candidate, add up:
    - `30 × (Σ rank − 6)`: prefer whoever has waited longest.
    - `100 ×` times each team's two players have partnered before, `+ 50` if they partnered in either player's most recent match.
    - `15 ×` times each cross-team pair has opposed before.
-6. **Choice.** Pick the lowest cost. Ties go to the candidate whose sorted player ranks come first. The result is deterministic.
-7. **Too few players.** If fewer than 4 players are available, return `null`. The court shows "Waiting for players".
+7. **Choice.** Pick the lowest cost. Ties go to the candidate whose sorted player ranks come first. The result is deterministic.
+8. **Too few players.** If fewer than 4 players are available, return `null`. The court shows "Waiting for players".
 
 Required properties, each covered by tests:
 - **Lowest counts first.** No available player is left out while an available player with a higher `queueCount` is picked, except to keep a locked pair together. Tested by simulation with 4–24 players, 1–6 courts and random finish order.
