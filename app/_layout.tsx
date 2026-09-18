@@ -7,7 +7,6 @@ import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import { ThemeProvider } from '../components/theme/ThemeProvider';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useGameStore } from '../store/game-store';
-import { useSubscriptionStore } from '../store/subscription-store';
 import { initI18n, changeLanguage } from '../i18n';
 import '../global.css';
 
@@ -16,7 +15,6 @@ LogBox.ignoreLogs(['SafeAreaView has been deprecated']);
 export default function RootLayout() {
   const [i18nReady, setI18nReady] = useState(false);
   const settings = useGameStore((state) => state.settings);
-  const initializeSubscriptions = useSubscriptionStore((state) => state.initialize);
 
   useEffect(() => {
     initI18n(settings.language).then(() => {
@@ -30,11 +28,6 @@ export default function RootLayout() {
     }
   }, [settings.language, i18nReady]);
 
-  useEffect(() => {
-    if (i18nReady) {
-      initializeSubscriptions();
-    }
-  }, [i18nReady, initializeSubscriptions]);
 
   if (!i18nReady) {
     return null;

@@ -86,7 +86,6 @@ export default {
   soundboard: {
     title: 'Soundboard',
     assignTeam: 'Assign to Team',
-    upgrade: 'Upgrade to Pro for 30+ sounds!',
   },
   stats: {
     title: 'Stats',
@@ -98,27 +97,5 @@ export default {
     loss: 'Loss',
     gamesPlayed: 'Games Played',
     winRate: 'Win Rate',
-  },
-  paywall: {
-    title: 'Unlock All Features',
-    subtitle: 'Get the ultimate pickleball experience',
-    monthly: 'Monthly',
-    annual: 'Annual',
-    lifetime: 'Lifetime',
-    monthlyPrice: '$2.99/mo',
-    annualPrice: '$17.99/yr',
-    lifetimePrice: '$34.99',
-    save50: 'Save 50%',
-    freeTrial: '7-day free trial',
-    restore: 'Restore Purchases',
-    features: {
-      allSounds: '30+ Sounds',
-      customSounds: 'Custom Sound Uploads',
-      teamSounds: 'Per-team Sound Assignment',
-      unlimitedStats: 'Unlimited Stats & Insights',
-      premiumShare: 'Premium Share Cards',
-    },
-    getPro: 'Get Pro',
-    currentPlan: 'Current Plan',
   },
 };
