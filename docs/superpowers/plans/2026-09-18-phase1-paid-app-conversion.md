@@ -13,13 +13,13 @@
 ## Global Constraints
 
 - The app works after every task (typecheck and lint pass with no new errors).
-- Baseline: `npx tsc --noEmit` reports only `TS2688: Cannot find type definition file for 'react 2'` (a stray duplicate folder in `node_modules/@types`, pre-existing, out of scope). `npm run lint` reports 0 errors and 5 warnings.
+- Baseline: plain `npx tsc --noEmit` aborts with `TS2688: Cannot find type definition file for 'react 2'` (a stray duplicate folder `node_modules/@types/react 2`, pre-existing) and then checks nothing. Always pass `--types react,node`, which type-checks normally (verified with a deliberate error). `npm run lint` reports 0 errors and 5 warnings.
 - Stored history cap: 500 games.
 - Sounds kept: airhorn, cheer, whistle, meme1, meme2, meme3.
 - There's no test runner yet (it arrives in Phase 2), so each task is verified by typecheck, lint, and a `grep` that proves the removed symbol is gone.
 
 **Verification commands used throughout:**
-- Typecheck: `npx tsc --noEmit 2>&1 | grep -v "react 2'" | grep -v "Entry point for implicit type library 'react 2'" | grep -v "The file is in the program because" | grep "error" || echo "TYPECHECK CLEAN"`
+- Typecheck: `npx tsc --noEmit --types react,node 2>&1 | grep "error TS" || echo "TYPECHECK CLEAN"`
 - Lint: `npm run lint 2>&1 | tail -3`, expecting `0 errors`
 
 ---
