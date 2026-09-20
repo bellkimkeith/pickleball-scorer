@@ -1,6 +1,7 @@
 import { View, Text, Pressable, StyleSheet, Share } from 'react-native';
 import { memo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { getGameResult } from '../../lib/utils/game-result';
 import { useDarkMode } from '../../hooks/useDarkMode';
 import { GameState, SinglesGameState, DoublesGameState } from '../../lib/types/game';
 
@@ -10,6 +11,7 @@ interface ShareCardProps {
 }
 
 function ShareCardComponent({ gameState, winner }: ShareCardProps) {
+  const { score1, score2 } = getGameResult(gameState);
   const { isDarkMode } = useDarkMode();
 
   const getPlayer1Name = () => {
@@ -32,7 +34,7 @@ function ShareCardComponent({ gameState, winner }: ShareCardProps) {
 
   const handleShare = async () => {
     const mode = gameState.mode === 'singles' ? 'Singles' : 'Doubles';
-    const message = `🎾 Pickle & Score\n\n${mode} Match\n${getPlayer1Name()} ${gameState.score1} - ${gameState.score2} ${getPlayer2Name()}\n\nWinner: ${getWinnerName()}!`;
+    const message = `🎾 Pickle & Score\n\n${mode} Match\n${getPlayer1Name()} ${score1} - ${score2} ${getPlayer2Name()}\n\nWinner: ${getWinnerName()}!`;
     
     try {
       await Share.share({
@@ -102,13 +104,13 @@ function ShareCardComponent({ gameState, winner }: ShareCardProps) {
 
         <View style={styles.scoreDisplay}>
           <Text style={[styles.score, winner === 1 ? styles.scoreWinner : isDarkMode ? styles.scoreDark : styles.scoreLight]}>
-            {gameState.score1}
+            {score1}
           </Text>
           <Text style={[styles.scoreDivider, isDarkMode ? styles.scoreDividerDark : styles.scoreDividerLight]}>
             -
           </Text>
           <Text style={[styles.score, winner === 2 ? styles.scoreWinner : isDarkMode ? styles.scoreDark : styles.scoreLight]}>
-            {gameState.score2}
+            {score2}
           </Text>
         </View>
 

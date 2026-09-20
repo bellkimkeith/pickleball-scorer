@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GameState } from '../types/game';
+import { getGameResult } from '../utils/game-result';
 
 export const GAME_HISTORY_KEY = '@pickleball_game_history';
 export const MAX_STORED_GAMES = 500;
@@ -17,6 +18,7 @@ export interface GameRecord {
 }
 
 export async function saveGame(gameState: GameState): Promise<GameRecord> {
+  const result = getGameResult(gameState);
   const record: GameRecord = {
     id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     date: Date.now(),
@@ -27,9 +29,9 @@ export async function saveGame(gameState: GameState): Promise<GameRecord> {
     player2: gameState.mode === 'singles' 
       ? (gameState as any).player2.name 
       : (gameState as any).team2.name,
-    score1: gameState.score1,
-    score2: gameState.score2,
-    winner: gameState.score1 > gameState.score2 ? 1 : 2,
+    score1: result.score1,
+    score2: result.score2,
+    winner: result.winner,
     duration: gameState.gameEndTime && gameState.gameStartTime
       ? Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 1000)
       : 0,

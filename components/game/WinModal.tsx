@@ -8,6 +8,7 @@ import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { Ionicons } from '@expo/vector-icons';
 import { useDarkMode } from '../../hooks/useDarkMode';
 import { useEffect } from 'react';
+import { getGameResult } from '../../lib/utils/game-result';
 import { useStatsStore } from '../../store/stats-store';
 import { GameRecord } from '../../lib/storage/game-history';
 
@@ -27,6 +28,7 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
     if (visible && gameState && gameState.gameStartTime && gameState.gameEndTime) {
       const winner = ScoringRules.getWinner(gameState);
       if (winner) {
+        const result = getGameResult(gameState);
         const record: GameRecord = {
           id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           date: Date.now(),
@@ -37,9 +39,9 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
           player2: gameState.mode === 'singles' 
             ? (gameState as any).player2.name 
             : (gameState as any).team2.name,
-          score1: gameState.score1,
-          score2: gameState.score2,
-          winner: gameState.score1 > gameState.score2 ? 1 : 2,
+          score1: result.score1,
+          score2: result.score2,
+          winner: result.winner,
           duration: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 1000),
         };
         
@@ -57,10 +59,7 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
       : 'Unknown'
     : 'Tie';
 
-  const scoresSwapped = gameState.scoresSwapped || false;
-  const isWinnerTeam1 = scoresSwapped 
-    ? gameState.score2 > gameState.score1 
-    : gameState.score1 > gameState.score2;
+  const isWinnerTeam1 = getGameResult(gameState).winner === 1;
   const winnerColorClass = isWinnerTeam1 ? 'text-team1' : 'text-team2';
 
   const finalScore = `${gameState.score1} - ${gameState.score2}`;

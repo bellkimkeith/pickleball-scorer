@@ -12,14 +12,14 @@
 
 ## Global Constraints
 
-- Typecheck with `npx tsc --noEmit --types react,node` (plain `tsc` aborts on the pre-existing `@types/react 2` folder). Lint must stay at 0 errors.
+- Typecheck with `npx tsc --noEmit --types react,node,jest` (plain `tsc` aborts on the pre-existing `@types/react 2` folder). Lint must stay at 0 errors.
 - Engine functions are pure: same inputs give the same outputs, no `Date.now()` inside (time is always a `now` parameter), no randomness.
 - Fairness is a strict filter, never a weight (spec §4.4 step 5).
 - Cost weights, exactly: waiting `30 × (Σ rank − 6)`, repeat partner `100 ×` previous partnerings `+ 50` if either player's most recent match, repeat opponent `15 ×` per previous opposing pair.
 - Paddle colors, in assignment order: `ochre, coral, paper, sky, carbon, lilac, sand, teal`.
 - Every test file lives next to its subject under `__tests__/`.
 
-**Verification commands:** `npm test`, `npx tsc --noEmit --types react,node`, `npm run lint`.
+**Verification commands:** `npm test`, `npx tsc --noEmit --types react,node,jest`, `npm run lint`.
 
 ---
 
