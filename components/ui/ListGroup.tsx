@@ -1,0 +1,127 @@
+import { Ionicons } from '@expo/vector-icons';
+import { Children, ReactNode, isValidElement, memo } from 'react';
+import { Pressable, Text, View, ViewStyle } from 'react-native';
+import { COURT } from '../../lib/theme/tokens';
+
+export interface ListGroupProps {
+  header?: string;
+  children: ReactNode;
+  style?: ViewStyle;
+}
+
+export interface ListRowProps {
+  label: string;
+  value?: string;
+  /** Toggle, segmented control, stepper, and so on. */
+  right?: ReactNode;
+  chevron?: boolean;
+  disabled?: boolean;
+  /** Explains why the row is disabled, shown under the label. */
+  disabledReason?: string;
+  destructive?: boolean;
+  onPress?: () => void;
+}
+
+function ListRowComponent({
+  label,
+  value,
+  right,
+  chevron = false,
+  disabled = false,
+  disabledReason,
+  destructive = false,
+  onPress,
+}: ListRowProps) {
+  const color = destructive ? COURT.danger : COURT.ink;
+
+  const body = (
+    <View
+      style={{
+        minHeight: 52,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        opacity: disabled ? 0.55 : 1,
+      }}
+    >
+      <View style={{ flex: 1 }}>
+        <Text style={{ color, fontSize: 17, fontWeight: '500' }}>{label}</Text>
+        {disabled && disabledReason && (
+          <Text style={{ color: COURT.inkMuted, fontSize: 12, marginTop: 2 }}>{disabledReason}</Text>
+        )}
+      </View>
+      {value && (
+        <Text style={{ color: COURT.inkMuted, fontSize: 15 }} numberOfLines={1}>
+          {value}
+        </Text>
+      )}
+      {right}
+      {chevron && <Ionicons name="chevron-forward" size={18} color={COURT.inkMuted} />}
+    </View>
+  );
+
+  if (!onPress || disabled) {
+    return (
+      <View accessible accessibilityState={{ disabled }} accessibilityLabel={`${label}${value ? `, ${value}` : ''}`}>
+        {body}
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${label}${value ? `, ${value}` : ''}`}
+      style={({ pressed }) => ({ backgroundColor: pressed ? `${COURT.line}14` : 'transparent' })}
+    >
+      {body}
+    </Pressable>
+  );
+}
+
+export const ListRow = memo(ListRowComponent);
+
+function ListGroupComponent({ header, children, style }: ListGroupProps) {
+  const rows = Children.toArray(children).filter(isValidElement);
+
+  return (
+    <View style={style}>
+      {header && (
+        <Text
+          style={{
+            color: COURT.inkMuted,
+            fontSize: 13,
+            fontWeight: '600',
+            letterSpacing: 0.4,
+            textTransform: 'uppercase',
+            paddingHorizontal: 16,
+            paddingBottom: 6,
+          }}
+        >
+          {header}
+        </Text>
+      )}
+      <View
+        style={{
+          backgroundColor: `${COURT.line}0f`,
+          borderRadius: 14,
+          borderWidth: 1,
+          borderColor: `${COURT.line}14`,
+          overflow: 'hidden',
+        }}
+      >
+        {rows.map((row, index) => (
+          <View key={index}>
+            {index > 0 && <View style={{ height: 1, backgroundColor: `${COURT.line}14`, marginLeft: 14 }} />}
+            {row}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+export const ListGroup = memo(ListGroupComponent);
