@@ -19,6 +19,8 @@ export interface ListRowProps {
   /** Explains why the row is disabled, shown under the label. */
   disabledReason?: string;
   destructive?: boolean;
+  /** Put a wide control (segmented, for instance) under the label instead of beside it. */
+  stacked?: boolean;
   onPress?: () => void;
 }
 
@@ -30,34 +32,39 @@ function ListRowComponent({
   disabled = false,
   disabledReason,
   destructive = false,
+  stacked = false,
   onPress,
 }: ListRowProps) {
   const color = destructive ? COURT.danger : COURT.ink;
+
+  const labelBlock = (
+    <View style={{ flex: stacked ? undefined : 1 }}>
+      <Text style={{ color, fontSize: 17, fontWeight: '500' }}>{label}</Text>
+      {disabled && disabledReason && (
+        <Text style={{ color: COURT.inkMuted, fontSize: 12, marginTop: 2 }}>{disabledReason}</Text>
+      )}
+    </View>
+  );
 
   const body = (
     <View
       style={{
         minHeight: 52,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
+        flexDirection: stacked ? 'column' : 'row',
+        alignItems: stacked ? 'stretch' : 'center',
+        gap: stacked ? 8 : 12,
         paddingHorizontal: 14,
-        paddingVertical: 8,
+        paddingVertical: stacked ? 12 : 8,
         opacity: disabled ? 0.55 : 1,
       }}
     >
-      <View style={{ flex: 1 }}>
-        <Text style={{ color, fontSize: 17, fontWeight: '500' }}>{label}</Text>
-        {disabled && disabledReason && (
-          <Text style={{ color: COURT.inkMuted, fontSize: 12, marginTop: 2 }}>{disabledReason}</Text>
-        )}
-      </View>
-      {value && (
+      {labelBlock}
+      {!stacked && value && (
         <Text style={{ color: COURT.inkMuted, fontSize: 15 }} numberOfLines={1}>
           {value}
         </Text>
       )}
-      {right}
+      {right && <View style={stacked ? undefined : { flexShrink: 0 }}>{right}</View>}
       {chevron && <Ionicons name="chevron-forward" size={18} color={COURT.inkMuted} />}
     </View>
   );

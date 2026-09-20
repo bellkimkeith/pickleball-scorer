@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Pressable, Text, View, ViewStyle } from 'react-native';
 import { COURT } from '../../lib/theme/tokens';
 
@@ -55,6 +55,7 @@ function CourtButtonComponent({
   style,
 }: CourtButtonProps) {
   const color = textColorFor(variant);
+  const [pressed, setPressed] = useState(false);
 
   const handlePress = () => {
     if (disabled) return;
@@ -67,25 +68,30 @@ function CourtButtonComponent({
   return (
     <Pressable
       onPress={handlePress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
       accessibilityState={{ disabled }}
-      style={({ pressed }) => [
-        {
-          height,
-          borderRadius: 12,
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingHorizontal: 16,
-          opacity: disabled ? 0.45 : 1,
-          transform: [{ scale: pressed && !disabled ? 0.97 : 1 }],
-        },
-        backgroundFor(variant),
-        style,
-      ]}
+      style={style}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View
+        style={[
+          {
+            height,
+            borderRadius: 12,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            gap: 8,
+            opacity: disabled ? 0.45 : 1,
+            transform: [{ scale: pressed && !disabled ? 0.97 : 1 }],
+          },
+          backgroundFor(variant),
+        ]}
+      >
         {icon && <Ionicons name={icon} size={20} color={color} />}
         <View style={{ alignItems: 'center' }}>
           {subtitle && (
