@@ -1,4 +1,10 @@
-import { Session, SessionPlayer } from '../types/queue';
+import {
+  Match,
+  SavedPlayer,
+  Session,
+  SessionActionType,
+  SessionPlayer,
+} from '../types/queue';
 
 export interface ProposedMatch {
   team1: [string, string];
@@ -185,4 +191,235 @@ export function pickNextMatch(session: Session, _now: number): ProposedMatch | n
     .map(c => ({ candidate: c, cost: cost(c) }))
     .sort((x, y) => x.cost - y.cost || tieBreak(x.candidate).localeCompare(tieBreak(y.candidate)))[0]
     .candidate.match;
+}
+
+// ---------------------------------------------------------------------------
+// Session changes
+// ---------------------------------------------------------------------------
+
+function withUndo(previous: Session, next: Session, type: SessionActionType): Session {
+  return { ...next, lastAction: { type, previous } };
+}
+
+/** Lowest queue count among active players, ignoring one player. */
+function groupLevel(session: Session, exceptId?: string): number {
+  const counts = session.players
+    .filter(p => p.status === 'active' && p.id !== exceptId)
+    .map(p => p.queueCount);
+  return counts.length > 0 ? Math.min(...counts) : 0;
+}
+
+function isOnCourt(session: Session, playerId: string): boolean {
+  return session.matches.some(
+    m => !m.endedAt && [...m.team1, ...m.team2].includes(playerId),
+  );
+}
+
+export function createSession(
+  players: SessionPlayer[],
+  courtCount: number,
+  now: number,
+): Session {
+  return {
+    id: `s${now}`,
+    startedAt: now,
+    courtCount,
+    players,
+    matches: [],
+    courts: Array.from({ length: courtCount }, () => null),
+  };
+}
+
+/** Call the next match onto a free court. Does nothing when nobody can play. */
+export function callMatch(session: Session, courtNumber: number, now: number): Session {
+  if (session.courts[courtNumber - 1]) return session;
+  const proposal = pickNextMatch(session, now);
+  if (!proposal) return session;
+
+  const match: Match = {
+    id: `m${session.matches.length + 1}`,
+    courtNumber,
+    team1: proposal.team1,
+    team2: proposal.team2,
+    calledAt: now,
+  };
+  const courts = [...session.courts];
+  courts[courtNumber - 1] = match.id;
+  return { ...session, matches: [...session.matches, match], courts };
+}
+
+/** Call matches onto every free court, in court order. */
+export function fillIdleCourts(session: Session, now: number): Session {
+  let next = session;
+  for (let court = 1; court <= next.courtCount; court++) {
+    if (next.courts[court - 1]) continue;
+    const called = callMatch(next, court, now);
+    if (called === next) break; // nobody available; later courts cannot fill either
+    next = called;
+  }
+  return next;
+}
+
+export function finishMatch(
+  session: Session,
+  matchId: string,
+  now: number,
+  score?: [number, number],
+): Session {
+  const match = session.matches.find(m => m.id === matchId);
+  if (!match || match.endedAt) return session;
+
+  const playing = new Set([...match.team1, ...match.team2]);
+  const matches = session.matches.map(m =>
+    m.id === matchId ? { ...m, endedAt: now, ...(score ? { score } : {}) } : m,
+  );
+  const courts = session.courts.map(id => (id === matchId ? null : id));
+  const players = session.players.map(p =>
+    playing.has(p.id)
+      ? {
+          ...p,
+          gamesPlayed: p.gamesPlayed + 1,
+          queueCount: p.queueCount + 1,
+          waitingSince: now,
+        }
+      : p,
+  );
+
+  return withUndo(session, { ...session, matches, courts, players }, 'finishMatch');
+}
+
+export function addPlayer(session: Session, saved: SavedPlayer, now: number): Session {
+  if (session.players.some(p => p.id === saved.id)) return session;
+
+  const newPlayer: SessionPlayer = {
+    id: saved.id,
+    name: saved.name,
+    color: saved.color,
+    status: 'active',
+    gamesPlayed: 0,
+    queueCount: groupLevel(session),
+    waitingSince: now,
+    arrivedAt: now,
+  };
+
+  return withUndo(
+    session,
+    { ...session, players: [...session.players, newPlayer] },
+    'addPlayer',
+  );
+}
+
+export function setSittingOut(session: Session, playerId: string, _now: number): Session {
+  if (isOnCourt(session, playerId)) {
+    throw new Error('Player is on a court');
+  }
+  const players = session.players.map(p =>
+    p.id === playerId ? { ...p, status: 'sitting_out' as const } : p,
+  );
+  return withUndo(session, { ...session, players }, 'sitOut');
+}
+
+export function returnPlayer(session: Session, playerId: string, now: number): Session {
+  const level = groupLevel(session, playerId);
+  const players = session.players.map(p =>
+    p.id === playerId
+      ? {
+          ...p,
+          status: 'active' as const,
+          queueCount: Math.max(p.queueCount, level),
+          waitingSince: now,
+        }
+      : p,
+  );
+  return withUndo(session, { ...session, players }, 'returnPlayer');
+}
+
+export function removePlayer(session: Session, playerId: string, _now: number): Session {
+  if (isOnCourt(session, playerId)) {
+    throw new Error('Player is on a court');
+  }
+  const players = session.players.map(p =>
+    p.id === playerId
+      ? { ...p, status: 'left' as const, lockedWith: undefined }
+      : p.lockedWith === playerId
+        ? { ...p, lockedWith: undefined }
+        : p,
+  );
+  return withUndo(session, { ...session, players }, 'removePlayer');
+}
+
+export function lockPair(session: Session, a: string, b: string): Session {
+  const players = session.players.map(p =>
+    p.id === a ? { ...p, lockedWith: b } : p.id === b ? { ...p, lockedWith: a } : p,
+  );
+  return withUndo(session, { ...session, players }, 'lockPair');
+}
+
+export function unlockPair(session: Session, playerId: string): Session {
+  const partnerId = session.players.find(p => p.id === playerId)?.lockedWith;
+  const players = session.players.map(p =>
+    p.id === playerId || p.id === partnerId ? { ...p, lockedWith: undefined } : p,
+  );
+  return withUndo(session, { ...session, players }, 'unlockPair');
+}
+
+/** Undo the most recent action, including any match it auto-called. */
+export function undoLast(session: Session): Session {
+  return session.lastAction ? session.lastAction.previous : session;
+}
+
+export function canUndo(session: Session): boolean {
+  return session.lastAction !== undefined;
+}
+
+/** Courts still holding an unfinished match are kept until that match ends. */
+export function setCourtCount(session: Session, count: number): Session {
+  if (count >= session.courts.length) {
+    const courts = [...session.courts];
+    while (courts.length < count) courts.push(null);
+    return { ...session, courtCount: count, courts };
+  }
+  const kept: (string | null)[] = [];
+  session.courts.forEach((matchId, index) => {
+    const busy = matchId
+      ? session.matches.some(m => m.id === matchId && !m.endedAt)
+      : false;
+    if (index < count || busy) kept.push(matchId);
+  });
+  return { ...session, courtCount: count, courts: kept };
+}
+
+export function endSession(session: Session, now: number): Session {
+  return { ...session, endedAt: now };
+}
+
+export interface QueueExplanation {
+  gamesPlayed: number;
+  queueCount: number;
+  lowestQueueCount: number;
+  isAtLowestCount: boolean;
+  waitingSince: number;
+  lastPartner: string | undefined;
+  joinedAtGroupLevel: boolean;
+}
+
+export function explainQueuePosition(
+  session: Session,
+  playerId: string,
+): QueueExplanation | null {
+  const player = session.players.find(p => p.id === playerId);
+  if (!player) return null;
+
+  const active = session.players.filter(p => p.status === 'active');
+  const lowest = active.length > 0 ? Math.min(...active.map(p => p.queueCount)) : 0;
+
+  return {
+    gamesPlayed: player.gamesPlayed,
+    queueCount: player.queueCount,
+    lowestQueueCount: lowest,
+    isAtLowestCount: player.queueCount === lowest,
+    waitingSince: player.waitingSince,
+    lastPartner: pairingHistory(session).lastPartner[playerId],
+    joinedAtGroupLevel: player.queueCount > player.gamesPlayed,
+  };
 }
