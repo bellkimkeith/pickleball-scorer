@@ -103,7 +103,7 @@ function SlotLabel({
   );
 }
 
-function EmptySlot({ onPress }: { onPress?: () => void }) {
+function EmptySlot({ onPress }: { onPress: () => void }) {
   const box = (
     <View
       style={{
@@ -118,7 +118,6 @@ function EmptySlot({ onPress }: { onPress?: () => void }) {
       <Text style={{ color: COURT.ink, fontSize: 15, fontWeight: '600' }}>+ Player</Text>
     </View>
   );
-  if (!onPress) return box;
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel="Add a player" hitSlop={8}>
       {box}
@@ -237,9 +236,9 @@ function CourtDiagramComponent({
                   onPlayerPress ? () => onPlayerPress(player.id) : onSlotPress ? () => onSlotPress(index) : undefined
                 }
               />
-            ) : (
-              <EmptySlot onPress={onSlotPress ? () => onSlotPress(index) : undefined} />
-            )}
+            ) : onSlotPress ? (
+              <EmptySlot onPress={() => onSlotPress(index)} />
+            ) : null}
           </View>
         ))
       )}

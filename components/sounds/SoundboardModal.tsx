@@ -22,6 +22,15 @@ type Category = 'all' | 'hype' | 'classic' | 'meme' | 'mine';
 
 const TILE_COLORS: PaddleColor[] = ['ochre', 'paper', 'sky', 'coral', 'lilac', 'carbon', 'sand', 'teal'];
 
+/** A custom sound is playable only while its copied file is still there. */
+function fileExists(uri: string): boolean {
+  try {
+    return new File(uri).exists;
+  } catch {
+    return false;
+  }
+}
+
 /** Reads a clip's length so it can be checked against the 5-second limit. */
 async function readDurationMs(uri: string): Promise<number> {
   const player = createAudioPlayer({ uri });
@@ -94,12 +103,12 @@ export function SoundboardModal({ visible, onClose }: SoundboardModalProps) {
       const destination = new File(Paths.document, `${id}.${extension}`);
       new File(asset.uri).copy(destination);
 
-      updateSettings({
-        customSounds: [
-          ...customSounds,
-          { id, name: defaultSoundName(asset.name), fileUri: destination.uri, durationMs },
-        ],
-      });
+      const added = [
+        ...customSounds,
+        { id, name: defaultSoundName(asset.name), fileUri: destination.uri, durationMs },
+      ];
+      SoundManager.setCustomSounds(added);
+      updateSettings({ customSounds: added });
       setCategory('mine');
     } catch {
       Alert.alert(t('soundboard.cannotAdd'), t('soundboard.pickFailed'));
@@ -147,7 +156,7 @@ export function SoundboardModal({ visible, onClose }: SoundboardModalProps) {
   const tile = (sound: SoundItem | CustomSound, index: number) => {
     const color = TILE_COLORS[index % TILE_COLORS.length];
     const isCustom = 'fileUri' in sound;
-    const available = !isCustom || SoundManager.isAvailable(sound.id);
+    const available = !isCustom || fileExists((sound as CustomSound).fileUri);
     const assigned = settings.team1Sound === sound.id ? 1 : settings.team2Sound === sound.id ? 2 : undefined;
 
     return (
