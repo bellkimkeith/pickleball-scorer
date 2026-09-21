@@ -10,6 +10,7 @@ export default {
     off: 'Aus',
   },
   home: {
+    savedPlayers: 'Gespeicherte Spieler',
     title: 'Pickleball Zähler',
     subtitle: 'Neues Spiel starten',
     singles: 'Einzel',

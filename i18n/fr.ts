@@ -10,6 +10,7 @@ export default {
     off: 'Non',
   },
   home: {
+    savedPlayers: 'Joueurs enregistrés',
     title: 'Scoreur Pickleball',
     subtitle: 'Commencer un nouveau match',
     singles: 'Simple',

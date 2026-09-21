@@ -10,6 +10,7 @@ export default {
     off: 'Off',
   },
   home: {
+    savedPlayers: 'Saved players',
     title: 'Pickleball Scorer',
     subtitle: 'Start a new match',
     singles: 'Singles',

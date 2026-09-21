@@ -10,6 +10,7 @@ export default {
     off: 'No',
   },
   home: {
+    savedPlayers: 'Jugadores guardados',
     title: 'Marcador de Pickleball',
     subtitle: 'Iniciar un nuevo partido',
     singles: 'Individual',
