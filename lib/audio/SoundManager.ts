@@ -1,4 +1,5 @@
 import { createAudioPlayer, setAudioModeAsync, AudioPlayer } from 'expo-audio';
+import { CustomSound } from './custom-sounds';
 
 export interface SoundItem {
   id: string;
@@ -28,6 +29,8 @@ const SOUND_FILES: Record<string, number> = {
 
 class SoundManagerClass {
   private loadedSounds: Map<string, AudioPlayer> = new Map();
+  /** Files the user added themselves, keyed by sound id. */
+  private customSources: Map<string, string> = new Map();
   private isInitialized = false;
   private team1Sound: string = 'airhorn';
   private team2Sound: string = 'cheer';
@@ -60,8 +63,14 @@ class SoundManagerClass {
     await Promise.all(loadPromises);
   }
 
+  /** Custom sounds are addressed by file URI; built-ins by bundled asset. */
+  setCustomSounds(sounds: CustomSound[]): void {
+    this.customSources = new Map(sounds.map(sound => [sound.id, sound.fileUri]));
+  }
+
   private async loadSound(soundId: string): Promise<void> {
-    const file = SOUND_FILES[soundId];
+    const file: number | { uri: string } | undefined =
+      SOUND_FILES[soundId] ?? (this.customSources.has(soundId) ? { uri: this.customSources.get(soundId)! } : undefined);
     if (!file) {
       console.warn(`No sound file found for "${soundId}"`);
       return;
@@ -76,7 +85,21 @@ class SoundManagerClass {
   }
 
   async preloadAll(): Promise<void> {
-    await this.preloadSounds(SOUNDS.map(s => s.id));
+    await this.preloadSounds([...SOUNDS.map(s => s.id), ...this.customSources.keys()]);
+  }
+
+  /** True when the sound can actually be played right now. */
+  isAvailable(soundId: string): boolean {
+    return SOUND_FILES[soundId] !== undefined || this.customSources.has(soundId);
+  }
+
+  forget(soundId: string): void {
+    const player = this.loadedSounds.get(soundId);
+    if (player) {
+      player.release();
+      this.loadedSounds.delete(soundId);
+    }
+    this.customSources.delete(soundId);
   }
 
   async play(soundId: string): Promise<void> {

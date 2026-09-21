@@ -1,3 +1,5 @@
+import { CustomSound } from '../audio/custom-sounds';
+
 export type GameMode = 'singles' | 'doubles';
 
 export type ServingSide = 'left' | 'right';
@@ -79,4 +81,5 @@ export interface GameSettings {
   autoSoundsOnSideOut?: boolean;
   team1Sound?: string;
   team2Sound?: string;
+  customSounds?: CustomSound[];
 }
