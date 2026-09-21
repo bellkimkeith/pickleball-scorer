@@ -49,7 +49,12 @@ function SheetComponent({ visible, onClose, title, children }: SheetProps) {
               marginBottom: 12,
             }}
           >
-            <Text style={{ color: COURT.ink, fontSize: 26, fontWeight: '700' }}>{title}</Text>
+            <Text
+              numberOfLines={2}
+              style={{ color: COURT.ink, fontSize: 26, fontWeight: '700', flexShrink: 1, paddingRight: 12 }}
+            >
+              {title}
+            </Text>
             <CourtButton title="Done" onPress={onClose} variant="outline" height={40} />
           </View>
         )}

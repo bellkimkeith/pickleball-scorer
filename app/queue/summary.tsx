@@ -77,8 +77,8 @@ export default function SummaryScreen() {
         <Text style={{ color: COURT.inkMuted, fontSize: 15, paddingHorizontal: 16, paddingTop: 2, paddingBottom: 16 }}>
           {t('openPlay.summaryMeta', {
             duration: duration(session.startedAt, session.endedAt ?? Date.now()),
-            games: session.matches.filter(m => m.endedAt).length,
-            courts: session.courtCount,
+            games: t('openPlay.gamesCount', { count: session.matches.filter(m => m.endedAt).length }),
+            courts: t('openPlay.courtsCount', { count: session.courtCount }),
           })}
         </Text>
 

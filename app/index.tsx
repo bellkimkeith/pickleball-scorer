@@ -56,16 +56,19 @@ export default function HomeScreen() {
             onPress={() => router.push(activeSession ? '/queue/session' : '/queue')}
             accessibilityRole="button"
             accessibilityLabel={activeSession ? t('openPlay.resume') : t('openPlay.homeCard')}
-            style={({ pressed }) => ({
-              borderRadius: 24,
-              overflow: 'hidden',
-              backgroundColor: COURT.inner,
-              borderWidth: 2,
-              borderColor: COURT.line,
-              transform: [{ scale: pressed ? 0.98 : 1 }],
-            })}
           >
-            <View style={{ height: 150, justifyContent: 'flex-end', padding: 18 }}>
+            <View
+              style={{
+                height: 150,
+                justifyContent: 'flex-end',
+                padding: 18,
+                borderRadius: 24,
+                overflow: 'hidden',
+                backgroundColor: COURT.inner,
+                borderWidth: 2,
+                borderColor: COURT.line,
+              }}
+            >
               <View style={{ position: 'absolute', left: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
               <View style={{ position: 'absolute', right: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
               <View style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, backgroundColor: COURT.line }} />

@@ -21,6 +21,8 @@ export interface PaddleRackProps {
   lockedPairs?: [string, string][];
   onPlayerPress?: (id: string) => void;
   emptyLabel?: string;
+  /** Shown in place of the NEXT UP tab when no full match can be called yet. */
+  notEnoughLabel?: string;
 }
 
 function Tape() {
@@ -49,6 +51,7 @@ function PaddleRackComponent({
   lockedPairs = [],
   onPlayerPress,
   emptyLabel = 'Nobody is waiting',
+  notEnoughLabel,
 }: PaddleRackProps) {
   const isEmpty = next.length === 0 && waiting.length === 0;
   const lockedWith = new Map<string, string>();
@@ -80,7 +83,7 @@ function PaddleRackComponent({
         }}
       >
         <Text style={{ color: COURT.lineText, fontSize: 11, fontWeight: '800', letterSpacing: 0.6 }}>
-          NEXT UP
+          {next.length === 0 && notEnoughLabel ? notEnoughLabel : 'NEXT UP'}
         </Text>
       </View>
 

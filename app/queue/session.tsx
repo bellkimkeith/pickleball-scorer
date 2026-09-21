@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -41,9 +41,14 @@ export default function SessionScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    if (!session) router.replace('/queue');
-  }, [session, router]);
+  // Only the focused screen may redirect. A stale copy of this screen can stay
+  // mounted in the stack, and it would otherwise send the user back to check-in
+  // the moment a session ends.
+  useFocusEffect(
+    useCallback(() => {
+      if (!useSessionStore.getState().activeSession) router.replace('/queue');
+    }, [router]),
+  );
 
   const rack = useMemo(() => {
     if (!session) return { next: [] as RackPlayer[], waiting: [] as RackPlayer[], pairs: [] as [string, string][] };
@@ -118,9 +123,9 @@ export default function SessionScreen() {
         </Text>
         <Text style={{ color: COURT.inkMuted, fontSize: 15, paddingHorizontal: 16, paddingTop: 2, paddingBottom: 18 }}>
           {t('openPlay.meta', {
-            players: activePlayers.length,
-            courts: session.courtCount,
-            games: finishedGames,
+            players: t('openPlay.playersCount', { count: activePlayers.length }),
+            courts: t('openPlay.courtsCount', { count: session.courtCount }),
+            games: t('openPlay.gamesCount', { count: finishedGames }),
           })}
         </Text>
 
@@ -171,6 +176,7 @@ export default function SessionScreen() {
             lockedPairs={rack.pairs}
             onPlayerPress={setOpenPlayerId}
             emptyLabel={t('openPlay.rackEmpty')}
+            notEnoughLabel={t('openPlay.notEnough')}
           />
         </View>
       </ScrollView>

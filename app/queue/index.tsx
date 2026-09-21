@@ -180,7 +180,7 @@ export default function CheckInScreen() {
               setPairSheetOpen(true);
             }}
             disabled={checkedIn.length < 2}
-            disabledReason={checkedIn.length < 2 ? t('openPlay.startHint') : undefined}
+            disabledReason={checkedIn.length < 2 ? t('openPlay.pairsHint') : undefined}
           />
           <ListRow label={t('openPlay.lateArrivals')} value={t('openPlay.lateArrivalsValue')} />
         </ListGroup>
