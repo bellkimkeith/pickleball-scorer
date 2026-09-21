@@ -127,17 +127,22 @@ function EmptySlot({ onPress }: { onPress?: () => void }) {
 }
 
 /** Dashes drawn as dots, so no SVG dependency is needed. */
-function ServeDiagonal({ fromLeft }: { fromLeft: boolean }) {
+function ServeDiagonal({ fromSlot }: { fromSlot: number }) {
   const dots = useMemo(() => Array.from({ length: 9 }, (_, i) => i / 8), []);
+  // Slots: 0 near-top, 1 near-bottom, 2 far-top, 3 far-bottom. The serve always
+  // crosses to the diagonally opposite half, so the line starts at the server.
+  const startsLeft = fromSlot < 2;
+  const startsTop = fromSlot === 0 || fromSlot === 2;
+
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', left: '28%', right: '28%', top: '30%', bottom: '30%' }}>
+    <View pointerEvents="none" style={{ position: 'absolute', left: '28%', right: '28%', top: '26%', bottom: '26%' }}>
       {dots.map(t => (
         <View
           key={t}
           style={{
             position: 'absolute',
-            left: `${(fromLeft ? t : 1 - t) * 100}%`,
-            top: `${(1 - t) * 100}%`,
+            left: `${(startsLeft ? t : 1 - t) * 100}%`,
+            top: `${(startsTop ? t : 1 - t) * 100}%`,
             width: 3,
             height: 3,
             borderRadius: 2,
@@ -163,7 +168,8 @@ function CourtDiagramComponent({
   accessibilityLabel,
   style,
 }: CourtDiagramProps) {
-  const isEmpty = players.every(p => p === null);
+  // In setup mode every slot stays tappable, so the empty state never applies.
+  const isEmpty = players.every(p => p === null) && !onSlotPress;
 
   const label = useMemo(() => {
     if (accessibilityLabel) return accessibilityLabel;
@@ -211,7 +217,7 @@ function CourtDiagramComponent({
       {/* net */}
       <View style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: LINE, marginLeft: -LINE / 2, backgroundColor: COURT.line }} />
 
-      {showServeDiagonal && servingIndex >= 0 && <ServeDiagonal fromLeft={servingIndex < 2} />}
+      {showServeDiagonal && servingIndex >= 0 && <ServeDiagonal fromSlot={servingIndex} />}
 
       {isEmpty ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

@@ -1,11 +1,18 @@
-import { View, Text, TextInput, ScrollView, Pressable } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
-import { useGameStore } from '../../store/game-store';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
 import { GameMode } from '../../lib/types/game';
-import { useDarkMode } from '../../hooks/useDarkMode';
+import { PaddleColor } from '../../lib/types/queue';
+import { useGameStore } from '../../store/game-store';
+import { useSessionStore } from '../../store/session-store';
+import { CourtDiagram, CourtSlots } from '../court/CourtDiagram';
+import { NameInputSheet } from '../queue/NameInputSheet';
+import { CourtButton } from '../ui/Button';
+import { Segmented } from '../ui/Controls';
+import { ListGroup, ListRow } from '../ui/ListGroup';
 
 interface GameSetupProps {
   mode: GameMode;
@@ -14,204 +21,182 @@ interface GameSetupProps {
   onCancel: () => void;
 }
 
+interface Slot {
+  name: string;
+  color: PaddleColor;
+}
+
 export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProps) {
-  const startSinglesGame = useGameStore((state) => state.startSinglesGame);
-  const startDoublesGame = useGameStore((state) => state.startDoublesGame);
-  const settings = useGameStore((state) => state.settings);
-  const updateSettings = useGameStore((state) => state.updateSettings);
-  const { isDarkMode } = useDarkMode();
+  const startSinglesGame = useGameStore(state => state.startSinglesGame);
+  const startDoublesGame = useGameStore(state => state.startDoublesGame);
+  const settings = useGameStore(state => state.settings);
+  const updateSettings = useGameStore(state => state.updateSettings);
+  const savedPlayers = useSessionStore(state => state.savedPlayers);
+  const addSavedPlayer = useSessionStore(state => state.addSavedPlayer);
   const { t } = useTranslation();
 
-  // Singles state
-  const [player1Name, setPlayer1Name] = useState('Player 1');
-  const [player2Name, setPlayer2Name] = useState('Player 2');
+  const slotCount = mode === 'singles' ? 2 : 4;
+  const [slots, setSlots] = useState<(Slot | null)[]>(Array(4).fill(null));
+  const [editing, setEditing] = useState<number | null>(null);
 
-  // Doubles state
-  const [team1Name, setTeam1Name] = useState('Team Alpha');
-  const [team1Player1, setTeam1Player1] = useState('Player 1');
-  const [team1Player2, setTeam1Player2] = useState('Player 2');
-  const [team2Name, setTeam2Name] = useState('Team Bravo');
-  const [team2Player1, setTeam2Player1] = useState('Player 3');
-  const [team2Player2, setTeam2Player2] = useState('Player 4');
+  if (!visible) return null;
 
-  const sanitizeName = (name: string, fallback: string): string => {
-    const trimmed = name.trim();
-    return trimmed.length > 0 ? trimmed : fallback;
+  /** Slot order on the diagram: near-top, near-bottom, far-top, far-bottom. */
+  const diagramSlots: CourtSlots =
+    mode === 'singles'
+      ? [
+          slots[0] ? { id: 's0', name: slots[0]!.name, color: slots[0]!.color } : null,
+          null,
+          slots[1] ? { id: 's1', name: slots[1]!.name, color: slots[1]!.color } : null,
+          null,
+        ]
+      : ([0, 1, 2, 3].map(i =>
+          slots[i] ? { id: `s${i}`, name: slots[i]!.name, color: slots[i]!.color } : null,
+        ) as CourtSlots);
+
+  const diagramIndexToSlot = (index: number): number =>
+    mode === 'singles' ? (index === 0 ? 0 : 1) : index;
+
+  const setSlot = (index: number, name: string) => {
+    const existing = savedPlayers.find(p => p.name.toLowerCase() === name.toLowerCase());
+    const player = existing ?? addSavedPlayer(name);
+    setSlots(current => {
+      const next = [...current];
+      next[index] = { name: player.name, color: player.color };
+      return next;
+    });
   };
 
-  const handleStart = () => {
+  const filled = slots.slice(0, slotCount).filter(Boolean).length;
+  const nameAt = (index: number, fallback: string) => slots[index]?.name ?? fallback;
+
+  const start = () => {
     if (mode === 'singles') {
-      startSinglesGame(
-        sanitizeName(player1Name, 'Player 1'),
-        sanitizeName(player2Name, 'Player 2')
-      );
+      startSinglesGame(nameAt(0, t('game.player1')), nameAt(1, t('game.player2')));
     } else {
-      startDoublesGame(
-        sanitizeName(team1Name, 'Team 1'),
-        [sanitizeName(team1Player1, 'Player 1'), sanitizeName(team1Player2, 'Player 2')],
-        sanitizeName(team2Name, 'Team 2'),
-        [sanitizeName(team2Player1, 'Player 3'), sanitizeName(team2Player2, 'Player 4')]
-      );
+      const team1: [string, string] = [nameAt(0, t('game.player1')), nameAt(1, t('game.player2'))];
+      const team2: [string, string] = [nameAt(2, t('game.team2Player1')), nameAt(3, t('game.team2Player2'))];
+      startDoublesGame(team1.join(' & '), team1, team2.join(' & '), team2);
     }
     onComplete();
   };
 
   return (
-    <Modal visible={visible} onClose={onCancel} dismissable={false}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+      <StatusBar style="light" />
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        <Pressable
+          onPress={onCancel}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.cancel')}
+          hitSlop={10}
+          style={{ paddingHorizontal: 16, paddingTop: 6, alignSelf: 'flex-start' }}
+        >
+          <Text style={{ color: COURT.ink, fontSize: 17 }}>‹ {t('common.cancel')}</Text>
+        </Pressable>
+
+        <Text style={{ color: COURT.ink, fontSize: 32, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4 }}>
           {t('game.setupMatch', { mode: mode === 'singles' ? t('home.singles') : t('home.doubles') })}
         </Text>
-
-        {/* Game Type Selection */}
-        <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          {t('game.scoringType')}
+        <Text style={{ color: COURT.inkMuted, fontSize: 15, paddingHorizontal: 16, paddingTop: 2, paddingBottom: 14 }}>
+          {t('game.tapToName')}
         </Text>
-        <View className="flex-row gap-2 mb-4">
-          <Pressable
-            onPress={() => updateSettings({ gameType: 'rally' })}
-            className={`flex-1 py-3 rounded-xl ${
-              settings.gameType === 'rally' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-            }`}
-          >
-            <Text
-              className={`text-center font-semibold ${
-                settings.gameType === 'rally' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}
-            >
-              {t('game.rally')}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => updateSettings({ gameType: 'sideout' })}
-            className={`flex-1 py-3 rounded-xl ${
-              settings.gameType === 'sideout' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-            }`}
-          >
-            <Text
-              className={`text-center font-semibold ${
-                settings.gameType === 'sideout' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}
-            >
-              {t('game.sideout')}
-            </Text>
-          </Pressable>
+
+        <View style={{ paddingHorizontal: 16 }}>
+          <Segmented
+            options={[
+              { value: 'sideout', label: t('game.sideout') },
+              { value: 'rally', label: t('game.rally') },
+            ]}
+            value={settings.gameType}
+            onChange={value => updateSettings({ gameType: value })}
+            accessibilityLabel={t('game.scoringType')}
+          />
         </View>
-        <Text className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
+        <Text style={{ color: COURT.inkMuted, fontSize: 13, paddingHorizontal: 16, paddingTop: 8 }}>
           {settings.gameType === 'rally' ? t('game.rallyDesc') : t('game.sideoutDesc')}
         </Text>
 
-        {mode === 'singles' ? (
-          <>
-            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              {t('game.player1')}
-            </Text>
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.playerNamePlaceholder', { player: t('game.player1') })}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={player1Name}
-              onChangeText={setPlayer1Name}
-              maxLength={20}
-              accessibilityLabel="Player 1 name"
-              style={{ textAlignVertical: 'center' }}
-            />
+        <View style={{ paddingHorizontal: 12, paddingTop: 22 }}>
+          <CourtDiagram
+            players={diagramSlots}
+            height={mode === 'singles' ? 170 : 210}
+            onSlotPress={index => setEditing(diagramIndexToSlot(index))}
+          />
+        </View>
 
-            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              {t('game.player2')}
-            </Text>
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.playerNamePlaceholder', { player: t('game.player2') })}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={player2Name}
-              onChangeText={setPlayer2Name}
-              maxLength={20}
-              accessibilityLabel="Player 2 name"
-              style={{ textAlignVertical: 'center' }}
-            />
-          </>
-        ) : (
+        {savedPlayers.length > 0 && (
           <>
-            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              {t('game.team1')}
+            <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', paddingHorizontal: 16, paddingTop: 20 }}>
+              {t('home.savedPlayers')}
             </Text>
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.teamNamePlaceholder')}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={team1Name}
-              onChangeText={setTeam1Name}
-              maxLength={20}
-              accessibilityLabel="Team 1 name"
-              style={{ textAlignVertical: 'center' }}
-            />
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.teamNamePlaceholder')}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={team1Player1}
-              onChangeText={setTeam1Player1}
-              maxLength={20}
-              accessibilityLabel="Team 1 Player 1 name"
-              style={{ textAlignVertical: 'center' }}
-            />
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.teamNamePlaceholder')}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={team1Player2}
-              onChangeText={setTeam1Player2}
-              maxLength={20}
-              accessibilityLabel="Team 1 Player 2 name"
-              style={{ textAlignVertical: 'center' }}
-            />
-
-            <Text className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              {t('game.team2')}
-            </Text>
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.teamNamePlaceholder')}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={team2Name}
-              onChangeText={setTeam2Name}
-              maxLength={20}
-              accessibilityLabel="Team 2 name"
-              style={{ textAlignVertical: 'center' }}
-            />
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-2 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.teamNamePlaceholder')}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={team2Player1}
-              onChangeText={setTeam2Player1}
-              maxLength={20}
-              accessibilityLabel="Team 2 Player 1 name"
-              style={{ textAlignVertical: 'center' }}
-            />
-            <TextInput
-              className={`rounded-xl px-4 h-14 mb-4 text-base ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}
-              placeholder={t('game.teamNamePlaceholder')}
-              placeholderTextColor={isDarkMode ? '#9ca3af' : '#6b7280'}
-              value={team2Player2}
-              onChangeText={setTeam2Player2}
-              maxLength={20}
-              accessibilityLabel="Team 2 Player 2 name"
-              style={{ textAlignVertical: 'center' }}
-            />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 12, paddingTop: 10 }}>
+              {savedPlayers.map(player => (
+                <Pressable
+                  key={player.id}
+                  onPress={() => {
+                    const firstEmpty = slots.slice(0, slotCount).findIndex(slot => slot === null);
+                    if (firstEmpty >= 0) setSlot(firstEmpty, player.name);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={player.name}
+                >
+                  <View
+                    style={{
+                      height: 38,
+                      paddingHorizontal: 12,
+                      borderRadius: 999,
+                      backgroundColor: `${COURT.line}14`,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                  >
+                    <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: PADDLE_FACE[player.color] }} />
+                    <Text style={{ color: COURT.ink, fontSize: 15, fontWeight: '600' }}>{player.name}</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
           </>
         )}
 
-        <View className="flex-row gap-3 mt-2">
-          <View className="flex-1">
-            <Button title={t('common.cancel')} onPress={onCancel} variant="secondary" />
-          </View>
-          <View className="flex-1">
-            <Button title={t('game.startMatch')} onPress={handleStart} variant="primary" />
-          </View>
-        </View>
+        <ListGroup style={{ marginHorizontal: 12, marginTop: 20 }}>
+          <ListRow
+            label={t('game.gameTo')}
+            value={`${settings.winningScore}${settings.winByTwo ? ` · ${t('settings.winByTwo')}` : ''}`}
+            chevron
+            onPress={() =>
+              updateSettings({
+                winningScore: settings.winningScore === 11 ? 15 : settings.winningScore === 15 ? 21 : 11,
+              })
+            }
+          />
+        </ListGroup>
       </ScrollView>
-    </Modal>
+
+      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingBottom: 30 }}>
+        <CourtButton title={t('game.startMatch')} onPress={start} height={52} />
+        {filled < slotCount && (
+          <Text style={{ color: COURT.inkMuted, fontSize: 13, textAlign: 'center', paddingTop: 8 }}>
+            {t('game.unnamedPlayers')}
+          </Text>
+        )}
+      </View>
+
+      <NameInputSheet
+        visible={editing !== null}
+        title={t('game.playerNamePlaceholder', { player: '' }).trim() || t('openPlay.namePlaceholder')}
+        placeholder={t('openPlay.namePlaceholder')}
+        confirmLabel={t('common.start')}
+        initialValue={editing !== null ? (slots[editing]?.name ?? '') : ''}
+        onSubmit={name => {
+          if (editing !== null) setSlot(editing, name);
+          setEditing(null);
+        }}
+        onClose={() => setEditing(null)}
+      />
+    </SafeAreaView>
   );
 }
