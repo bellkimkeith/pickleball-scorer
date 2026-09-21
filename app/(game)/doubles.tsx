@@ -1,6 +1,6 @@
 import { View, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -14,9 +14,15 @@ import { SoundboardModal } from '../../components/sounds/SoundboardModal';
 import { ScoringRules } from '../../lib/utils/scoring-rules';
 import { DoublesGameState } from '../../lib/types/game';
 import { useDarkMode } from '../../hooks/useDarkMode';
+import { getGameResult } from '../../lib/utils/game-result';
+import { useSessionStore } from '../../store/session-store';
 
 export default function DoublesScreen() {
   const router = useRouter();
+  const { sessionMatchId } = useLocalSearchParams<{ sessionMatchId?: string }>();
+  const activeSession = useSessionStore((state) => state.activeSession);
+  const matchDone = useSessionStore((state) => state.matchDone);
+  const startDoublesGame = useGameStore((state) => state.startDoublesGame);
   const gameState = useGameStore((state) => state.gameState);
   const settings = useGameStore((state) => state.settings);
   const isGameActive = useGameStore((state) => state.isGameActive);
@@ -28,9 +34,22 @@ export default function DoublesScreen() {
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
 
-  const [showSetup, setShowSetup] = useState(true);
+  const [showSetup, setShowSetup] = useState(!sessionMatchId);
   const [showWinModal, setShowWinModal] = useState(false);
   const [showSoundboard, setShowSoundboard] = useState(false);
+
+  // Starting from an Open Play match: fill both teams in and skip setup.
+  useEffect(() => {
+    if (!sessionMatchId || !activeSession || gameState) return;
+    const match = activeSession.matches.find((m) => m.id === sessionMatchId);
+    if (!match) return;
+    const nameOf = (id: string) =>
+      activeSession.players.find((p) => p.id === id)?.name ?? '';
+    const team1 = [nameOf(match.team1[0]), nameOf(match.team1[1])] as [string, string];
+    const team2 = [nameOf(match.team2[0]), nameOf(match.team2[1])] as [string, string];
+    startDoublesGame(team1.join(' & '), team1, team2.join(' & '), team2);
+    setShowSetup(false);
+  }, [sessionMatchId, activeSession, gameState, startDoublesGame]);
 
   // Check if game is over
   useEffect(() => {
@@ -166,6 +185,16 @@ export default function DoublesScreen() {
         gameState={gameState}
         onPlayAgain={handlePlayAgain}
         onExit={handleExit}
+        onBackToSession={
+          sessionMatchId
+            ? () => {
+                const result = getGameResult(gameState);
+                matchDone(sessionMatchId, [result.score1, result.score2]);
+                resetGame();
+                router.replace('/queue/session');
+              }
+            : undefined
+        }
       />
 
       <SoundboardModal

@@ -17,9 +17,11 @@ interface WinModalProps {
   gameState: GameState | null;
   onPlayAgain: () => void;
   onExit: () => void;
+  /** Shown as the primary action when the game came from an Open Play session. */
+  onBackToSession?: () => void;
 }
 
-export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalProps) {
+export function WinModal({ visible, gameState, onPlayAgain, onExit, onBackToSession }: WinModalProps) {
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
   const { saveGameRecord, loadHistory } = useStatsStore();
@@ -102,7 +104,13 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit }: WinModalPr
             />
           </View>
 
-          <View className="flex-row gap-3 mt-8 w-full">
+          {onBackToSession && (
+            <View className="mt-8 w-full">
+              <Button title={t('openPlay.backToOpenPlay')} onPress={onBackToSession} variant="primary" />
+            </View>
+          )}
+
+          <View className={`flex-row gap-3 w-full ${onBackToSession ? 'mt-3' : 'mt-8'}`}>
             <View className="flex-1">
               <Button title={t('common.exit')} onPress={onExit} variant="secondary" />
             </View>
