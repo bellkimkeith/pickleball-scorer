@@ -21,6 +21,8 @@ export interface PaddleProps {
   style?: ViewStyle;
 }
 
+const WRAP_BANDS = [6, 14, 22, 30, 38, 46, 54];
+
 const SIZES: Record<PaddleSize, { width: number; face: number; grip: number; font: number; radius: number }> = {
   lg: { width: 62, face: 104, grip: 58, font: 15, radius: 26 },
   md: { width: 62, face: 76, grip: 0, font: 13, radius: 22 },
@@ -49,6 +51,8 @@ function PaddleComponent({
       <View
         style={{
           height: dims.face,
+          borderWidth: ghost ? 1.5 : outlined ? 2 : 1,
+          borderColor: ghost ? `${COURT.line}66` : outlined ? COURT.line : '#00000022',
           borderRadius: dims.radius,
           borderBottomLeftRadius: dims.radius * 0.7,
           borderBottomRightRadius: dims.radius * 0.7,
@@ -57,14 +61,6 @@ function PaddleComponent({
           justifyContent: 'flex-end',
           paddingBottom: size === 'head' ? 6 : 10,
           paddingHorizontal: 4,
-          borderWidth: ghost ? 1.5 : 0,
-          borderColor: `${COURT.line}66`,
-          ...(outlined
-            ? {
-                borderWidth: 2,
-                borderColor: COURT.line,
-              }
-            : {}),
         }}
       >
         <Text
@@ -95,31 +91,64 @@ function PaddleComponent({
       </View>
 
       {dims.grip > 0 && (
-        <View
-          style={{
-            width: 20,
-            height: dims.grip,
-            alignSelf: 'center',
-            borderBottomLeftRadius: 6,
-            borderBottomRightRadius: 6,
-            backgroundColor: PADDLE_GRIP,
-            alignItems: 'center',
-            paddingTop: 6,
-          }}
-        >
-          {showGripNumber && (
-            <Text
-              style={{
-                color: PADDLE_GRIP_TEXT,
-                fontSize: 11,
-                fontWeight: '800',
-                fontVariant: ['tabular-nums'],
-              }}
-            >
-              {games}
-            </Text>
-          )}
-        </View>
+        <>
+          {/* throat: the taper where the face meets the handle */}
+          <View
+            style={{
+              width: 30,
+              height: 8,
+              alignSelf: 'center',
+              backgroundColor: face,
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+              borderWidth: ghost ? 1.5 : 0,
+              borderTopWidth: 0,
+              borderColor: `${COURT.line}66`,
+            }}
+          />
+          <View
+            style={{
+              width: 20,
+              height: dims.grip,
+              alignSelf: 'center',
+              borderBottomLeftRadius: 6,
+              borderBottomRightRadius: 6,
+              backgroundColor: PADDLE_GRIP,
+              alignItems: 'center',
+              paddingTop: 6,
+              overflow: 'hidden',
+            }}
+          >
+            {/* overgrip wrapped on the diagonal, the way a handle is taped */}
+            {WRAP_BANDS.map(top => (
+              <View
+                key={top}
+                pointerEvents="none"
+                style={{
+                  position: 'absolute',
+                  left: -14,
+                  right: -14,
+                  top,
+                  height: 3,
+                  backgroundColor: '#ffffff14',
+                  transform: [{ rotate: '-28deg' }],
+                }}
+              />
+            ))}
+            {showGripNumber && (
+              <Text
+                style={{
+                  color: PADDLE_GRIP_TEXT,
+                  fontSize: 11,
+                  fontWeight: '800',
+                  fontVariant: ['tabular-nums'],
+                }}
+              >
+                {games}
+              </Text>
+            )}
+          </View>
+        </>
       )}
     </View>
   );

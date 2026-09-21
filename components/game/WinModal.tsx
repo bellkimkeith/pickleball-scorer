@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Modal, ScrollView, Text, View } from 'react-native';
+import { ImageBackground, Modal, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
@@ -89,15 +89,17 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit, onBackToSess
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onExit}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }}>
+      <ImageBackground
+        source={require('../../assets/textures/court-grit.png')}
+        resizeMode="repeat"
+        style={{ flex: 1, backgroundColor: COURT.outer }}
+      >
+        <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30, flexGrow: 1 }}>
-          <Text style={{ color: COURT.inkMuted, fontSize: 15, fontWeight: '600', paddingTop: 30 }}>
-            {t('winModal.gameOver')}
-            {minutes ? ` · ${t('winModal.duration', { minutes })}` : ''}
-          </Text>
-
-          <Text style={{ color: COURT.ink, fontSize: 40, fontWeight: '800', lineHeight: 44, marginTop: 8 }}>
-            {t('winModal.wins', { name: winnerName })}
+          <Text style={{ color: COURT.ink, fontSize: 40, fontWeight: '800', lineHeight: 44, paddingTop: 30 }}>
+            {gameState.mode === 'doubles'
+              ? t('winModal.winsPair', { name: winnerName })
+              : t('winModal.wins', { name: winnerName })}
           </Text>
 
           <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 14, marginTop: 22 }}>
@@ -127,6 +129,12 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit, onBackToSess
               {low}
             </Text>
           </View>
+
+          {minutes && (
+            <Text style={{ color: COURT.inkMuted, fontSize: 15, marginTop: 10 }}>
+              {t('winModal.duration', { minutes })}
+            </Text>
+          )}
 
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 18 }}>
             {winningPlayers.map((name, index) => (
@@ -189,7 +197,8 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit, onBackToSess
             {!onBackToSession && <CourtButton title={t('common.exit')} variant="outline" onPress={onExit} height={48} />}
           </View>
         </ScrollView>
-      </SafeAreaView>
+        </SafeAreaView>
+      </ImageBackground>
     </Modal>
   );
 }

@@ -59,6 +59,7 @@ export default {
     dontSwitch: "Don't Switch",
   },
   winModal: {
+    winsPair: '{{name}} win!',
     beat: 'def. {{name}}',
     share: 'Share',
     gameOver: 'Game Over!',

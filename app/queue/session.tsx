@@ -8,6 +8,7 @@ import { CourtDiagram, CourtSlots } from '../../components/court/CourtDiagram';
 import { PaddleRack, RackPlayer } from '../../components/court/PaddleRack';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
 import { PlayerSheet } from '../../components/queue/PlayerSheet';
+import { BackButton } from '../../components/ui/BackButton';
 import { CourtButton } from '../../components/ui/Button';
 import { Dialog } from '../../components/ui/Dialog';
 import { COURT } from '../../lib/theme/tokens';
@@ -105,14 +106,12 @@ export default function SessionScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 110 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6 }}>
-          <Pressable onPress={() => router.replace('/')} accessibilityRole="button" accessibilityLabel={t('common.back')} hitSlop={10}>
-            <Text style={{ color: COURT.ink, fontSize: 17 }}>‹ {t('common.back')}</Text>
-          </Pressable>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 16, paddingTop: 6 }}>
+          <BackButton onPress={() => router.replace('/')} />
           <Pressable onPress={() => setEndOpen(true)} accessibilityRole="button" accessibilityLabel={t('openPlay.end')} hitSlop={10}>
             <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '600' }}>{t('openPlay.end')}</Text>
           </Pressable>
@@ -139,6 +138,7 @@ export default function SessionScreen() {
                   courtLabel={t('openPlay.court', { number: index + 1 })}
                   clock={match ? elapsed(match.calledAt, now) : undefined}
                   emptyLabel={t('openPlay.waiting')}
+                  animateEntry
                   onPlayerPress={match ? setOpenPlayerId : undefined}
                   style={{ marginTop: 12 }}
                 />

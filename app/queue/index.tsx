@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Paddle } from '../../components/court/Paddle';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
+import { BackButton } from '../../components/ui/BackButton';
 import { CourtButton } from '../../components/ui/Button';
 import { Stepper } from '../../components/ui/Controls';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
@@ -70,19 +71,11 @@ export default function CheckInScreen() {
   const managedPlayer = savedPlayers.find(p => p.id === managing);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.back')}
-          style={{ paddingHorizontal: 16, paddingTop: 6, alignSelf: 'flex-start' }}
-          hitSlop={10}
-        >
-          <Text style={{ color: COURT.ink, fontSize: 17 }}>‹ {t('common.back')}</Text>
-        </Pressable>
+        <BackButton />
 
         <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4 }}>
           {t('openPlay.whosHere')}

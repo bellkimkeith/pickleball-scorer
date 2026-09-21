@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Segmented, Stepper, Toggle } from '../../components/ui/Controls';
+import { BackButton } from '../../components/ui/BackButton';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
 import { Sheet } from '../../components/ui/Sheet';
 import { CourtButton } from '../../components/ui/Button';
@@ -27,19 +28,11 @@ export default function SettingsScreen() {
   const setDefaultCourts = (count: number) => useSessionStore.setState({ defaultCourtCount: count });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.back')}
-          hitSlop={10}
-          style={{ paddingHorizontal: 16, paddingTop: 6, alignSelf: 'flex-start' }}
-        >
-          <Text style={{ color: COURT.ink, fontSize: 17 }}>‹ {t('common.back')}</Text>
-        </Pressable>
+        <BackButton />
 
         <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 18 }}>
           {t('settings.title')}

@@ -56,7 +56,7 @@ export default function SummaryScreen() {
 
   if (!session) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <Text style={{ color: COURT.inkMuted, fontSize: 16 }}>{t('stats.noGames')}</Text>
           <CourtButton title={t('openPlay.done')} onPress={() => router.replace('/')} style={{ marginTop: 16 }} />
@@ -72,7 +72,7 @@ export default function SummaryScreen() {
   const max = counts.length > 0 ? Math.max(...counts) : 0;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 110 }}>

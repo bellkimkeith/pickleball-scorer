@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { LogBox, View } from 'react-native';
+import { ImageBackground, LogBox } from 'react-native';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import { useGameStore } from '../store/game-store';
@@ -43,11 +43,17 @@ export default function RootLayout() {
 
 function ThemedApp() {
   return (
-    <View style={{ flex: 1, backgroundColor: COURT.outer }}>
+    <ImageBackground
+      source={require('../assets/textures/court-grit.png')}
+      resizeMode="repeat"
+      style={{ flex: 1, backgroundColor: COURT.outer }}
+    >
       <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerShown: false,
+        // The textured court ground lives at the root; screens sit on it.
+        contentStyle: { backgroundColor: 'transparent' },
           animation: 'slide_from_right',
         }}
       >
@@ -56,6 +62,6 @@ function ThemedApp() {
         <Stack.Screen name="queue" />
         <Stack.Screen name="settings" />
       </Stack>
-    </View>
+    </ImageBackground>
   );
 }

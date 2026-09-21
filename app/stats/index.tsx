@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BackButton } from '../../components/ui/BackButton';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
 import { GameRecord } from '../../lib/storage/game-history';
 import { COURT } from '../../lib/theme/tokens';
@@ -87,19 +88,11 @@ export default function StatsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.back')}
-          hitSlop={10}
-          style={{ paddingHorizontal: 16, paddingTop: 6, alignSelf: 'flex-start' }}
-        >
-          <Text style={{ color: COURT.ink, fontSize: 17 }}>‹ {t('common.back')}</Text>
-        </Pressable>
+        <BackButton />
 
         <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4 }}>
           {t('stats.title')}

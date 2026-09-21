@@ -1,5 +1,6 @@
-import { memo, useMemo } from 'react';
-import { Pressable, Text, View, ViewStyle } from 'react-native';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { AccessibilityInfo, Pressable, Text, View, ViewStyle } from 'react-native';
+import Animated, { FadeIn, SlideInLeft, SlideInRight } from 'react-native-reanimated';
 import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
 import { PaddleColor } from '../../lib/types/queue';
 
@@ -19,6 +20,8 @@ export type CourtSlots = [
 
 export interface CourtDiagramProps {
   players: CourtSlots;
+  /** Animate names onto the court, as if the paddles walked on. */
+  animateEntry?: boolean;
   courtLabel?: string;
   clock?: string;
   servingPlayerId?: string;
@@ -32,6 +35,23 @@ export interface CourtDiagramProps {
 }
 
 const LINE = 2;
+
+/** Honors the system "reduce motion" switch. */
+function useReduceMotion(): boolean {
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    let active = true;
+    AccessibilityInfo.isReduceMotionEnabled().then(value => {
+      if (active) setReduce(value);
+    });
+    const listener = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduce);
+    return () => {
+      active = false;
+      listener.remove();
+    };
+  }, []);
+  return reduce;
+}
 
 function SlotLabel({
   player,
@@ -156,6 +176,7 @@ function ServeDiagonal({ fromSlot }: { fromSlot: number }) {
 
 function CourtDiagramComponent({
   players,
+  animateEntry = false,
   courtLabel,
   clock,
   servingPlayerId,
@@ -167,6 +188,8 @@ function CourtDiagramComponent({
   accessibilityLabel,
   style,
 }: CourtDiagramProps) {
+  const reduceMotion = useReduceMotion();
+
   // In setup mode every slot stays tappable, so the empty state never applies.
   const isEmpty = players.every(p => p === null) && !onSlotPress;
 
@@ -226,7 +249,17 @@ function CourtDiagramComponent({
         </View>
       ) : (
         players.map((player, index) => (
-          <View key={index} style={{ position: 'absolute', ...corners[index] }}>
+          <Animated.View
+            key={`${index}-${player?.id ?? 'empty'}`}
+            entering={
+              animateEntry && player && !reduceMotion
+                ? (index < 2 ? SlideInLeft : SlideInRight).springify().damping(18).delay(index * 70)
+                : animateEntry && player
+                  ? FadeIn.duration(180)
+                  : undefined
+            }
+            style={{ position: 'absolute', ...corners[index] }}
+          >
             {player ? (
               <SlotLabel
                 player={player}
@@ -239,7 +272,7 @@ function CourtDiagramComponent({
             ) : onSlotPress ? (
               <EmptySlot onPress={() => onSlotPress(index)} />
             ) : null}
-          </View>
+          </Animated.View>
         ))
       )}
 

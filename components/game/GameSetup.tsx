@@ -10,6 +10,7 @@ import { useGameStore } from '../../store/game-store';
 import { useSessionStore } from '../../store/session-store';
 import { CourtDiagram, CourtSlots } from '../court/CourtDiagram';
 import { NameInputSheet } from '../queue/NameInputSheet';
+import { BackButton } from '../ui/BackButton';
 import { CourtButton } from '../ui/Button';
 import { Segmented } from '../ui/Controls';
 import { ListGroup, ListRow } from '../ui/ListGroup';
@@ -82,19 +83,11 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-        <Pressable
-          onPress={onCancel}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.cancel')}
-          hitSlop={10}
-          style={{ paddingHorizontal: 16, paddingTop: 6, alignSelf: 'flex-start' }}
-        >
-          <Text style={{ color: COURT.ink, fontSize: 17 }}>‹ {t('common.cancel')}</Text>
-        </Pressable>
+        <BackButton label={t('common.cancel')} onPress={onCancel} />
 
         <Text style={{ color: COURT.ink, fontSize: 32, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4 }}>
           {t('game.setupMatch', { mode: mode === 'singles' ? t('home.singles') : t('home.doubles') })}
