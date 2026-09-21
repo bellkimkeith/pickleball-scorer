@@ -58,6 +58,7 @@ function ThemedApp() {
       >
         <Stack.Screen name="index" />
         <Stack.Screen name="(game)" />
+        <Stack.Screen name="queue" />
         <Stack.Screen name="settings" />
       </Stack>
     </View>

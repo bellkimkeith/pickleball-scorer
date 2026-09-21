@@ -5,11 +5,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useDarkMode } from '../hooks/useDarkMode';
+import { useSessionStore } from '../store/session-store';
+import { COURT } from '../lib/theme/tokens';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
+  const activeSession = useSessionStore((state) => state.activeSession);
 
   return (
     <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} edges={['top']}>
@@ -45,6 +48,44 @@ export default function HomeScreen() {
               )}
             </Pressable>
           </View>
+        </View>
+
+        {/* Open Play */}
+        <View className="px-6 mb-4">
+          <Pressable
+            onPress={() => router.push(activeSession ? '/queue/session' : '/queue')}
+            accessibilityRole="button"
+            accessibilityLabel={activeSession ? t('openPlay.resume') : t('openPlay.homeCard')}
+            style={({ pressed }) => ({
+              borderRadius: 24,
+              overflow: 'hidden',
+              backgroundColor: COURT.inner,
+              borderWidth: 2,
+              borderColor: COURT.line,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
+          >
+            <View style={{ height: 150, justifyContent: 'flex-end', padding: 18 }}>
+              <View style={{ position: 'absolute', left: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
+              <View style={{ position: 'absolute', right: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
+              <View style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, backgroundColor: COURT.line }} />
+              <View style={{ position: 'absolute', left: 0, width: '27%', top: '50%', height: 2, backgroundColor: COURT.line }} />
+              <View style={{ position: 'absolute', right: 0, width: '27%', top: '50%', height: 2, backgroundColor: COURT.line }} />
+              <View style={{ alignSelf: 'flex-start', backgroundColor: '#1f4b7d', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10 }}>
+                <Text style={{ color: COURT.ink, fontSize: 24, fontWeight: '800' }}>
+                  {activeSession ? t('openPlay.resume') : t('openPlay.homeCard')}
+                </Text>
+                <Text style={{ color: '#dce8f5', fontSize: 14, marginTop: 2 }}>
+                  {activeSession
+                    ? t('openPlay.resumeDesc', {
+                        count: activeSession.players.filter((p) => p.status !== 'left').length,
+                        courts: activeSession.courtCount,
+                      })
+                    : t('openPlay.homeCardDesc')}
+                </Text>
+              </View>
+            </View>
+          </Pressable>
         </View>
 
         {/* Mode Selection */}
