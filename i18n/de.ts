@@ -59,6 +59,8 @@ export default {
     dontSwitch: 'Nicht wechseln',
   },
   winModal: {
+    beat: 'schlägt {{name}}',
+    share: 'Teilen',
     gameOver: 'Spiel beendet!',
     wins: '{{name}} gewinnt!',
     finalScore: 'Endstand',

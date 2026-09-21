@@ -1,378 +1,115 @@
-import { View, Text, Pressable, StyleSheet, Share } from 'react-native';
 import { memo } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Share, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { COURT } from '../../lib/theme/tokens';
+import { DoublesGameState, GameState, SinglesGameState } from '../../lib/types/game';
 import { getGameResult } from '../../lib/utils/game-result';
-import { useDarkMode } from '../../hooks/useDarkMode';
-import { GameState, SinglesGameState, DoublesGameState } from '../../lib/types/game';
+import { CourtButton } from '../ui/Button';
 
 interface ShareCardProps {
   gameState: GameState;
   winner: 1 | 2;
+  /** Hides the share button when the card is only being displayed. */
+  showAction?: boolean;
 }
 
-function ShareCardComponent({ gameState, winner }: ShareCardProps) {
+const PLATE = '#1f4b7d';
+
+function ShareCardComponent({ gameState, winner, showAction = true }: ShareCardProps) {
+  const { t } = useTranslation();
   const { score1, score2 } = getGameResult(gameState);
-  const { isDarkMode } = useDarkMode();
 
-  const getPlayer1Name = () => {
-    if (gameState.mode === 'singles') {
-      return (gameState as SinglesGameState).player1.name;
-    }
-    return (gameState as DoublesGameState).team1.name;
-  };
+  const name1 =
+    gameState.mode === 'singles'
+      ? (gameState as SinglesGameState).player1.name
+      : (gameState as DoublesGameState).team1.name;
+  const name2 =
+    gameState.mode === 'singles'
+      ? (gameState as SinglesGameState).player2.name
+      : (gameState as DoublesGameState).team2.name;
 
-  const getPlayer2Name = () => {
-    if (gameState.mode === 'singles') {
-      return (gameState as SinglesGameState).player2.name;
-    }
-    return (gameState as DoublesGameState).team2.name;
-  };
+  const winnerName = winner === 1 ? name1 : name2;
+  const loserName = winner === 1 ? name2 : name1;
+  const high = Math.max(score1, score2);
+  const low = Math.min(score1, score2);
 
-  const getWinnerName = () => {
-    return winner === 1 ? getPlayer1Name() : getPlayer2Name();
-  };
+  const minutes =
+    gameState.gameEndTime && gameState.gameStartTime
+      ? Math.max(1, Math.round((gameState.gameEndTime - gameState.gameStartTime) / 60000))
+      : null;
 
-  const handleShare = async () => {
-    const mode = gameState.mode === 'singles' ? 'Singles' : 'Doubles';
-    const message = `🎾 Pickle & Score\n\n${mode} Match\n${getPlayer1Name()} ${score1} - ${score2} ${getPlayer2Name()}\n\nWinner: ${getWinnerName()}!`;
-    
-    try {
-      await Share.share({
-        message,
-      });
-    } catch (error) {
-      console.error('Share failed:', error);
-    }
-  };
+  const date = new Date().toLocaleDateString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
 
-  const formatDate = () => {
-    return new Date().toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+  const share = () => {
+    const mode = gameState.mode === 'singles' ? t('home.singles') : t('home.doubles');
+    Share.share({
+      message: `${mode}\n${winnerName} ${high} – ${low} ${loserName}\n\n${t('home.title')}`,
+    }).catch(() => {});
   };
 
   return (
-    <View style={[styles.container, isDarkMode ? styles.containerDark : styles.containerLight]}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <View style={[styles.iconContainer, isDarkMode ? styles.iconContainerDark : styles.iconContainerLight]}>
-            <Ionicons name="tennisball" size={18} color={isDarkMode ? '#22c55e' : '#16a34a'} />
-          </View>
-          <View>
-            <Text style={[styles.appName, isDarkMode ? styles.appNameDark : styles.appNameLight]}>
-              Pickle & Score
-            </Text>
-            <Text style={[styles.date, isDarkMode ? styles.dateDark : styles.dateLight]}>
-              {formatDate()}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Match Info */}
-      <View style={styles.matchInfo}>
-        <Text style={[styles.matchType, isDarkMode ? styles.matchTypeDark : styles.matchTypeLight]}>
-          {gameState.mode === 'singles' ? 'Singles Match' : 'Doubles Match'}
-        </Text>
-      </View>
-
-      {/* Score Display */}
-      <View style={styles.scoreContainer}>
-        <View style={styles.playerSection}>
-          <View style={[
-            styles.playerAvatar,
-            winner === 1 ? styles.playerAvatarWinner : isDarkMode ? styles.playerAvatarDark : styles.playerAvatarLight
-          ]}>
-            <Ionicons 
-              name={gameState.mode === 'singles' ? 'person' : 'people'} 
-              size={20} 
-              color={winner === 1 ? '#ffffff' : isDarkMode ? '#f3f4f6' : '#1f2937'} 
-            />
-          </View>
-          <Text 
-            style={[
-              styles.playerName, 
-              winner === 1 && styles.playerNameWinner,
-              isDarkMode ? styles.playerNameDark : styles.playerNameLight
-            ]}
-          >
-            {getPlayer1Name()}
-          </Text>
-        </View>
-
-        <View style={styles.scoreDisplay}>
-          <Text style={[styles.score, winner === 1 ? styles.scoreWinner : isDarkMode ? styles.scoreDark : styles.scoreLight]}>
-            {score1}
-          </Text>
-          <Text style={[styles.scoreDivider, isDarkMode ? styles.scoreDividerDark : styles.scoreDividerLight]}>
-            -
-          </Text>
-          <Text style={[styles.score, winner === 2 ? styles.scoreWinner : isDarkMode ? styles.scoreDark : styles.scoreLight]}>
-            {score2}
-          </Text>
-        </View>
-
-        <View style={styles.playerSection}>
-          <View style={[
-            styles.playerAvatar,
-            winner === 2 ? styles.playerAvatarWinner : isDarkMode ? styles.playerAvatarDark : styles.playerAvatarLight
-          ]}>
-            <Ionicons 
-              name={gameState.mode === 'singles' ? 'person' : 'people'} 
-              size={20} 
-              color={winner === 2 ? '#ffffff' : isDarkMode ? '#f3f4f6' : '#1f2937'} 
-            />
-          </View>
-          <Text 
-            style={[
-              styles.playerName, 
-              winner === 2 && styles.playerNameWinner,
-              isDarkMode ? styles.playerNameDark : styles.playerNameLight
-            ]}
-          >
-            {getPlayer2Name()}
-          </Text>
-        </View>
-      </View>
-
-      {/* Winner Banner */}
-      <View style={[styles.winnerBanner, isDarkMode ? styles.winnerBannerDark : styles.winnerBannerLight]}>
-        <View style={[styles.winnerBannerContent, isDarkMode ? styles.winnerBannerContentDark : styles.winnerBannerContentLight]}>
-          <Ionicons name="trophy" size={18} color={isDarkMode ? '#fbbf24' : '#d97706'} />
-          <Text style={[styles.winnerText, isDarkMode ? styles.winnerTextDark : styles.winnerTextLight]}>
-            {getWinnerName()} Wins!
-          </Text>
-        </View>
-      </View>
-
-      {/* Share Button */}
-      <Pressable 
-        onPress={handleShare} 
-        style={({ pressed }) => [
-          styles.shareButton,
-          pressed && styles.shareButtonPressed
-        ]}
+    <View>
+      <View
+        style={{
+          aspectRatio: 4 / 5,
+          borderRadius: 18,
+          overflow: 'hidden',
+          backgroundColor: COURT.inner,
+          borderWidth: 3,
+          borderColor: COURT.line,
+        }}
       >
-        <View style={styles.shareButtonContent}>
-          <Ionicons name="share-outline" size={20} color="#ffffff" />
-          <Text style={styles.shareButtonText}>Share Match</Text>
+        {/* court seen from above: net across the middle */}
+        <View style={{ position: 'absolute', left: 0, right: 0, top: '36%', bottom: '36%', backgroundColor: COURT.kitchen }} />
+        <View style={{ position: 'absolute', left: 0, right: 0, top: '36%', height: 3, backgroundColor: COURT.line }} />
+        <View style={{ position: 'absolute', left: 0, right: 0, bottom: '36%', height: 3, backgroundColor: COURT.line }} />
+        <View style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: 3, backgroundColor: COURT.line }} />
+        <View style={{ position: 'absolute', left: '50%', top: 0, height: '36%', width: 3, backgroundColor: COURT.line }} />
+        <View style={{ position: 'absolute', left: '50%', bottom: 0, height: '36%', width: 3, backgroundColor: COURT.line }} />
+
+        <View style={{ flex: 1, justifyContent: 'space-between', padding: 18 }}>
+          <View style={{ alignSelf: 'flex-start', backgroundColor: PLATE, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 5 }}>
+            <Text style={{ color: '#dce8f5', fontSize: 12, fontWeight: '700', letterSpacing: 0.8 }}>
+              {date.toUpperCase()} · {(gameState.mode === 'singles' ? t('home.singles') : t('home.doubles')).toUpperCase()}
+            </Text>
+          </View>
+
+          <Text
+            style={{
+              color: COURT.ink,
+              fontSize: 72,
+              fontWeight: '800',
+              letterSpacing: -2,
+              textAlign: 'center',
+              fontVariant: ['tabular-nums'],
+              textShadowColor: '#00000066',
+              textShadowRadius: 10,
+              textShadowOffset: { width: 0, height: 2 },
+            }}
+          >
+            {high}–{low}
+          </Text>
+
+          <View style={{ alignSelf: 'flex-start', backgroundColor: PLATE, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}>
+            <Text style={{ color: COURT.ink, fontSize: 19, fontWeight: '800' }}>{winnerName}</Text>
+            <Text style={{ color: '#dce8f5', fontSize: 14 }}>
+              {t('winModal.beat', { name: loserName })}
+              {minutes ? ` · ${t('winModal.duration', { minutes })}` : ''}
+            </Text>
+            <Text style={{ color: '#dce8f5', fontSize: 11, marginTop: 8, opacity: 0.8 }}>{t('home.title')}</Text>
+          </View>
         </View>
-      </Pressable>
+      </View>
+
+      {showAction && (
+        <CourtButton title={t('winModal.share')} icon="share-outline" onPress={share} style={{ marginTop: 12 }} />
+      )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 20,
-    padding: 16,
-    marginTop: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: 320,
-  },
-  containerLight: {
-    borderColor: '#e5e7eb',
-  },
-  containerDark: {
-    borderColor: '#4b5563',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-    width: '100%',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconContainerLight: {
-    backgroundColor: '#dcfce7',
-  },
-  iconContainerDark: {
-    backgroundColor: '#14532d',
-  },
-  appName: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  appNameLight: {
-    color: '#1f2937',
-  },
-  appNameDark: {
-    color: '#f3f4f6',
-  },
-  date: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  dateLight: {
-    color: '#6b7280',
-  },
-  dateDark: {
-    color: '#9ca3af',
-  },
-  matchInfo: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  matchType: {
-    fontSize: 14,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  matchTypeLight: {
-    color: '#16a34a',
-  },
-  matchTypeDark: {
-    color: '#22c55e',
-  },
-  scoreContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  playerSection: {
-    alignItems: 'center',
-    flex: 1,
-    minWidth: 80,
-  },
-  playerAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  playerAvatarLight: {
-    backgroundColor: '#f3f4f6',
-  },
-  playerAvatarDark: {
-    backgroundColor: '#374151',
-  },
-  playerAvatarWinner: {
-    backgroundColor: '#16a34a',
-  },
-  playerName: {
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  playerNameLight: {
-    color: '#1f2937',
-  },
-  playerNameDark: {
-    color: '#f3f4f6',
-  },
-  playerNameWinner: {
-    color: '#16a34a',
-  },
-  scoreDisplay: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  score: {
-    fontSize: 36,
-    fontWeight: '800',
-  },
-  scoreLight: {
-    color: '#1f2937',
-  },
-  scoreDark: {
-    color: '#f3f4f6',
-  },
-  scoreWinner: {
-    color: '#16a34a',
-  },
-  scoreDivider: {
-    fontSize: 28,
-    fontWeight: '500',
-  },
-  scoreDividerLight: {
-    color: '#d1d5db',
-  },
-  scoreDividerDark: {
-    color: '#4b5563',
-  },
-  winnerBanner: {
-    borderRadius: 16,
-    marginBottom: 12,
-    overflow: 'hidden',
-  },
-  winnerBannerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  winnerBannerContentLight: {
-    backgroundColor: '#fef3c7',
-  },
-  winnerBannerContentDark: {
-    backgroundColor: '#78350f',
-  },
-  winnerBannerLight: {
-    backgroundColor: '#fef3c7',
-  },
-  winnerBannerDark: {
-    backgroundColor: '#451a03',
-  },
-  winnerText: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  winnerTextLight: {
-    color: '#92400e',
-  },
-  winnerTextDark: {
-    color: '#fef3c7',
-  },
-  shareButton: {
-    backgroundColor: '#16a34a',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    marginTop: 16,
-    minWidth: 200,
-    alignSelf: 'center',
-  },
-  shareButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  shareButtonPressed: {
-    opacity: 0.7,
-  },
-  shareButtonIcon: {
-    marginRight: 10,
-  },
-  shareButtonText: {
-    color: '#ffffff',
-    fontSize: 17,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-});
 
 export const ShareCard = memo(ShareCardComponent);

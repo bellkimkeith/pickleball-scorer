@@ -1,16 +1,17 @@
-import { View, Text, ScrollView } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Modal, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
-import { ShareCard } from './ShareCard';
-import { GameState, DoublesGameState } from '../../lib/types/game';
-import { ScoringRules } from '../../lib/utils/scoring-rules';
-import { Ionicons } from '@expo/vector-icons';
-import { useDarkMode } from '../../hooks/useDarkMode';
-import { useEffect } from 'react';
-import { getGameResult } from '../../lib/utils/game-result';
-import { useStatsStore } from '../../store/stats-store';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
+import { DoublesGameState, GameState, SinglesGameState } from '../../lib/types/game';
+import { PaddleColor } from '../../lib/types/queue';
 import { GameRecord } from '../../lib/storage/game-history';
+import { getGameResult } from '../../lib/utils/game-result';
+import { ScoringRules } from '../../lib/utils/scoring-rules';
+import { useSessionStore } from '../../store/session-store';
+import { useStatsStore } from '../../store/stats-store';
+import { CourtButton } from '../ui/Button';
+import { ShareCard } from './ShareCard';
 
 interface WinModalProps {
   visible: boolean;
@@ -22,104 +23,173 @@ interface WinModalProps {
 }
 
 export function WinModal({ visible, gameState, onPlayAgain, onExit, onBackToSession }: WinModalProps) {
-  const { isDarkMode } = useDarkMode();
   const { t } = useTranslation();
   const { saveGameRecord, loadHistory } = useStatsStore();
-  
+  const savedPlayers = useSessionStore(state => state.savedPlayers);
+  const [showCard, setShowCard] = useState(false);
+
   useEffect(() => {
     if (visible && gameState && gameState.gameStartTime && gameState.gameEndTime) {
       const winner = ScoringRules.getWinner(gameState);
       if (winner) {
         const result = getGameResult(gameState);
         const record: GameRecord = {
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           date: Date.now(),
           mode: gameState.mode,
-          player1: gameState.mode === 'singles' 
-            ? (gameState as any).player1.name 
-            : (gameState as any).team1.name,
-          player2: gameState.mode === 'singles' 
-            ? (gameState as any).player2.name 
-            : (gameState as any).team2.name,
+          player1:
+            gameState.mode === 'singles'
+              ? (gameState as SinglesGameState).player1.name
+              : (gameState as DoublesGameState).team1.name,
+          player2:
+            gameState.mode === 'singles'
+              ? (gameState as SinglesGameState).player2.name
+              : (gameState as DoublesGameState).team2.name,
           score1: result.score1,
           score2: result.score2,
           winner: result.winner,
           duration: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 1000),
         };
-        
         saveGameRecord(record).then(() => loadHistory());
       }
     }
   }, [visible, gameState, saveGameRecord, loadHistory]);
-  
+
+  useEffect(() => {
+    if (!visible) setShowCard(false);
+  }, [visible]);
+
   if (!gameState) return null;
 
-  const winner = ScoringRules.getWinner(gameState);
-  const winnerName = winner
-    ? 'name' in winner
-      ? winner.name
-      : 'Unknown'
-    : 'Tie';
+  const { score1, score2, winner } = getGameResult(gameState);
+  const high = Math.max(score1, score2);
+  const low = Math.min(score1, score2);
 
-  const isWinnerTeam1 = getGameResult(gameState).winner === 1;
-  const winnerColorClass = isWinnerTeam1 ? 'text-team1' : 'text-team2';
+  const winnerName =
+    gameState.mode === 'singles'
+      ? (gameState as SinglesGameState)[winner === 1 ? 'player1' : 'player2'].name
+      : (gameState as DoublesGameState)[winner === 1 ? 'team1' : 'team2'].name;
+  const loserName =
+    gameState.mode === 'singles'
+      ? (gameState as SinglesGameState)[winner === 1 ? 'player2' : 'player1'].name
+      : (gameState as DoublesGameState)[winner === 1 ? 'team2' : 'team1'].name;
 
-  const finalScore = `${gameState.score1} - ${gameState.score2}`;
+  const minutes =
+    gameState.gameEndTime && gameState.gameStartTime
+      ? Math.max(1, Math.round((gameState.gameEndTime - gameState.gameStartTime) / 60000))
+      : null;
 
-  const isDoubles = gameState.mode === 'doubles';
-  const doublesState = isDoubles ? (gameState as DoublesGameState) : null;
-  const winningPlayers = isDoubles && doublesState
-    ? (isWinnerTeam1 ? doublesState.team1.players : doublesState.team2.players)
-    : null;
+  const winningPlayers =
+    gameState.mode === 'doubles'
+      ? (gameState as DoublesGameState)[winner === 1 ? 'team1' : 'team2'].players.map(p => p.name)
+      : [winnerName];
 
-  const winnerValue = isWinnerTeam1 ? 1 : 2;
+  const colorOf = (name: string, fallback: PaddleColor): PaddleColor =>
+    savedPlayers.find(p => p.name === name)?.color ?? fallback;
 
   return (
-    <Modal visible={visible} onClose={onExit} dismissable={false}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="items-center py-4" accessibilityRole="alert">
-          <Ionicons name="trophy" size={60} color="#fbbf24" />
-
-          <Text accessibilityRole="header" className={`text-2xl font-bold mt-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+    <Modal visible={visible} animationType="slide" onRequestClose={onExit}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }}>
+        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30, flexGrow: 1 }}>
+          <Text style={{ color: COURT.inkMuted, fontSize: 15, fontWeight: '600', paddingTop: 30 }}>
             {t('winModal.gameOver')}
+            {minutes ? ` · ${t('winModal.duration', { minutes })}` : ''}
           </Text>
 
-          {winningPlayers && (
-            <Text className={`text-base font-medium mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              {winningPlayers[0].name} & {winningPlayers[1].name}
-            </Text>
-          )}
+          <Text style={{ color: COURT.ink, fontSize: 40, fontWeight: '800', lineHeight: 44, marginTop: 8 }}>
+            {t('winModal.wins', { name: winnerName })}
+          </Text>
 
-          {gameState.gameEndTime && gameState.gameStartTime && (
-            <Text className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-4`}>
-              {t('winModal.duration', { minutes: Math.floor((gameState.gameEndTime - gameState.gameStartTime) / 60000) })}
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 14, marginTop: 22 }}>
+            <Text
+              style={{
+                color: COURT.ink,
+                fontSize: 104,
+                fontWeight: '800',
+                letterSpacing: -4,
+                lineHeight: 104,
+                fontVariant: ['tabular-nums'],
+              }}
+            >
+              {high}
             </Text>
-          )}
-
-          {/* Share Card */}
-          <View className="mt-4">
-            <ShareCard
-              gameState={gameState}
-              winner={winnerValue}
-            />
+            <Text style={{ color: COURT.inkMuted, fontSize: 42 }}>–</Text>
+            <Text
+              style={{
+                color: '#9fb8ad',
+                fontSize: 104,
+                fontWeight: '800',
+                letterSpacing: -4,
+                lineHeight: 104,
+                fontVariant: ['tabular-nums'],
+              }}
+            >
+              {low}
+            </Text>
           </View>
 
-          {onBackToSession && (
-            <View className="mt-8 w-full">
-              <Button title={t('openPlay.backToOpenPlay')} onPress={onBackToSession} variant="primary" />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 18 }}>
+            {winningPlayers.map((name, index) => (
+              <View
+                key={name}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8,
+                  height: 36,
+                  paddingHorizontal: 12,
+                  borderRadius: 999,
+                  backgroundColor: `${COURT.line}14`,
+                }}
+              >
+                <View
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: PADDLE_FACE[colorOf(name, index === 0 ? 'coral' : 'carbon')],
+                  }}
+                />
+                <Text style={{ color: COURT.ink, fontSize: 15, fontWeight: '600' }}>{name}</Text>
+              </View>
+            ))}
+            <View style={{ justifyContent: 'center' }}>
+              <Text style={{ color: COURT.inkMuted, fontSize: 15 }}>
+                {t('winModal.beat', { name: loserName })}
+              </Text>
+            </View>
+          </View>
+
+          {showCard && (
+            <View style={{ marginTop: 22 }}>
+              <ShareCard gameState={gameState} winner={winner} />
             </View>
           )}
 
-          <View className={`flex-row gap-3 w-full ${onBackToSession ? 'mt-3' : 'mt-8'}`}>
-            <View className="flex-1">
-              <Button title={t('common.exit')} onPress={onExit} variant="secondary" />
+          <View style={{ flex: 1 }} />
+
+          <View style={{ gap: 10, marginTop: 24 }}>
+            {onBackToSession && <CourtButton title={t('openPlay.backToOpenPlay')} onPress={onBackToSession} height={52} />}
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <CourtButton
+                title={t('winModal.share')}
+                variant={onBackToSession ? 'deep' : 'line'}
+                onPress={() => setShowCard(current => !current)}
+                height={52}
+                style={{ flex: 1 }}
+              />
+              <CourtButton
+                title={t('winModal.playAgain')}
+                variant="deep"
+                onPress={onPlayAgain}
+                height={52}
+                style={{ flex: 1 }}
+              />
             </View>
-            <View className="flex-1">
-              <Button title={t('winModal.playAgain')} onPress={onPlayAgain} variant="primary" />
-            </View>
+            {!onBackToSession && <CourtButton title={t('common.exit')} variant="outline" onPress={onExit} height={48} />}
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     </Modal>
   );
 }
