@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CourtDiagram } from '../components/court/CourtDiagram';
 import { MiniCourt } from '../components/court/MiniCourt';
 import { ListGroup, ListRow } from '../components/ui/ListGroup';
 import { COURT } from '../lib/theme/tokens';
@@ -82,36 +83,30 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        <View style={{ paddingHorizontal: 12, paddingTop: 18, flex: 1, minHeight: 170 }}>
+        <View style={{ paddingHorizontal: 12, paddingTop: 18 }}>
           <Pressable
-            style={{ flex: 1 }}
             onPress={() => router.push(activeSession ? '/queue/session' : '/queue')}
             accessibilityRole="button"
             accessibilityLabel={activeSession ? t('openPlay.resume') : t('openPlay.homeCard')}
           >
-            <View
-              style={{
-                flex: 1,
-                minHeight: 160,
-                justifyContent: 'flex-end',
-                padding: 16,
-                borderRadius: 20,
-                overflow: 'hidden',
-                backgroundColor: COURT.inner,
-                borderWidth: 2,
-                borderColor: COURT.line,
-              }}
-            >
-              <View style={{ position: 'absolute', left: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
-              <View style={{ position: 'absolute', right: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
-              <View style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, backgroundColor: COURT.line }} />
-              <View style={{ position: 'absolute', left: 0, width: '27%', top: '50%', height: 2, backgroundColor: COURT.line }} />
-              <View style={{ position: 'absolute', right: 0, width: '27%', top: '50%', height: 2, backgroundColor: COURT.line }} />
-              <View style={{ alignSelf: 'flex-start', backgroundColor: '#1f4b7d', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10 }}>
-                <Text style={{ color: COURT.ink, fontSize: 24, fontWeight: '800' }}>
+            <View>
+              <CourtDiagram players={[null, null, null, null]} emptyLabel="" style={{ borderRadius: 8 }} />
+              <View
+                style={{
+                  position: 'absolute',
+                  left: 10,
+                  bottom: 10,
+                  maxWidth: '78%',
+                  backgroundColor: '#1f4b7dee',
+                  borderRadius: 10,
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
+              >
+                <Text style={{ color: COURT.ink, fontSize: 20, fontWeight: '800' }}>
                   {activeSession ? t('openPlay.resume') : t('openPlay.homeCard')}
                 </Text>
-                <Text style={{ color: '#dce8f5', fontSize: 14, marginTop: 2 }}>
+                <Text style={{ color: '#dce8f5', fontSize: 13, marginTop: 1 }}>
                   {activeSession
                     ? t('openPlay.resumeDesc', {
                         count: activeSession.players.filter(p => p.status !== 'left').length,
@@ -124,7 +119,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        <View style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 12 }}>
+        <View style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 16 }}>
           {modeTile(t('home.singles'), t('home.singlesDesc'), 1, () => router.push('/(game)/singles'))}
           {modeTile(t('home.doubles'), t('home.doublesDesc'), 2, () => router.push('/(game)/doubles'))}
         </View>

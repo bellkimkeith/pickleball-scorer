@@ -133,7 +133,7 @@ export default function DoublesScreen() {
       </View>
 
       <View style={{ paddingHorizontal: 12, paddingTop: 20 }}>
-        <CourtDiagram players={slots} height={260} servingPlayerId={servingId} showServeDiagonal />
+        <CourtDiagram players={slots} servingPlayerId={servingId} showServeDiagonal />
       </View>
 
       <View style={{ flex: 1, justifyContent: 'flex-end', paddingHorizontal: 12, paddingBottom: 12 }}>
@@ -220,7 +220,7 @@ export default function DoublesScreen() {
         visible={showSwitchSides}
         title={t('game.switchSides')}
         message={t('game.switchSidesMessage', { score: settings.sideChangeAt })}
-        illustration={<CourtDiagram players={[null, null, null, null]} height={70} emptyLabel="⇄" style={{ width: 170 }} />}
+        illustration={<CourtDiagram players={[null, null, null, null]} emptyLabel="⇄" style={{ width: 170 }} />}
         confirmLabel={t('game.switch')}
         cancelLabel={t('game.dontSwitch')}
         onConfirm={() => {

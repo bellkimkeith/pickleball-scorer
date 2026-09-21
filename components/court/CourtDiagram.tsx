@@ -26,6 +26,7 @@ export interface CourtDiagramProps {
   clock?: string;
   servingPlayerId?: string;
   showServeDiagonal?: boolean;
+  /** Fixed height. Omit to keep the court's real 44:20 proportions. */
   height?: number;
   emptyLabel?: string;
   onSlotPress?: (index: number) => void;
@@ -35,6 +36,20 @@ export interface CourtDiagramProps {
 }
 
 const LINE = 2;
+
+/**
+ * Real court proportions, so the drawing is a court and not a rounded box.
+ * A pickleball court is 44ft long by 20ft wide, the non-volley zone ("kitchen")
+ * reaches 7ft either side of the net, and the service courts fill the
+ * remaining 15ft to each baseline.
+ */
+export const COURT_LENGTH_FT = 44;
+export const COURT_WIDTH_FT = 20;
+export const COURT_ASPECT = COURT_LENGTH_FT / COURT_WIDTH_FT; // 2.2
+const KITCHEN_FT = 7;
+const SERVICE_FT = COURT_LENGTH_FT / 2 - KITCHEN_FT; // 15
+const SERVICE_PCT = `${(SERVICE_FT / COURT_LENGTH_FT) * 100}%`;   // 34.09%
+const KITCHEN_PCT = `${(KITCHEN_FT / COURT_LENGTH_FT) * 100}%`;   // 15.91%
 
 /** Honors the system "reduce motion" switch. */
 function useReduceMotion(): boolean {
@@ -154,7 +169,7 @@ function ServeDiagonal({ fromSlot }: { fromSlot: number }) {
   const startsTop = fromSlot === 0 || fromSlot === 2;
 
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', left: '28%', right: '28%', top: '26%', bottom: '26%' }}>
+    <View pointerEvents="none" style={{ position: 'absolute', left: '30%', right: '30%', top: '26%', bottom: '26%' }}>
       {dots.map(t => (
         <View
           key={t}
@@ -181,7 +196,7 @@ function CourtDiagramComponent({
   clock,
   servingPlayerId,
   showServeDiagonal = false,
-  height = 124,
+  height,
   emptyLabel,
   onSlotPress,
   onPlayerPress,
@@ -218,7 +233,7 @@ function CourtDiagramComponent({
       accessibilityLabel={label}
       style={[
         {
-          height,
+          ...(height ? { height } : { aspectRatio: COURT_ASPECT }),
           borderRadius: 4,
           backgroundColor: COURT.inner,
           borderWidth: LINE,
@@ -228,14 +243,14 @@ function CourtDiagramComponent({
       ]}
     >
       {/* non-volley zones */}
-      <View style={{ position: 'absolute', left: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
-      <View style={{ position: 'absolute', right: '27%', width: '23%', top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
-      {/* service centre lines */}
-      <View style={{ position: 'absolute', left: 0, width: '27%', top: '50%', height: LINE, backgroundColor: COURT.line }} />
-      <View style={{ position: 'absolute', right: 0, width: '27%', top: '50%', height: LINE, backgroundColor: COURT.line }} />
-      {/* kitchen lines */}
-      <View style={{ position: 'absolute', left: '27%', top: 0, bottom: 0, width: LINE, backgroundColor: COURT.line }} />
-      <View style={{ position: 'absolute', right: '27%', top: 0, bottom: 0, width: LINE, backgroundColor: COURT.line }} />
+      <View style={{ position: 'absolute', left: SERVICE_PCT, width: KITCHEN_PCT, top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
+      <View style={{ position: 'absolute', right: SERVICE_PCT, width: KITCHEN_PCT, top: 0, bottom: 0, backgroundColor: COURT.kitchen }} />
+      {/* centre lines, which only run through the service courts */}
+      <View style={{ position: 'absolute', left: 0, width: SERVICE_PCT, top: '50%', height: LINE, backgroundColor: COURT.line }} />
+      <View style={{ position: 'absolute', right: 0, width: SERVICE_PCT, top: '50%', height: LINE, backgroundColor: COURT.line }} />
+      {/* non-volley zone lines */}
+      <View style={{ position: 'absolute', left: SERVICE_PCT, top: 0, bottom: 0, width: LINE, backgroundColor: COURT.line }} />
+      <View style={{ position: 'absolute', right: SERVICE_PCT, top: 0, bottom: 0, width: LINE, backgroundColor: COURT.line }} />
       {/* net */}
       <View style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: LINE, marginLeft: -LINE / 2, backgroundColor: COURT.line }} />
 
