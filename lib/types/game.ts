@@ -65,8 +65,6 @@ export interface ScoreEvent {
 
 export type GameType = 'sideout' | 'rally';
 
-export type ThemeMode = 'light' | 'dark';
-
 export type Language = 'en' | 'es' | 'fr' | 'de';
 
 export interface GameSettings {
@@ -75,7 +73,6 @@ export interface GameSettings {
   sideChangeAt: number;
   swapScoresOnSideChange: boolean;
   gameType: GameType;
-  theme: ThemeMode;
   language?: Language;
   autoSoundsEnabled?: boolean;
   autoSoundsOnSideOut?: boolean;

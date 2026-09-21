@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
@@ -26,7 +26,12 @@ export default function SummaryScreen() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const session = useSessionStore(state => state.openPlayHistory[0]);
+  const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
+  const session = useSessionStore(state =>
+    sessionId
+      ? state.openPlayHistory.find(entry => entry.id === sessionId)
+      : state.openPlayHistory[0],
+  );
   const saveGroup = useSessionStore(state => state.saveGroup);
   const [namingGroup, setNamingGroup] = useState(false);
 

@@ -4,9 +4,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LogBox, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
-import { ThemeProvider } from '../components/theme/ThemeProvider';
-import { useDarkMode } from '../hooks/useDarkMode';
 import { useGameStore } from '../store/game-store';
+import { COURT } from '../lib/theme/tokens';
 import { initI18n, changeLanguage } from '../i18n';
 import '../global.css';
 
@@ -36,20 +35,16 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
-        <ThemeProvider>
-          <ThemedApp />
-        </ThemeProvider>
+        <ThemedApp />
       </SafeAreaProvider>
     </ErrorBoundary>
   );
 }
 
 function ThemedApp() {
-  const { isDarkMode } = useDarkMode();
-  
   return (
-    <View style={{ flex: 1, backgroundColor: isDarkMode ? '#111827' : '#f9fafb' }}>
-      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+    <View style={{ flex: 1, backgroundColor: COURT.outer }}>
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerShown: false,

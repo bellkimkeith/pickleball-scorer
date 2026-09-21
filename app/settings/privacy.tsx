@@ -1,85 +1,88 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { COURT } from '../../lib/theme/tokens';
+
+const SECTIONS: { heading: string; body: string }[] = [
+  {
+    heading: 'Data collection',
+    body: 'This app does not collect, store, transmit or share any personal data or usage information. Everything it saves (scores, player names, sessions, custom sounds and settings) stays on your device.',
+  },
+  {
+    heading: 'Network usage',
+    body: 'The app makes no network requests. It works entirely offline and never needs an internet connection.',
+  },
+  {
+    heading: 'Analytics and advertising',
+    body: 'There are no analytics services, tracking tools or advertising frameworks in this app.',
+  },
+  {
+    heading: 'Your audio files',
+    body: 'If you add your own soundboard clips, the system file picker asks you to choose a file, and a copy is saved inside the app on your device. Those clips are never uploaded, shared or included in the images you share.',
+  },
+  {
+    heading: 'Device permissions',
+    body: 'The app does not use your camera, contacts or location. The only time it touches your files is when you pick an audio clip yourself.',
+  },
+  {
+    heading: 'Sharing',
+    body: 'When you share a result, your phone’s own share sheet handles it, and you choose where it goes. The app sends nothing on its own.',
+  },
+  {
+    heading: 'Payment',
+    body: 'The app is a one-time purchase handled by the App Store or Google Play. It contains no subscriptions or in-app purchases, and the app never sees your payment details.',
+  },
+  {
+    heading: 'Children’s privacy',
+    body: 'The app is safe for all ages. Since no data is collected, there are no concerns regarding children’s privacy.',
+  },
+  {
+    heading: 'Contact',
+    body: 'For questions about this policy, use the developer contact details on the app’s store listing.',
+  },
+];
 
 export default function PrivacyPolicyScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <StatusBar style="dark" />
-      <ScrollView className="flex-1">
-        {/* Header */}
-        <View className="pb-6 px-6 flex-row items-center">
-          <Pressable
-            onPress={() => router.back()}
-            className="mr-4"
-            accessibilityLabel="Go back"
-            accessibilityRole="button"
-          >
-            <Ionicons name="arrow-back" size={28} color="#374151" />
-          </Pressable>
-          <Text className="text-3xl font-bold text-gray-900">Privacy Policy</Text>
-        </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COURT.outer }} edges={['top']}>
+      <StatusBar style="light" />
 
-        <View className="px-6 pb-8">
-          <View className="bg-white rounded-2xl p-6 mb-4">
-            <Text className="text-lg font-semibold text-gray-900 mb-3">
-              Privacy Policy for Pickleball Scorer
-            </Text>
-            <Text className="text-sm text-gray-500 mb-4">Last updated: March 17, 2026</Text>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.back')}
+          hitSlop={10}
+          style={{ paddingHorizontal: 16, paddingTop: 6, alignSelf: 'flex-start' }}
+        >
+          <Text style={{ color: COURT.ink, fontSize: 17 }}>‹ {t('common.back')}</Text>
+        </Pressable>
 
-            <Text className="text-base text-gray-700 mb-4">
-              Pickleball Scorer is a fully offline application. Your privacy is important to us, and
-              we want to be transparent about our practices.
-            </Text>
+        <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4 }}>
+          {t('settings.privacyPolicy')}
+        </Text>
+        <Text style={{ color: COURT.inkMuted, fontSize: 14, paddingHorizontal: 16, paddingTop: 4, paddingBottom: 18 }}>
+          Last updated: 21 September 2026
+        </Text>
 
-            <Text className="text-lg font-semibold text-gray-900 mb-2">Data Collection</Text>
-            <Text className="text-base text-gray-700 mb-4">
-              This app does not collect, store, transmit, or share any personal data or usage
-              information. All game data (scores, player names, and settings) is stored locally on
-              your device and is never sent to any server.
-            </Text>
+        <View style={{ paddingHorizontal: 16 }}>
+          <Text style={{ color: '#e4ece7', fontSize: 17, lineHeight: 26, marginBottom: 20 }}>
+            Pickleball Scorer runs entirely on your phone. This page explains exactly what that means.
+          </Text>
 
-            <Text className="text-lg font-semibold text-gray-900 mb-2">Network Usage</Text>
-            <Text className="text-base text-gray-700 mb-4">
-              This app does not make any network requests. It functions entirely offline and does not
-              require an internet connection.
-            </Text>
-
-            <Text className="text-lg font-semibold text-gray-900 mb-2">Analytics</Text>
-            <Text className="text-base text-gray-700 mb-4">
-              This app does not use any analytics services, tracking tools, or advertising
-              frameworks.
-            </Text>
-
-            <Text className="text-lg font-semibold text-gray-900 mb-2">Third-Party Services</Text>
-            <Text className="text-base text-gray-700 mb-4">
-              This app does not integrate with any third-party services that collect user data.
-            </Text>
-
-            <Text className="text-lg font-semibold text-gray-900 mb-2">Device Permissions</Text>
-            <Text className="text-base text-gray-700 mb-4">
-              This app does not request access to your camera, contacts, location, or any other
-              sensitive device features.
-            </Text>
-
-            <Text className="text-lg font-semibold text-gray-900 mb-2">
-              Children&apos;s Privacy
-            </Text>
-            <Text className="text-base text-gray-700 mb-4">
-              This app is safe for users of all ages. Since no data is collected, there are no
-              concerns regarding children&apos;s privacy.
-            </Text>
-
-            <Text className="text-lg font-semibold text-gray-900 mb-2">Contact</Text>
-            <Text className="text-base text-gray-700">
-              If you have any questions about this privacy policy, please contact us through the App
-              Store developer contact information.
-            </Text>
-          </View>
+          {SECTIONS.map(section => (
+            <View key={section.heading} style={{ marginBottom: 20 }}>
+              <Text style={{ color: COURT.ink, fontSize: 18, fontWeight: '700', marginBottom: 6 }}>
+                {section.heading}
+              </Text>
+              <Text style={{ color: '#e4ece7', fontSize: 16, lineHeight: 24 }}>{section.body}</Text>
+            </View>
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
