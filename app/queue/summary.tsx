@@ -75,7 +75,7 @@ export default function SummaryScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 110 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
         <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 18 }}>
           {t('openPlay.summaryTitle')}
         </Text>
@@ -125,6 +125,7 @@ export default function SummaryScreen() {
 
         <ListGroup style={{ marginHorizontal: 12, marginTop: 20 }}>
           <ListRow
+            stacked
             label={t('openPlay.frequentPartners')}
             value={
               topPairs.length === 0
@@ -138,7 +139,7 @@ export default function SummaryScreen() {
         </ListGroup>
       </ScrollView>
 
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingBottom: 30 }}>
+      <View style={{ padding: 16, paddingBottom: 30 }}>
         <CourtButton title={t('openPlay.done')} onPress={() => router.replace('/')} height={52} />
       </View>
 

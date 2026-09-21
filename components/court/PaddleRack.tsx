@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Text, View } from 'react-native';
+import Animated, { FadeIn, SlideOutUp } from 'react-native-reanimated';
 import { COURT } from '../../lib/theme/tokens';
 import { PaddleColor } from '../../lib/types/queue';
 import { Paddle } from './Paddle';
@@ -99,7 +100,11 @@ function PaddleRackComponent({
               const tapedToPrevious =
                 index > 0 && partner !== undefined && next[index - 1]?.id === partner;
               return (
-                <View key={player.id}>
+                <Animated.View
+                  key={player.id}
+                  entering={FadeIn.duration(200)}
+                  exiting={SlideOutUp.springify().damping(20)}
+                >
                   {tapedToPrevious && <Tape />}
                   <Paddle
                     name={player.name}
@@ -109,7 +114,7 @@ function PaddleRackComponent({
                     outlined
                     onPress={onPlayerPress ? () => onPlayerPress(player.id) : undefined}
                   />
-                </View>
+                </Animated.View>
               );
             })}
           </View>

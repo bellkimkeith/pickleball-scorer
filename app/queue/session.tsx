@@ -109,7 +109,7 @@ export default function SessionScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 110 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 16, paddingTop: 6 }}>
           <BackButton onPress={() => router.replace('/')} />
           <Pressable onPress={() => setEndOpen(true)} accessibilityRole="button" accessibilityLabel={t('openPlay.end')} hitSlop={10}>
@@ -181,7 +181,7 @@ export default function SessionScreen() {
         </View>
       </ScrollView>
 
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', gap: 8, padding: 16, paddingBottom: 30 }}>
+      <View style={{ flexDirection: 'row', gap: 8, padding: 16, paddingBottom: 30 }}>
         <CourtButton
           title={t('openPlay.addPlayer')}
           variant="deep"

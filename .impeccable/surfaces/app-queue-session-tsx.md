@@ -17,7 +17,7 @@ Organizer holding one phone courtside for ~2 hours, glancing between rallies in 
 
 THESIS: Draw what players see. Courts are real top-down courts with each name in its playing position; the queue is the paddle rack every open-play group already uses. Refuses the category default of white cards, a green button and a plain list.
 
-OWN-WORLD: The outer-court green ground (#2d5a48) with a faint acrylic grit, inner-court blue (#2c5c93) and a lighter kitchen blue (#3a6aa3), 2-inch white line color (#f4f6f2) as the only primary-button fill. Paddle faces are the only saturated color: ochre, coral, white, sky, carbon; each player keeps one paddle color all session. Grip-wrap handles carry games-played numbers, and tape joins locked pairs. System type (SF / Roboto); no display face.
+OWN-WORLD: The outer-court green ground (#2d5a48) with a faint acrylic grit, inner-court blue (#2c5c93) and a lighter kitchen blue (#3a6aa3), 2-inch white line color (#f4f6f2) as the only primary-button fill. Paddle faces are the only saturated color: eight of them (ochre, coral, paper, sky, carbon, lilac, sand, teal), because spec §4.6 gives every player their own face so they can find themselves on court, in the rack and in the summary, and five collide once a session passes eight players. Each player keeps one paddle color all session. Grip-wrap handles carry games-played numbers, and tape joins locked pairs. System type (SF / Roboto); no display face.
 
 STORY: The organizer sees at a glance who is on which court and side, who is next (the outlined paddles) and how many games each person has played (the handle numbers). They believe the rotation is fair because the counts are visible, and they act with Match done.
 

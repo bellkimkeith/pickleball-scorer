@@ -35,7 +35,7 @@ export const PADDLE_FACE: Record<PaddleColor, string> = {
   paper: '#f2efe8',
   sky: '#8fc3e6',
   carbon: '#2f3130',
-  lilac: '#9d8fc4',
+  lilac: '#8a93bd',
   sand: '#cbb389',
   teal: '#3f9e91',
 };

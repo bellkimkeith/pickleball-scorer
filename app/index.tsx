@@ -59,7 +59,11 @@ export default function HomeScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingHorizontal: 16, paddingTop: 8 }}>
           <View style={{ flex: 1 }}>
             <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '800', lineHeight: 38 }}>
@@ -78,15 +82,17 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        <View style={{ paddingHorizontal: 12, paddingTop: 18 }}>
+        <View style={{ paddingHorizontal: 12, paddingTop: 18, flex: 1, minHeight: 170 }}>
           <Pressable
+            style={{ flex: 1 }}
             onPress={() => router.push(activeSession ? '/queue/session' : '/queue')}
             accessibilityRole="button"
             accessibilityLabel={activeSession ? t('openPlay.resume') : t('openPlay.homeCard')}
           >
             <View
               style={{
-                height: 160,
+                flex: 1,
+                minHeight: 160,
                 justifyContent: 'flex-end',
                 padding: 16,
                 borderRadius: 20,

@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo, Pressable, Text, View, ViewStyle } from 'react-native';
-import Animated, { FadeIn, SlideInLeft, SlideInRight } from 'react-native-reanimated';
+import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
 import { PaddleColor } from '../../lib/types/queue';
 
@@ -253,7 +253,7 @@ function CourtDiagramComponent({
             key={`${index}-${player?.id ?? 'empty'}`}
             entering={
               animateEntry && player && !reduceMotion
-                ? (index < 2 ? SlideInLeft : SlideInRight).springify().damping(18).delay(index * 70)
+                ? SlideInDown.springify().damping(17).delay(index * 60)
                 : animateEntry && player
                   ? FadeIn.duration(180)
                   : undefined

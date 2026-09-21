@@ -74,7 +74,7 @@ export default function CheckInScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <StatusBar style="light" />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
         <BackButton />
 
         <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4 }}>
@@ -191,7 +191,7 @@ export default function CheckInScreen() {
         </Text>
       </ScrollView>
 
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingBottom: 30 }}>
+      <View style={{ padding: 16, paddingBottom: 30 }}>
         <CourtButton
           title={t('openPlay.start', { count: checkedIn.length })}
           onPress={start}
