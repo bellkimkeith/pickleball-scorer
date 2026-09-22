@@ -1,8 +1,8 @@
 # Release checklist
 
-For the release that turns Pickleball Scorer into a one-time paid app with Open
-Play and the Court & Paddle design. Work top to bottom; the store steps in §2
-are the ones that can hurt real users if skipped.
+For the release that turns Pickle & Score into a one-time paid app with Open
+Play and the Court & Paddle design. The live app is the free v1.1.0; this
+release is the first to carry Open Play, the new design, and a price.
 
 ## 1. Before you build
 
@@ -14,19 +14,23 @@ are the ones that can hurt real users if skipped.
 - [ ] Bump `version` in `app.json` (and `ios.buildNumber` / `android.versionCode`).
 - [ ] Icons and splash regenerate cleanly: `node scripts/generate-icons.mjs`.
 
-## 2. Store setup, before the paid build goes live
+## 2. Store setup
 
-This is the part with real-world consequences.
+Verified from the repository on 22 September 2026: **the paywall was never
+shipped.** The subscription code lived only on the
+`feature/phase1-soundboard-stats-paywall` branch, never reached `main`, is
+absent from the `v1.1.0` tag, and the RevenueCat key was never filled in (the
+store fell back to the literal `your_api_key_here`). What is live is a free app
+at version 1.1.0. So there are no subscribers to migrate and nothing to stop
+selling.
 
-- [ ] **App Store Connect:** stop selling the old subscription products. Anyone
-      with an active subscription keeps being charged for features that are now
-      free otherwise. Decide and act: let them lapse, refund, or cancel.
-- [ ] **Google Play Console:** same for any subscription products there.
-- [ ] **RevenueCat:** archive or delete the project; nothing in the app talks to
-      it any more.
-- [ ] Set the price tier in both stores (₱199 or the local equivalent).
+- [ ] Set the price in both stores (₱199 or the local equivalent). Note that on
+      both stores, people who already downloaded the free version keep it for
+      free; only new downloads pay.
+- [ ] Delete the RevenueCat project if one was ever created; nothing in the app
+      talks to it.
 - [ ] Update the store description: no subscriptions, no ads, works offline,
-      one-time purchase. Mention Open Play (fair rotation) as the headline feature.
+      one-time purchase. Lead with Open Play (fair rotation).
 - [ ] New screenshots. The strongest set: the live session with two courts and
       the paddle rack, the session summary ("everyone played 6 or 7 games"),
       the doubles scorer, check-in, and stats.
