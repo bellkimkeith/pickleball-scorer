@@ -1,10 +1,11 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CourtDiagram, CourtSlots } from '../../components/court/CourtDiagram';
+import { FlightPlayer, PaddleFlight } from '../../components/court/PaddleFlight';
 import { PaddleRack, RackPlayer } from '../../components/court/PaddleRack';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
 import { PlayerSheet } from '../../components/queue/PlayerSheet';
@@ -36,6 +37,47 @@ export default function SessionScreen() {
   const [addOpen, setAddOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
   const [openPlayerId, setOpenPlayerId] = useState<string | null>(null);
+  const [flight, setFlight] = useState<FlightPlayer[]>([]);
+
+  // Measured at the moment a match is called, so the paddles can travel from
+  // where they actually sit in the rack to where they land on the court.
+  const rootRef = useRef<View>(null);
+  const rackRef = useRef<View>(null);
+  const courtRefs = useRef<Record<number, View | null>>({});
+
+  const measure = (node: View | null) =>
+    new Promise<{ x: number; y: number; width: number; height: number } | null>(resolve => {
+      if (!node) return resolve(null);
+      node.measureInWindow((x, y, width, height) => resolve({ x, y, width, height }));
+    });
+
+  /** Fly the four who are next from the rack onto the court that just freed up. */
+  const flyPaddlesToCourt = async (courtIndex: number, travelling: RackPlayer[]) => {
+    const [root, rack, court] = await Promise.all([
+      measure(rootRef.current),
+      measure(rackRef.current),
+      measure(courtRefs.current[courtIndex] ?? null),
+    ]);
+    if (!root || !rack || !court || travelling.length === 0) return;
+
+    const slots = [
+      { x: court.x + 14, y: court.y + 16 },
+      { x: court.x + 14, y: court.y + court.height - 58 },
+      { x: court.x + court.width - 62, y: court.y + 16 },
+      { x: court.x + court.width - 62, y: court.y + court.height - 58 },
+    ];
+
+    setFlight(
+      travelling.slice(0, 4).map((player, index) => ({
+        id: player.id,
+        name: player.name,
+        color: player.color,
+        games: player.games,
+        from: { x: rack.x + 12 + index * 56 - root.x, y: rack.y + 20 - root.y },
+        to: { x: slots[index].x - root.x, y: slots[index].y - root.y },
+      })),
+    );
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -106,7 +148,7 @@ export default function SessionScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']} ref={rootRef} collapsable={false}>
       <StatusBar style="light" />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
@@ -133,20 +175,26 @@ export default function SessionScreen() {
             const match = matchId ? session.matches.find(m => m.id === matchId && !m.endedAt) : undefined;
             return (
               <View key={index}>
-                <CourtDiagram
-                  players={match ? slotsFor(match) : [null, null, null, null]}
-                  courtLabel={t('openPlay.court', { number: index + 1 })}
-                  clock={match ? elapsed(match.calledAt, now) : undefined}
-                  emptyLabel={t('openPlay.waiting')}
-                  animateEntry
-                  onPlayerPress={match ? setOpenPlayerId : undefined}
-                  style={{ marginTop: 12 }}
-                />
+                <View ref={node => { courtRefs.current[index] = node; }} collapsable={false}>
+                  <CourtDiagram
+                    players={match ? slotsFor(match) : [null, null, null, null]}
+                    courtLabel={t('openPlay.court', { number: index + 1 })}
+                    clock={match ? elapsed(match.calledAt, now) : undefined}
+                    emptyLabel={t('openPlay.waiting')}
+                    animateEntry
+                    onPlayerPress={match ? setOpenPlayerId : undefined}
+                    style={{ marginTop: 12 }}
+                  />
+                </View>
                 {match && (
                   <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
                     <CourtButton
                       title={t('openPlay.matchDone')}
-                      onPress={() => matchDone(match.id)}
+                      onPress={() => {
+                        const travelling = rack.next;
+                        matchDone(match.id);
+                        flyPaddlesToCourt(index, travelling);
+                      }}
                       style={{ flex: 1 }}
                       height={48}
                     />
@@ -169,7 +217,7 @@ export default function SessionScreen() {
           <Text style={{ color: COURT.inkMuted, fontSize: 13 }}>{t('openPlay.rackHint')}</Text>
         </View>
 
-        <View style={{ paddingHorizontal: 12 }}>
+        <View style={{ paddingHorizontal: 12 }} ref={rackRef} collapsable={false}>
           <PaddleRack
             next={rack.next}
             waiting={rack.waiting}
@@ -214,6 +262,8 @@ export default function SessionScreen() {
       />
 
       <PlayerSheet playerId={openPlayerId} onClose={() => setOpenPlayerId(null)} />
+
+      <PaddleFlight players={flight} onDone={() => setFlight([])} />
 
       <Dialog
         visible={endOpen}

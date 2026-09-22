@@ -11,7 +11,7 @@ export default {
   },
   home: {
     savedPlayers: 'Gespeicherte Spieler',
-    title: 'Pickleball Zähler',
+    title: 'Pickle & Score',
     subtitle: 'Neues Spiel starten',
     singles: 'Einzel',
     singlesDesc: '1v1 Spiel',

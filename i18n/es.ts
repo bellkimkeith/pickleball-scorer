@@ -11,7 +11,7 @@ export default {
   },
   home: {
     savedPlayers: 'Jugadores guardados',
-    title: 'Marcador de Pickleball',
+    title: 'Pickle & Score',
     subtitle: 'Iniciar un nuevo partido',
     singles: 'Individual',
     singlesDesc: 'Partido 1v1',
