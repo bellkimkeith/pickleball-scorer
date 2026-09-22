@@ -348,7 +348,7 @@ A top-down court at 44:20, drawn from positioned views: 2pt line-white border, k
 ### Motion
 Entry animation on called matches: each of the four court slots enters with `SlideInDown.springify().damping(17)` staggered 60ms by slot index, so names appear to walk on. The rack's next-four fade in (`FadeIn` 200ms) and exit upward (`SlideOutUp.springify().damping(20)`) as they are called. Reduce Motion is read from `AccessibilityInfo` with a live listener and downgrades every entry to a 180ms crossfade. Screen transitions are the platform push; sheets slide, dialogs fade.
 
-The direction contract's signature rack-to-court shared-element move is **not built**. What ships is the staggered entry plus the rack exit — two independent animations, not one continuous transfer.
+The direction contract's signature move is **built**: on Match done the four next paddles are measured where they sit in the rack and animated to their court positions (`components/court/PaddleFlight.tsx`, 420ms, cubic ease-out, 70ms stagger, shrinking and fading as they land), over a staggered `SlideInDown` entry of the court names. Reduce Motion skips the flight entirely and keeps the plain entry.
 
 ### Named Rules
 **The Inner-View Rule.** Under NativeWind, a `Pressable`'s `style` callback is dropped. Visual styling must live on a `View` inside the `Pressable`, with press state held in React state. This has broken twice; do not put a background, border or radius on a `Pressable` directly.

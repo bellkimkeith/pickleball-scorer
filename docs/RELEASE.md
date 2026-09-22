@@ -68,11 +68,7 @@ Everything so far was verified on an Android emulator. Before release:
 
 - The soundboard ships with 6 built-in sounds; the other 11 names were removed
   because they never had audio files. Add licensed clips later if you want more.
-- The contract's full rack-to-court animation (paddles flying onto the court) is
-  not built; what ships is an entry animation plus a rack exit.
 - The app is single-device: no accounts, no sync, no sharing a live queue.
-- `Pickle & Score` (app.json) and "Pickleball Scorer" (in-app title) are still
-  two different names. Pick one before the store listing goes out.
 
 ## 6. After release
 
