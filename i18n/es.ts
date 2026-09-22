@@ -103,6 +103,7 @@ export default {
     de: 'Deutsch',
   },
   openPlay: {
+    everyone: 'Todos',
     manageHint: 'Mantén pulsado a un jugador para renombrarlo o eliminarlo',
     renamePlayer: 'Renombrar',
     deletePlayer: 'Eliminar jugador',

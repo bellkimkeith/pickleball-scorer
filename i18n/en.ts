@@ -150,6 +150,7 @@ export default {
     winRate: 'Win Rate',
   },
   openPlay: {
+    everyone: 'Everyone',
     manageHint: 'Long-press a player to rename or delete them',
     renamePlayer: 'Rename',
     deletePlayer: 'Delete player',

@@ -175,3 +175,36 @@ and the handle lengthened slightly so the silhouette still reads at 40px.
 `,
 );
 console.log('wrote', `${OUT}/ICONS.md`);
+
+// ---------------------------------------------------------------------------
+// Native projects keep their own copies of the icon, so write those too.
+// (This repo checks in android/ and ios/, so `expo prebuild` is not run.)
+// ---------------------------------------------------------------------------
+const ANDROID_RES = 'android/app/src/main/res';
+const DENSITIES = [
+  ['mdpi', 48, 108],
+  ['hdpi', 72, 162],
+  ['xhdpi', 96, 216],
+  ['xxhdpi', 144, 324],
+  ['xxxhdpi', 192, 432],
+];
+
+const legacySvg = iconSvg({ background: true, scale: 0.9 });
+const foregroundSvg = iconSvg({ background: false, scale: 0.62 });
+
+for (const [density, launcher, foreground] of DENSITIES) {
+  const dir = `${ANDROID_RES}/mipmap-${density}`;
+  await sharp(Buffer.from(legacySvg)).resize(launcher, launcher).webp({ quality: 95 })
+    .toFile(`${dir}/ic_launcher.webp`);
+  await sharp(Buffer.from(legacySvg)).resize(launcher, launcher).webp({ quality: 95 })
+    .toFile(`${dir}/ic_launcher_round.webp`);
+  await sharp(Buffer.from(foregroundSvg)).resize(foreground, foreground).webp({ quality: 95 })
+    .toFile(`${dir}/ic_launcher_foreground.webp`);
+  console.log('wrote', `${dir}/ic_launcher*.webp`);
+}
+
+await sharp(Buffer.from(iconSvg({ background: true, scale: 0.9 })))
+  .resize(1024, 1024)
+  .png()
+  .toFile('ios/PickleScore/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png');
+console.log('wrote ios App-Icon-1024x1024@1x.png');

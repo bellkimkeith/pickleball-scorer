@@ -9,7 +9,7 @@ import { NameInputSheet } from '../../components/queue/NameInputSheet';
 import { CourtButton } from '../../components/ui/Button';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
 import { pairingHistory } from '../../lib/queue/engine';
-import { COURT } from '../../lib/theme/tokens';
+import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
 import { useSessionStore } from '../../store/session-store';
 
 function clockTime(timestamp: number): string {
@@ -120,6 +120,56 @@ export default function SummaryScreen() {
               games={player.gamesPlayed}
               size="head"
             />
+          ))}
+        </View>
+
+        <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', paddingHorizontal: 16, paddingTop: 22, paddingBottom: 8 }}>
+          {t('openPlay.everyone')}
+        </Text>
+        <View
+          style={{
+            marginHorizontal: 12,
+            borderRadius: 14,
+            backgroundColor: `${COURT.line}0f`,
+            borderWidth: 1,
+            borderColor: `${COURT.line}14`,
+            overflow: 'hidden',
+          }}
+        >
+          {players.map((player, index) => (
+            <View key={player.id}>
+              {index > 0 && <View style={{ height: 1, backgroundColor: `${COURT.line}14`, marginLeft: 14 }} />}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, height: 48 }}>
+                <View
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: PADDLE_FACE[player.color],
+                  }}
+                />
+                <Text style={{ color: COURT.ink, fontSize: 16, flex: 1 }} numberOfLines={1}>
+                  {player.name}
+                </Text>
+                {player.queueCount > player.gamesPlayed && (
+                  <Text style={{ color: COURT.inkMuted, fontSize: 13 }}>
+                    {t('openPlay.arrived', { time: clockTime(player.arrivedAt) })}
+                  </Text>
+                )}
+                <Text
+                  style={{
+                    color: COURT.ink,
+                    fontSize: 16,
+                    fontWeight: '700',
+                    fontVariant: ['tabular-nums'],
+                    minWidth: 22,
+                    textAlign: 'right',
+                  }}
+                >
+                  {player.gamesPlayed}
+                </Text>
+              </View>
+            </View>
           ))}
         </View>
 

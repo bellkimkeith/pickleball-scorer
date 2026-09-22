@@ -1,5 +1,7 @@
 import { memo } from 'react';
 import { Pressable, Text, View, ViewStyle } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
+import { PADDLE_FACE_PATH, PADDLE_GUARD_WIDTH, PADDLE_HANDLE_PATH } from '../../lib/theme/paddle-shape';
 import { COURT, PADDLE_FACE, PADDLE_GRIP, PADDLE_GRIP_TEXT, PADDLE_TEXT } from '../../lib/theme/tokens';
 import { PaddleColor } from '../../lib/types/queue';
 
@@ -10,7 +12,7 @@ export interface PaddleProps {
   color: PaddleColor;
   games?: number;
   size?: PaddleSize;
-  /** Next up: a line-white outline around the face. */
+  /** Next up: a line-white outline around the paddle. */
   outlined?: boolean;
   /** Not checked in: hollow face. */
   ghost?: boolean;
@@ -21,13 +23,20 @@ export interface PaddleProps {
   style?: ViewStyle;
 }
 
-const WRAP_BANDS = [6, 14, 22, 30, 38, 46, 54];
-
-const SIZES: Record<PaddleSize, { width: number; face: number; grip: number; font: number; radius: number }> = {
-  lg: { width: 62, face: 104, grip: 58, font: 15, radius: 26 },
-  md: { width: 62, face: 76, grip: 0, font: 13, radius: 22 },
-  head: { width: 42, face: 54, grip: 0, font: 11, radius: 16 },
+/**
+ * The rack shows the whole paddle; the smaller sizes crop below the neck so the
+ * face (which carries the name) stays big enough to read.
+ */
+const SIZES: Record<
+  PaddleSize,
+  { width: number; font: number; noteFont: number; gripFont: number; boxHeight: number; numberOnFace: boolean }
+> = {
+  lg: { width: 68, font: 13, noteFont: 9, gripFont: 11, boxHeight: 200, numberOnFace: false },
+  md: { width: 64, font: 13, noteFont: 8, gripFont: 10, boxHeight: 150, numberOnFace: true },
+  head: { width: 48, font: 10, noteFont: 7, gripFont: 9, boxHeight: 150, numberOnFace: true },
 };
+
+const GUARD = '#17181a';
 
 function PaddleComponent({
   name,
@@ -42,113 +51,94 @@ function PaddleComponent({
   style,
 }: PaddleProps) {
   const dims = SIZES[size];
-  const face = ghost ? 'transparent' : PADDLE_FACE[color];
-  const text = ghost ? COURT.inkMuted : PADDLE_TEXT[color];
-  const showGripNumber = dims.grip > 0 && games !== undefined;
+  // 80 units wide is the paddle's own width inside the 200 box.
+  const scale = dims.width / 92;
+  const height = dims.boxHeight * scale;
+
+  const faceColor = ghost ? 'transparent' : PADDLE_FACE[color];
+  const textColor = ghost ? COURT.inkMuted : PADDLE_TEXT[color];
+  const guardColor = ghost ? `${COURT.line}66` : GUARD;
 
   const body = (
-    <View style={[{ width: dims.width }, style]}>
+    <View style={[{ width: dims.width, height }, style]}>
+      <Svg width={dims.width} height={height} viewBox={`54 12 92 ${dims.boxHeight}`}>
+        <Path d={PADDLE_HANDLE_PATH} fill={ghost ? 'transparent' : PADDLE_GRIP} stroke={ghost ? guardColor : 'none'} strokeWidth={3} />
+        <Path
+          d={PADDLE_FACE_PATH}
+          fill={guardColor}
+          stroke={guardColor}
+          strokeWidth={PADDLE_GUARD_WIDTH}
+          strokeLinejoin="round"
+        />
+        <Path d={PADDLE_FACE_PATH} fill={faceColor} />
+        {outlined && (
+          <Path
+            d={PADDLE_FACE_PATH}
+            fill="none"
+            stroke={COURT.line}
+            strokeWidth={PADDLE_GUARD_WIDTH + 5}
+            strokeLinejoin="round"
+            opacity={0.9}
+          />
+        )}
+        <Path d={PADDLE_FACE_PATH} fill={faceColor} />
+      </Svg>
+
+      {/* name on the face */}
       <View
+        pointerEvents="none"
         style={{
-          height: dims.face,
-          borderWidth: ghost ? 1.5 : outlined ? 2 : 1,
-          borderColor: ghost ? `${COURT.line}66` : outlined ? COURT.line : '#00000022',
-          borderRadius: dims.radius,
-          borderBottomLeftRadius: dims.radius * 0.7,
-          borderBottomRightRadius: dims.radius * 0.7,
-          backgroundColor: face,
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: (74 - 12) * scale - dims.font,
           alignItems: 'center',
-          justifyContent: 'flex-end',
-          paddingBottom: size === 'head' ? 6 : 10,
           paddingHorizontal: 4,
         }}
       >
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
-          style={{ color: text, fontSize: dims.font, fontWeight: '700' }}
+          style={{ color: textColor, fontSize: dims.font, fontWeight: '700' }}
         >
           {name}
         </Text>
         {note && (
-          <Text numberOfLines={1} style={{ color: text, fontSize: 10, fontWeight: '600', opacity: 0.75 }}>
+          <Text numberOfLines={1} style={{ color: textColor, fontSize: dims.noteFont, fontWeight: '600', opacity: 0.75 }}>
             {note}
           </Text>
         )}
-        {!showGripNumber && games !== undefined && (
+      </View>
+
+      {/* games played, on the handle */}
+      {games !== undefined && (
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: dims.numberOnFace
+              ? (74 - 12) * scale + dims.font * 0.6
+              : (156 - 12) * scale - dims.gripFont * 0.7,
+            alignItems: 'center',
+          }}
+        >
           <Text
             style={{
-              color: text,
-              fontSize: 10,
+              color: ghost
+                ? COURT.inkMuted
+                : dims.numberOnFace
+                  ? PADDLE_TEXT[color]
+                  : PADDLE_GRIP_TEXT,
+              fontSize: dims.gripFont,
               fontWeight: '800',
-              opacity: 0.8,
               fontVariant: ['tabular-nums'],
             }}
           >
             {games}
           </Text>
-        )}
-      </View>
-
-      {dims.grip > 0 && (
-        <>
-          {/* throat: the taper where the face meets the handle */}
-          <View
-            style={{
-              width: 30,
-              height: 8,
-              alignSelf: 'center',
-              backgroundColor: face,
-              borderBottomLeftRadius: 10,
-              borderBottomRightRadius: 10,
-              borderWidth: ghost ? 1.5 : 0,
-              borderTopWidth: 0,
-              borderColor: `${COURT.line}66`,
-            }}
-          />
-          <View
-            style={{
-              width: 20,
-              height: dims.grip,
-              alignSelf: 'center',
-              borderBottomLeftRadius: 6,
-              borderBottomRightRadius: 6,
-              backgroundColor: PADDLE_GRIP,
-              alignItems: 'center',
-              paddingTop: 6,
-              overflow: 'hidden',
-            }}
-          >
-            {/* overgrip wrapped on the diagonal, the way a handle is taped */}
-            {WRAP_BANDS.map(top => (
-              <View
-                key={top}
-                pointerEvents="none"
-                style={{
-                  position: 'absolute',
-                  left: -14,
-                  right: -14,
-                  top,
-                  height: 3,
-                  backgroundColor: '#ffffff14',
-                  transform: [{ rotate: '-28deg' }],
-                }}
-              />
-            ))}
-            {showGripNumber && (
-              <Text
-                style={{
-                  color: PADDLE_GRIP_TEXT,
-                  fontSize: 11,
-                  fontWeight: '800',
-                  fontVariant: ['tabular-nums'],
-                }}
-              >
-                {games}
-              </Text>
-            )}
-          </View>
-        </>
+        </View>
       )}
     </View>
   );
@@ -172,6 +162,7 @@ function PaddleComponent({
       accessibilityRole="button"
       accessibilityLabel={label}
       hitSlop={6}
+      android_ripple={{ color: `${COURT.line}22`, borderless: true }}
       style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
     >
       {body}
