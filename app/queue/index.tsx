@@ -10,6 +10,7 @@ import { BackButton } from '../../components/ui/BackButton';
 import { CourtButton } from '../../components/ui/Button';
 import { Stepper } from '../../components/ui/Controls';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
+import { Dialog } from '../../components/ui/Dialog';
 import { Sheet } from '../../components/ui/Sheet';
 import { COURT } from '../../lib/theme/tokens';
 import { useSessionStore } from '../../store/session-store';
@@ -23,6 +24,7 @@ export default function CheckInScreen() {
   const defaultCourtCount = useSessionStore(state => state.defaultCourtCount);
   const addSavedPlayer = useSessionStore(state => state.addSavedPlayer);
   const deleteSavedPlayer = useSessionStore(state => state.deleteSavedPlayer);
+  const renameSavedPlayer = useSessionStore(state => state.renameSavedPlayer);
   const startSession = useSessionStore(state => state.startSession);
   const lock = useSessionStore(state => state.lock);
 
@@ -31,6 +33,8 @@ export default function CheckInScreen() {
   const [pairs, setPairs] = useState<[string, string][]>([]);
   const [addOpen, setAddOpen] = useState(false);
   const [managing, setManaging] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [pairSheetOpen, setPairSheetOpen] = useState(false);
   const [pairingWith, setPairingWith] = useState<string | null>(null);
 
@@ -80,9 +84,14 @@ export default function CheckInScreen() {
         <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4 }}>
           {t('openPlay.whosHere')}
         </Text>
-        <Text style={{ color: COURT.inkMuted, fontSize: 15, paddingHorizontal: 16, paddingTop: 2, paddingBottom: 14 }}>
+        <Text style={{ color: COURT.inkMuted, fontSize: 15, paddingHorizontal: 16, paddingTop: 2 }}>
           {t('openPlay.whosHereDesc')}
         </Text>
+        {savedPlayers.length > 0 && (
+          <Text style={{ color: COURT.inkMuted, fontSize: 13, paddingHorizontal: 16, paddingTop: 4, paddingBottom: 12 }}>
+            {t('openPlay.manageHint')}
+          </Text>
+        )}
 
         <Pressable
           onPress={() => setAddOpen(true)}
@@ -215,19 +224,58 @@ export default function CheckInScreen() {
       />
 
       <Sheet visible={managing !== null} onClose={() => setManaging(null)} title={managedPlayer?.name}>
-        <CourtButton
-          title={t('openPlay.removePlayer')}
-          variant="dangerText"
-          onPress={() => {
-            if (managing) {
-              deleteSavedPlayer(managing);
-              setCheckedIn(current => current.filter(id => id !== managing));
-              setPairs(current => current.filter(pair => !pair.includes(managing)));
-            }
-            setManaging(null);
-          }}
-        />
+        <View style={{ gap: 10, paddingBottom: 8 }}>
+          <CourtButton
+            title={t('openPlay.renamePlayer')}
+            variant="deep"
+            onPress={() => {
+              setRenaming(managing);
+              setManaging(null);
+            }}
+          />
+          <CourtButton
+            title={t('openPlay.deletePlayer')}
+            variant="dangerText"
+            onPress={() => {
+              setConfirmDelete(managing);
+              setManaging(null);
+            }}
+          />
+        </View>
       </Sheet>
+
+      <NameInputSheet
+        visible={renaming !== null}
+        title={t('openPlay.renamePlayer')}
+        placeholder={t('openPlay.namePlaceholder')}
+        confirmLabel={t('openPlay.renamePlayer')}
+        initialValue={savedPlayers.find(p => p.id === renaming)?.name ?? ''}
+        onSubmit={name => {
+          if (renaming) renameSavedPlayer(renaming, name);
+          setRenaming(null);
+        }}
+        onClose={() => setRenaming(null)}
+      />
+
+      <Dialog
+        visible={confirmDelete !== null}
+        title={t('openPlay.deletePlayerTitle', {
+          name: savedPlayers.find(p => p.id === confirmDelete)?.name ?? '',
+        })}
+        message={t('openPlay.deletePlayerMessage')}
+        confirmLabel={t('openPlay.deletePlayer')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={() => {
+          if (confirmDelete) {
+            deleteSavedPlayer(confirmDelete);
+            setCheckedIn(current => current.filter(id => id !== confirmDelete));
+            setPairs(current => current.filter(pair => !pair.includes(confirmDelete)));
+          }
+          setConfirmDelete(null);
+        }}
+        onCancel={() => setConfirmDelete(null)}
+        destructive
+      />
 
       <Sheet
         visible={pairSheetOpen}

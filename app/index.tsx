@@ -110,7 +110,7 @@ export default function HomeScreen() {
                   {activeSession
                     ? t('openPlay.resumeDesc', {
                         count: activeSession.players.filter(p => p.status !== 'left').length,
-                        courts: activeSession.courtCount,
+                        courts: t('openPlay.courtsCount', { count: activeSession.courtCount }),
                       })
                     : t('openPlay.homeCardDesc')}
                 </Text>
