@@ -174,6 +174,7 @@ export default {
     removeMessage: 'Sus partidos siguen en el resumen.',
     onCourt: 'Está jugando ahora',
     sittingOut: 'descansando',
+    sittingOutSection: 'Descansando',
     late: 'tarde',
     summaryTitle: 'Sesión terminada',
     summaryMeta: '{{duration}} · {{games}} · {{courts}}',

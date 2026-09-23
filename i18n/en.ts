@@ -222,6 +222,7 @@ export default {
     removeMessage: 'Their games stay in the summary.',
     onCourt: 'On court right now',
     sittingOut: 'sitting out',
+    sittingOutSection: 'Sitting out',
     late: 'late',
     summaryTitle: 'Session over',
     summaryMeta: '{{duration}} · {{games}} · {{courts}}',

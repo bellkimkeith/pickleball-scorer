@@ -18,6 +18,10 @@ export interface PaddleRackProps {
   next: RackPlayer[];
   /** Everyone else waiting, in queue order, as small heads. */
   waiting: RackPlayer[];
+  /** Sitting out: still on the rack, hollow, so they can be tapped to come back. */
+  resting?: RackPlayer[];
+  /** Heading above the sitting-out row. */
+  restingLabel?: string;
   /** Pairs locked together; tape is drawn when both are in `next`. */
   lockedPairs?: [string, string][];
   onPlayerPress?: (id: string) => void;
@@ -49,12 +53,14 @@ function Tape() {
 function PaddleRackComponent({
   next,
   waiting,
+  resting = [],
+  restingLabel,
   lockedPairs = [],
   onPlayerPress,
   emptyLabel = 'Nobody is waiting',
   notEnoughLabel,
 }: PaddleRackProps) {
-  const isEmpty = next.length === 0 && waiting.length === 0;
+  const isEmpty = next.length === 0 && waiting.length === 0 && resting.length === 0;
   const lockedWith = new Map<string, string>();
   for (const [a, b] of lockedPairs) {
     lockedWith.set(a, b);
@@ -132,6 +138,38 @@ function PaddleRackComponent({
                   onPress={onPlayerPress ? () => onPlayerPress(player.id) : undefined}
                 />
               ))}
+            </View>
+          )}
+
+          {resting.length > 0 && (
+            <View style={{ marginTop: 14 }}>
+              {restingLabel && (
+                <Text
+                  style={{
+                    color: COURT.inkMuted,
+                    fontSize: 11,
+                    fontWeight: '800',
+                    letterSpacing: 0.6,
+                    marginBottom: 6,
+                  }}
+                >
+                  {restingLabel.toUpperCase()}
+                </Text>
+              )}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                {resting.map(player => (
+                  <Paddle
+                    key={player.id}
+                    name={player.name}
+                    color={player.color}
+                    games={player.games}
+                    note={player.note}
+                    size="head"
+                    ghost
+                    onPress={onPlayerPress ? () => onPlayerPress(player.id) : undefined}
+                  />
+                ))}
+              </View>
             </View>
           )}
         </>

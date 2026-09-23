@@ -94,7 +94,13 @@ export default function SessionScreen() {
   );
 
   const rack = useMemo(() => {
-    if (!session) return { next: [] as RackPlayer[], waiting: [] as RackPlayer[], pairs: [] as [string, string][] };
+    if (!session)
+      return {
+        next: [] as RackPlayer[],
+        waiting: [] as RackPlayer[],
+        resting: [] as RackPlayer[],
+        pairs: [] as [string, string][],
+      };
 
     const byId = new Map(session.players.map(p => [p.id, p]));
     const toRack = (player: SessionPlayer): RackPlayer => ({
@@ -114,6 +120,11 @@ export default function SessionScreen() {
       .sort((a, b) => a.queueCount - b.queueCount || a.waitingSince - b.waitingSince)
       .map(toRack);
 
+    // Sitting out stays on the rack, hollow: it is the only way back to their
+    // sheet, and so to "Come back". The heading above the row says they are
+    // sitting out, so the paddle does not repeat it.
+    const resting = session.players.filter(p => p.status === 'sitting_out').map(toRack);
+
     const seen = new Set<string>();
     const pairs: [string, string][] = [];
     for (const player of session.players) {
@@ -124,7 +135,7 @@ export default function SessionScreen() {
       }
     }
 
-    return { next, waiting, pairs };
+    return { next, waiting, resting, pairs };
   }, [session, t]);
 
   if (!session) return null;
@@ -151,7 +162,9 @@ export default function SessionScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']} ref={rootRef} collapsable={false}>
       <StatusBar style="light" />
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
+      {/* The Add player / Undo bar floats over the list, so the rack needs room
+          to scroll clear of it — otherwise its last row can never be read. */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 120 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 16, paddingTop: 6 }}>
           <BackButton onPress={() => router.replace('/')} />
           <Pressable onPress={() => setEndOpen(true)} accessibilityRole="button" accessibilityLabel={t('openPlay.end')} hitSlop={10}>
@@ -221,6 +234,8 @@ export default function SessionScreen() {
           <PaddleRack
             next={rack.next}
             waiting={rack.waiting}
+            resting={rack.resting}
+            restingLabel={t('openPlay.sittingOutSection')}
             lockedPairs={rack.pairs}
             onPlayerPress={setOpenPlayerId}
             emptyLabel={t('openPlay.rackEmpty')}

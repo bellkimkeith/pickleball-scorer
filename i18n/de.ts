@@ -174,6 +174,7 @@ export default {
     removeMessage: 'Die Spiele bleiben in der Zusammenfassung.',
     onCourt: 'Gerade auf dem Feld',
     sittingOut: 'pausiert',
+    sittingOutSection: 'Pausiert',
     late: 'spät',
     summaryTitle: 'Session beendet',
     summaryMeta: '{{duration}} · {{games}} · {{courts}}',
