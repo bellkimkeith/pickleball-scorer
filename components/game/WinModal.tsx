@@ -96,7 +96,15 @@ export function WinModal({ visible, gameState, onPlayAgain, onExit, onBackToSess
       >
         <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30, flexGrow: 1 }}>
-          <Text style={{ color: COURT.ink, fontSize: 40, fontWeight: '800', lineHeight: 44, paddingTop: 30 }}>
+          {/* A long name is shrunk to fit rather than broken mid-word, which is
+              what Android did to it ("Fernandez-Rodrigue / z"). */}
+          <Text
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            minimumFontScale={0.45}
+            textBreakStrategy="simple"
+            style={{ color: COURT.ink, fontSize: 40, fontWeight: '800', paddingTop: 30 }}
+          >
             {gameState.mode === 'doubles'
               ? t('winModal.winsPair', { name: winnerName })
               : t('winModal.wins', { name: winnerName })}
