@@ -1,6 +1,14 @@
 import { ReactNode, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { COURT } from '../../lib/theme/tokens';
 import { CourtButton } from './Button';
 
@@ -31,50 +39,59 @@ function SheetComponent({ visible, onClose, title, children }: SheetProps) {
         accessibilityLabel={t('common.close')}
         style={[StyleSheet.absoluteFill, { backgroundColor: '#00000099' }]}
       />
-      <View
-        style={{
-          marginTop: 'auto',
-          backgroundColor: COURT.surface,
-          borderTopLeftRadius: 22,
-          borderTopRightRadius: 22,
-          paddingTop: 10,
-          paddingBottom: 30,
-          maxHeight: '80%',
-        }}
+      {/* Neither platform moves this modal out of the keyboard's way — iOS
+          never does, and Android stops resizing it once the modal draws behind
+          the status bar — so a sheet with a text field would sit behind the
+          keys. */}
+      <KeyboardAvoidingView
+        behavior="padding"
+        pointerEvents="box-none"
+        style={{ flex: 1, justifyContent: 'flex-end' }}
       >
         <View
           style={{
-            width: 38,
-            height: 5,
-            borderRadius: 3,
-            backgroundColor: `${COURT.line}40`,
-            alignSelf: 'center',
-            marginBottom: 14,
+            backgroundColor: COURT.surface,
+            borderTopLeftRadius: 22,
+            borderTopRightRadius: 22,
+            paddingTop: 10,
+            paddingBottom: 30,
+            maxHeight: '80%',
           }}
-        />
-        {title && (
+        >
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 16,
-              marginBottom: 12,
+              width: 38,
+              height: 5,
+              borderRadius: 3,
+              backgroundColor: `${COURT.line}40`,
+              alignSelf: 'center',
+              marginBottom: 14,
             }}
-          >
-            <Text
-              numberOfLines={2}
-              style={{ color: COURT.ink, fontSize: 26, fontWeight: '700', flexShrink: 1, paddingRight: 12 }}
+          />
+          {title && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingHorizontal: 16,
+                marginBottom: 12,
+              }}
             >
-              {title}
-            </Text>
-            <CourtButton title={t('common.done')} onPress={onClose} variant="outline" height={40} />
-          </View>
-        )}
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}>
-          {children}
-        </ScrollView>
-      </View>
+              <Text
+                numberOfLines={2}
+                style={{ color: COURT.ink, fontSize: 26, fontWeight: '700', flexShrink: 1, paddingRight: 12 }}
+              >
+                {title}
+              </Text>
+              <CourtButton title={t('common.done')} onPress={onClose} variant="outline" height={40} />
+            </View>
+          )}
+          <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}>
+            {children}
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
