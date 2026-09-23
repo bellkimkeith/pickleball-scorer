@@ -168,6 +168,7 @@ export default {
     gamesPlayed_other: '{{count}} games played',
     pairsHint: 'Check in at least 2 players',
     notEnough: 'WAITING FOR A FOURTH',
+    nextUp: 'Next up',
     title: 'Open Play',
     homeCard: 'Run a session',
     homeCardDesc: 'Fair rotation. Everyone plays equally.',

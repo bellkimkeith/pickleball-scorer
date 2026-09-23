@@ -121,6 +121,7 @@ export default {
     gamesPlayed_other: '{{count}} Spiele gespielt',
     pairsHint: 'Checke mindestens 2 Spieler ein',
     notEnough: 'WARTET AUF EINEN VIERTEN',
+    nextUp: 'Als Nächstes',
     title: 'Offenes Spiel',
     homeCard: 'Session starten',
     homeCardDesc: 'Faire Rotation. Alle spielen gleich viel.',

@@ -121,6 +121,7 @@ export default {
     gamesPlayed_other: '{{count}} matchs joués',
     pairsHint: 'Inscrivez au moins 2 joueurs',
     notEnough: 'EN ATTENTE D\'UN QUATRIÈME',
+    nextUp: 'Prochains',
     title: 'Jeu libre',
     homeCard: 'Organiser une session',
     homeCardDesc: 'Rotation équitable. Tout le monde joue autant.',

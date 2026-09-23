@@ -252,6 +252,7 @@ export default function SessionScreen() {
             onPlayerPress={setOpenPlayerId}
             emptyLabel={t('openPlay.rackEmpty')}
             notEnoughLabel={t('openPlay.notEnough')}
+            nextLabel={t('openPlay.nextUp')}
           />
         </View>
       </ScrollView>

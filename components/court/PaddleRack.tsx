@@ -26,8 +26,10 @@ export interface PaddleRackProps {
   lockedPairs?: [string, string][];
   onPlayerPress?: (id: string) => void;
   emptyLabel?: string;
-  /** Shown in place of the NEXT UP tab when no full match can be called yet. */
+  /** Shown in place of the next-up tab when no full match can be called yet. */
   notEnoughLabel?: string;
+  /** The next-up tab's own wording. */
+  nextLabel?: string;
 }
 
 function Tape() {
@@ -59,6 +61,7 @@ function PaddleRackComponent({
   onPlayerPress,
   emptyLabel = 'Nobody is waiting',
   notEnoughLabel,
+  nextLabel = 'Next up',
 }: PaddleRackProps) {
   const isEmpty = next.length === 0 && waiting.length === 0 && resting.length === 0;
   const lockedWith = new Map<string, string>();
@@ -77,22 +80,26 @@ function PaddleRackComponent({
         paddingBottom: 12,
       }}
     >
-      <View
-        style={{
-          position: 'absolute',
-          left: 10,
-          top: 0,
-          backgroundColor: COURT.line,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-          paddingHorizontal: 8,
-          paddingVertical: 2,
-        }}
-      >
-        <Text style={{ color: COURT.lineText, fontSize: 11, fontWeight: '800', letterSpacing: 0.6 }}>
-          {next.length === 0 && notEnoughLabel ? notEnoughLabel : 'NEXT UP'}
-        </Text>
-      </View>
+      {/* An empty rack has nobody to be next, so it carries no tab at all:
+          "waiting for a fourth" above "nobody is waiting" contradicted itself. */}
+      {!isEmpty && (
+        <View
+          style={{
+            position: 'absolute',
+            left: 10,
+            top: 0,
+            backgroundColor: COURT.line,
+            borderBottomLeftRadius: 6,
+            borderBottomRightRadius: 6,
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+          }}
+        >
+          <Text style={{ color: COURT.lineText, fontSize: 11, fontWeight: '800', letterSpacing: 0.6 }}>
+            {(next.length === 0 && notEnoughLabel ? notEnoughLabel : nextLabel).toUpperCase()}
+          </Text>
+        </View>
+      )}
 
       {isEmpty ? (
         <View style={{ paddingVertical: 28, alignItems: 'center' }}>

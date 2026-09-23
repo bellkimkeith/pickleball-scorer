@@ -121,6 +121,7 @@ export default {
     gamesPlayed_other: '{{count}} partidos jugados',
     pairsHint: 'Registra al menos 2 jugadores',
     notEnough: 'FALTAN JUGADORES',
+    nextUp: 'Siguientes',
     title: 'Juego libre',
     homeCard: 'Organizar una sesión',
     homeCardDesc: 'Rotación justa. Todos juegan por igual.',
