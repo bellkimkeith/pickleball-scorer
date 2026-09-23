@@ -97,25 +97,31 @@ export function PlayerSheet({ playerId, onClose }: PlayerSheetProps) {
           </View>
         </View>
 
-        <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', marginTop: 18, marginBottom: 8 }}>
-          {t('openPlay.whyNext')}
-        </Text>
+        {/* Someone already on court is not in the queue, so the reasons
+            they would be picked next say nothing about them. */}
+        {!onCourt && (
+          <>
+          <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', marginTop: 18, marginBottom: 8 }}>
+            {t('openPlay.whyNext')}
+          </Text>
 
-        <ListGroup>
-          <ListRow
-            label={t('openPlay.fewestGames')}
-            value={
-              why?.isAtLowestCount
-                ? t('openPlay.tiedAt', { count: why.queueCount })
-                : t('openPlay.behindBy', { count: (why?.queueCount ?? 0) - (why?.lowestQueueCount ?? 0) })
-            }
-          />
-          <ListRow label={t('openPlay.waitingSince')} value={clockTime(player.waitingSince)} />
-          <ListRow
-            label={t('openPlay.partneredWith')}
-            value={lastPartnerName ?? t('openPlay.nobodyYet')}
-          />
-        </ListGroup>
+          <ListGroup>
+            <ListRow
+              label={t('openPlay.fewestGames')}
+              value={
+                why?.isAtLowestCount
+                  ? t('openPlay.tiedAt', { count: why.queueCount })
+                  : t('openPlay.behindBy', { count: (why?.queueCount ?? 0) - (why?.lowestQueueCount ?? 0) })
+              }
+            />
+            <ListRow label={t('openPlay.waitingSince')} value={clockTime(player.waitingSince)} />
+            <ListRow
+              label={t('openPlay.partneredWith')}
+              value={lastPartnerName ?? t('openPlay.nobodyYet')}
+            />
+          </ListGroup>
+          </>
+        )}
 
         <View style={{ gap: 10, marginTop: 18, paddingBottom: 6 }}>
           {player.status === 'sitting_out' ? (
