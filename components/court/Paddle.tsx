@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View, ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { PADDLE_FACE_PATH, PADDLE_GUARD_WIDTH, PADDLE_HANDLE_PATH } from '../../lib/theme/paddle-shape';
@@ -50,6 +51,7 @@ function PaddleComponent({
   onLongPress,
   style,
 }: PaddleProps) {
+  const { t } = useTranslation();
   const dims = SIZES[size];
   // 80 units wide is the paddle's own width inside the 200 box.
   const scale = dims.width / 92;
@@ -147,9 +149,9 @@ function PaddleComponent({
 
   const label = [
     name,
-    games !== undefined ? `${games} games` : null,
-    outlined ? 'next up' : null,
-    ghost ? 'not checked in' : null,
+    games !== undefined ? t('openPlay.gamesCount', { count: games }) : null,
+    outlined ? t('openPlay.nextUp') : null,
+    ghost ? t('openPlay.notCheckedIn') : null,
     note,
   ]
     .filter(Boolean)
