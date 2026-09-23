@@ -23,6 +23,7 @@ interface GameStore {
   sideOut: () => void;
   undoLastAction: () => void;
   resetGame: () => void;
+  discardGame: () => void;
   markSidesChanged: (swapScores: boolean) => void;
   endGame: () => void;
   updateSettings: (settings: Partial<GameSettings>) => void;
@@ -312,6 +313,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   resetGame: () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    set({ gameState: null, isGameActive: false });
+  },
+
+  /**
+   * Drop a game the user walked away from, with no haptic: leaving a scorer is
+   * not an action they asked to feel. A game left behind would otherwise show
+   * up in place of the next Open Play match and have its score saved against it.
+   */
+  discardGame: () => {
     set({ gameState: null, isGameActive: false });
   },
 

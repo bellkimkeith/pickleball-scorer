@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -46,17 +46,26 @@ export default function DoublesScreen() {
   const [showSwitchSides, setShowSwitchSides] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
 
-  // Starting from an Open Play match: fill both teams in and skip setup.
+  // Starting from an Open Play match: fill both teams in and skip setup. The
+  // match is loaded even when the store still holds a game, because a game
+  // abandoned earlier would otherwise be scored in this match's place.
+  const loadedMatchId = useRef<string | null>(null);
   useEffect(() => {
-    if (!sessionMatchId || !activeSession || gameState) return;
+    if (!sessionMatchId || !activeSession) return;
+    if (loadedMatchId.current === sessionMatchId) return;
     const match = activeSession.matches.find(m => m.id === sessionMatchId);
     if (!match) return;
     const nameOf = (id: string) => activeSession.players.find(p => p.id === id)?.name ?? '';
     const team1: [string, string] = [nameOf(match.team1[0]), nameOf(match.team1[1])];
     const team2: [string, string] = [nameOf(match.team2[0]), nameOf(match.team2[1])];
     startDoublesGame(team1.join(' & '), team1, team2.join(' & '), team2);
+    loadedMatchId.current = sessionMatchId;
     setShowSetup(false);
-  }, [sessionMatchId, activeSession, gameState, startDoublesGame]);
+  }, [sessionMatchId, activeSession, startDoublesGame]);
+
+  // Leaving with the platform back gesture ends the game here; nothing about it
+  // should survive into the next screen.
+  useEffect(() => () => useGameStore.getState().discardGame(), []);
 
   useEffect(() => {
     if (gameState && !isGameActive && ScoringRules.isGameOver(gameState.score1, gameState.score2, settings)) {
@@ -75,7 +84,9 @@ export default function DoublesScreen() {
     }
   }, [gameState, isGameActive, settings]);
 
-  if (showSetup || !gameState) {
+  // A game of the other mode (left behind by the singles scorer) has no teams
+  // to read, so it is treated as no game at all rather than crashing below.
+  if (showSetup || !gameState || gameState.mode !== 'doubles') {
     return (
       <GameSetup mode="doubles" visible onComplete={() => setShowSetup(false)} onCancel={() => router.back()} />
     );

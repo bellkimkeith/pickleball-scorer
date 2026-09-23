@@ -58,7 +58,7 @@ export default function SinglesScreen() {
     }
   }, [gameState, isGameActive, settings]);
 
-  if (showSetup || !gameState) {
+  if (showSetup || !gameState || gameState.mode !== 'singles') {
     return (
       <GameSetup mode="singles" visible onComplete={() => setShowSetup(false)} onCancel={() => router.back()} />
     );
