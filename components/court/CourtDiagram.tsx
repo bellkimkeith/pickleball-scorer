@@ -100,7 +100,8 @@ function SlotLabel({
         paddingVertical: serving ? 4 : 0,
         borderRadius: 999,
         backgroundColor: serving ? COURT.line : 'transparent',
-        maxWidth: 130,
+        // The slot itself is capped to the service box; fill whatever it gives.
+        maxWidth: '100%',
       }}
     >
       {serving ? (
@@ -273,7 +274,9 @@ function CourtDiagramComponent({
                   ? FadeIn.duration(180)
                   : undefined
             }
-            style={{ position: 'absolute', ...corners[index] }}
+            // A name may not spill past its own service box, which is 34% of
+            // the court, or it draws over the kitchen and the centre line.
+            style={{ position: 'absolute', maxWidth: '31%', ...corners[index] }}
           >
             {player ? (
               <SlotLabel
