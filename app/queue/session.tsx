@@ -188,7 +188,14 @@ export default function SessionScreen() {
             const match = matchId ? session.matches.find(m => m.id === matchId && !m.endedAt) : undefined;
             return (
               <View key={index}>
-                <View ref={node => { courtRefs.current[index] = node; }} collapsable={false}>
+                {/* The margin belongs here, not on the court: a margin on a view
+                    with an aspect ratio makes Yoga take its width from the
+                    reduced height, drawing the court narrower than the screen. */}
+                <View
+                  ref={node => { courtRefs.current[index] = node; }}
+                  collapsable={false}
+                  style={{ marginTop: 12 }}
+                >
                   <CourtDiagram
                     players={match ? slotsFor(match) : [null, null, null, null]}
                     courtLabel={t('openPlay.court', { number: index + 1 })}
@@ -196,7 +203,6 @@ export default function SessionScreen() {
                     emptyLabel={t('openPlay.waiting')}
                     animateEntry
                     onPlayerPress={match ? setOpenPlayerId : undefined}
-                    style={{ marginTop: 12 }}
                   />
                 </View>
                 {match && (
