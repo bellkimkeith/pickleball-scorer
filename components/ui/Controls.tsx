@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { COURT } from '../../lib/theme/tokens';
 
 export interface SegmentedOption<T extends string> {
@@ -119,6 +120,7 @@ export interface StepperProps {
 }
 
 function StepperComponent({ value, min, max, onChange, accessibilityLabel }: StepperProps) {
+  const { t } = useTranslation();
   const step = (delta: number) => {
     const next = value + delta;
     if (next < min || next > max) return;
@@ -156,7 +158,7 @@ function StepperComponent({ value, min, max, onChange, accessibilityLabel }: Ste
         overflow: 'hidden',
       }}
     >
-      {button('remove', -1, value <= min, 'Fewer')}
+      {button('remove', -1, value <= min, t('common.fewer'))}
       <Text
         style={{
           color: COURT.ink,
@@ -169,7 +171,7 @@ function StepperComponent({ value, min, max, onChange, accessibilityLabel }: Ste
       >
         {value}
       </Text>
-      {button('add', 1, value >= max, 'More')}
+      {button('add', 1, value >= max, t('common.more'))}
     </View>
   );
 }

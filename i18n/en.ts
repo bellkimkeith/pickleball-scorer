@@ -1,5 +1,14 @@
 export default {
   common: {
+    done: 'Done',
+    close: 'Close',
+    fewer: 'Fewer',
+    more: 'More',
+    player: 'Player',
+    addPlayer: 'Add a player',
+    serving: 'serving',
+    court: 'Court',
+    emptyCourt: 'Empty',
     cancel: 'Cancel',
     start: 'Start',
     end: 'End',

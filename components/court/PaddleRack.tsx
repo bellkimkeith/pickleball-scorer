@@ -59,7 +59,7 @@ function PaddleRackComponent({
   restingLabel,
   lockedPairs = [],
   onPlayerPress,
-  emptyLabel = 'Nobody is waiting',
+  emptyLabel,
   notEnoughLabel,
   nextLabel = 'Next up',
 }: PaddleRackProps) {

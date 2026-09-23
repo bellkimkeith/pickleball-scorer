@@ -1,4 +1,5 @@
 import { ReactNode, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { COURT } from '../../lib/theme/tokens';
 import { CourtButton } from './Button';
@@ -11,6 +12,8 @@ export interface SheetProps {
 }
 
 function SheetComponent({ visible, onClose, title, children }: SheetProps) {
+  const { t } = useTranslation();
+
   return (
     <Modal
       visible={visible}
@@ -25,7 +28,7 @@ function SheetComponent({ visible, onClose, title, children }: SheetProps) {
       <Pressable
         onPress={onClose}
         accessibilityRole="button"
-        accessibilityLabel="Close"
+        accessibilityLabel={t('common.close')}
         style={[StyleSheet.absoluteFill, { backgroundColor: '#00000099' }]}
       />
       <View
@@ -65,7 +68,7 @@ function SheetComponent({ visible, onClose, title, children }: SheetProps) {
             >
               {title}
             </Text>
-            <CourtButton title="Done" onPress={onClose} variant="outline" height={40} />
+            <CourtButton title={t('common.done')} onPress={onClose} variant="outline" height={40} />
           </View>
         )}
         <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}>

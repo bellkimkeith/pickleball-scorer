@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo, Pressable, Text, View, ViewStyle } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
 import { PaddleColor } from '../../lib/types/queue';
@@ -71,11 +72,13 @@ function useReduceMotion(): boolean {
 function SlotLabel({
   player,
   serving,
+  servingLabel,
   align,
   onPress,
 }: {
   player: CourtSlotPlayer;
   serving: boolean;
+  servingLabel: string;
   align: 'left' | 'right';
   onPress?: () => void;
 }) {
@@ -131,7 +134,7 @@ function SlotLabel({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${player.name}${serving ? ', serving' : ''}`}
+      accessibilityLabel={serving ? `${player.name}, ${servingLabel}` : player.name}
       hitSlop={8}
     >
       {content}
@@ -139,7 +142,15 @@ function SlotLabel({
   );
 }
 
-function EmptySlot({ onPress }: { onPress: () => void }) {
+function EmptySlot({
+  onPress,
+  label,
+  addLabel,
+}: {
+  onPress: () => void;
+  label: string;
+  addLabel: string;
+}) {
   const box = (
     <View
       style={{
@@ -151,11 +162,11 @@ function EmptySlot({ onPress }: { onPress: () => void }) {
         borderStyle: 'dashed',
       }}
     >
-      <Text style={{ color: COURT.ink, fontSize: 15, fontWeight: '600' }}>+ Player</Text>
+      <Text style={{ color: COURT.ink, fontSize: 15, fontWeight: '600' }}>+ {label}</Text>
     </View>
   );
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel="Add a player" hitSlop={8}>
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={addLabel} hitSlop={8}>
       {box}
     </Pressable>
   );
@@ -204,6 +215,7 @@ function CourtDiagramComponent({
   accessibilityLabel,
   style,
 }: CourtDiagramProps) {
+  const { t } = useTranslation();
   const reduceMotion = useReduceMotion();
 
   // In setup mode every slot stays tappable, so the empty state never applies.
@@ -211,13 +223,13 @@ function CourtDiagramComponent({
 
   const label = useMemo(() => {
     if (accessibilityLabel) return accessibilityLabel;
-    if (isEmpty) return `${courtLabel ?? 'Court'}. ${emptyLabel ?? 'Empty'}.`;
+    if (isEmpty) return `${courtLabel ?? t('common.court')}. ${emptyLabel ?? t('common.emptyCourt')}.`;
     const side = (a: number, b: number) =>
       [players[a]?.name, players[b]?.name].filter(Boolean).join(' and ');
     const parts = [courtLabel, `${side(0, 1)} versus ${side(2, 3)}`];
     if (clock) parts.push(clock);
     return parts.filter(Boolean).join('. ');
-  }, [accessibilityLabel, courtLabel, clock, emptyLabel, isEmpty, players]);
+  }, [accessibilityLabel, courtLabel, clock, emptyLabel, isEmpty, players, t]);
 
   const servingIndex = players.findIndex(p => p && p.id === servingPlayerId);
 
@@ -260,7 +272,7 @@ function CourtDiagramComponent({
       {isEmpty ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ color: COURT.ink, fontSize: 15, fontWeight: '600', opacity: 0.85 }}>
-            {emptyLabel ?? 'Waiting for players'}
+            {emptyLabel ?? t('openPlay.waiting')}
           </Text>
         </View>
       ) : (
@@ -282,13 +294,18 @@ function CourtDiagramComponent({
               <SlotLabel
                 player={player}
                 serving={player.id === servingPlayerId}
+                servingLabel={t('common.serving')}
                 align={corners[index].align}
                 onPress={
                   onPlayerPress ? () => onPlayerPress(player.id) : onSlotPress ? () => onSlotPress(index) : undefined
                 }
               />
             ) : onSlotPress ? (
-              <EmptySlot onPress={() => onSlotPress(index)} />
+              <EmptySlot
+                onPress={() => onSlotPress(index)}
+                label={t('common.player')}
+                addLabel={t('common.addPlayer')}
+              />
             ) : null}
           </Animated.View>
         ))

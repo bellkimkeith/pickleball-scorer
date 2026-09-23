@@ -1,5 +1,14 @@
 export default {
   common: {
+    done: 'Terminé',
+    close: 'Fermer',
+    fewer: 'Moins',
+    more: 'Plus',
+    player: 'Joueur',
+    addPlayer: 'Ajouter un joueur',
+    serving: 'au service',
+    court: 'Terrain',
+    emptyCourt: 'Vide',
     cancel: 'Annuler',
     start: 'Démarrer',
     end: 'Terminer',
