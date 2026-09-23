@@ -58,7 +58,8 @@
         }
       ],
       "expo-localization",
-      "./plugins/with-ios-deployment-target"
+      "./plugins/with-ios-deployment-target",
+      "./plugins/with-ios-scene-lifecycle"
     ]
   }
 }
