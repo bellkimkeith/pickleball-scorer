@@ -38,6 +38,10 @@ export const PADDLE_FACE: Record<PaddleColor, string> = {
   lilac: '#8a93bd',
   sand: '#cbb389',
   teal: '#3f9e91',
+  rose: '#e39ab5',
+  plum: '#a88ccc',
+  moss: '#9bb063',
+  ice: '#bfe3d9',
 };
 
 /** Text drawn on a paddle face; each pair clears 4.5:1. */
@@ -50,6 +54,10 @@ export const PADDLE_TEXT: Record<PaddleColor, string> = {
   lilac: '#150e26',
   sand: '#241c0d',
   teal: '#04201a',
+  rose: '#2a0d18',
+  plum: '#1b0f2b',
+  moss: '#1c2408',
+  ice: '#0f241f',
 };
 
 /** Grip wrap under the paddle face. */

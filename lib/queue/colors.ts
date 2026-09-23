@@ -9,9 +9,18 @@ export const PADDLE_COLORS: readonly PaddleColor[] = [
   'lilac',
   'sand',
   'teal',
+  'rose',
+  'plum',
+  'moss',
+  'ice',
 ] as const;
 
-/** Next colour for a newly saved player, cycling once every colour is used. */
+/**
+ * Next colour for a newly saved player, cycling once every colour is used.
+ *
+ * Twelve of them: a session of eight on two courts never repeats, and a busy
+ * session of twelve still gives everyone their own paddle.
+ */
 export function nextColorForRoster(saved: SavedPlayer[]): PaddleColor {
   return PADDLE_COLORS[saved.length % PADDLE_COLORS.length];
 }

@@ -6,7 +6,11 @@ export type PaddleColor =
   | 'carbon'
   | 'lilac'
   | 'sand'
-  | 'teal';
+  | 'teal'
+  | 'rose'
+  | 'plum'
+  | 'moss'
+  | 'ice';
 
 export interface SavedPlayer {
   id: string;
