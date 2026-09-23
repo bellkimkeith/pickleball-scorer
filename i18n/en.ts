@@ -217,7 +217,6 @@ export default {
     endMessageLive_other: '{{count}} matches are still on court and have not finished, so they will not count. Everything already played is kept in the summary.',
     endConfirm: 'End session',
     keepPlaying: 'Keep playing',
-    gamesPlayed: '{{count}} games played',
     arrived: 'arrived {{time}}',
     joinedAtGroupLevel: 'Queued at the group\'s level ({{count}}) on arrival',
     whyNext: 'Why they are next',
