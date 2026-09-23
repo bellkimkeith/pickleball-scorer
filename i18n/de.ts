@@ -153,6 +153,8 @@ export default {
     end: 'Beenden',
     endTitle: 'Diese Session beenden?',
     endMessage: 'Die Spiele aller bleiben in der Zusammenfassung.',
+    endMessageLive_one: 'Das Spiel auf dem Platz ist nicht beendet und zählt deshalb nicht. Alles bereits Gespielte bleibt in der Zusammenfassung.',
+    endMessageLive_other: '{{count}} Spiele auf den Plätzen sind nicht beendet und zählen deshalb nicht. Alles bereits Gespielte bleibt in der Zusammenfassung.',
     endConfirm: 'Session beenden',
     keepPlaying: 'Weiterspielen',
     arrived: 'angekommen um {{time}}',

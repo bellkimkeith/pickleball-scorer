@@ -152,6 +152,12 @@ export default function SessionScreen() {
     return [slot(match.team1[0]), slot(match.team1[1]), slot(match.team2[0]), slot(match.team2[1])];
   };
 
+  // Matches still on court have not finished, so ending now does not count
+  // them; the dialog says so rather than promising every game is kept.
+  const liveMatches = session.courts.filter(
+    id => id && session.matches.some(m => m.id === id && !m.endedAt),
+  ).length;
+
   const endSessionNow = () => {
     setEndOpen(false);
     finishSession();
@@ -289,7 +295,11 @@ export default function SessionScreen() {
       <Dialog
         visible={endOpen}
         title={t('openPlay.endTitle')}
-        message={t('openPlay.endMessage')}
+        message={
+          liveMatches > 0
+            ? t('openPlay.endMessageLive', { count: liveMatches })
+            : t('openPlay.endMessage')
+        }
         confirmLabel={t('openPlay.endConfirm')}
         cancelLabel={t('openPlay.keepPlaying')}
         onConfirm={endSessionNow}

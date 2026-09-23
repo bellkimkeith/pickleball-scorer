@@ -153,6 +153,8 @@ export default {
     end: 'Terminer',
     endTitle: 'Terminer cette session ?',
     endMessage: 'Les matchs de chacun restent dans le résumé.',
+    endMessageLive_one: 'Le match encore sur le terrain n\'est pas terminé, il ne comptera donc pas. Tout ce qui a déjà été joué reste dans le résumé.',
+    endMessageLive_other: '{{count}} matchs sont encore sur les terrains et ne sont pas terminés, ils ne compteront donc pas. Tout ce qui a déjà été joué reste dans le résumé.',
     endConfirm: 'Terminer la session',
     keepPlaying: 'Continuer à jouer',
     arrived: 'arrivé à {{time}}',

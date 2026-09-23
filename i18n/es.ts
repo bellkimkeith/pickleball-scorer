@@ -153,6 +153,8 @@ export default {
     end: 'Terminar',
     endTitle: '¿Terminar esta sesión?',
     endMessage: 'Los partidos de todos se guardan en el resumen.',
+    endMessageLive_one: 'El partido que sigue en la pista no ha terminado, así que no contará. Todo lo ya jugado se guarda en el resumen.',
+    endMessageLive_other: '{{count}} partidos siguen en las pistas y no han terminado, así que no contarán. Todo lo ya jugado se guarda en el resumen.',
     endConfirm: 'Terminar sesión',
     keepPlaying: 'Seguir jugando',
     arrived: 'llegó a las {{time}}',

@@ -200,6 +200,8 @@ export default {
     end: 'End',
     endTitle: 'End this session?',
     endMessage: 'Everyone\'s games are kept in the summary.',
+    endMessageLive_one: 'The match still on court has not finished, so it will not count. Everything already played is kept in the summary.',
+    endMessageLive_other: '{{count}} matches are still on court and have not finished, so they will not count. Everything already played is kept in the summary.',
     endConfirm: 'End session',
     keepPlaying: 'Keep playing',
     gamesPlayed: '{{count}} games played',
