@@ -46,6 +46,7 @@ export function NameInputSheet({
           placeholderTextColor={COURT.inkMuted}
           autoFocus
           autoCapitalize="words"
+          maxLength={40}
           returnKeyType="done"
           onSubmitEditing={submit}
           accessibilityLabel={placeholder}

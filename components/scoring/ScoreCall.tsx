@@ -48,7 +48,17 @@ function ScoreCallComponent({ serving, receiving, serverNumber, caption }: Score
           </>
         )}
       </View>
-      <Text style={{ color: COURT.inkMuted, fontSize: 15, textAlign: 'center', marginTop: 6 }}>
+      {/* Long names would otherwise run to both edges of the screen. */}
+      <Text
+        numberOfLines={2}
+        style={{
+          color: COURT.inkMuted,
+          fontSize: 15,
+          textAlign: 'center',
+          marginTop: 6,
+          paddingHorizontal: 20,
+        }}
+      >
         {caption}
       </Text>
     </View>
