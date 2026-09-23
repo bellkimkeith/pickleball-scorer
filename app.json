@@ -21,7 +21,7 @@
       "bundleIdentifier": "com.bellkimkeith.pickleballscorer",
       "appleTeamId": "F89UG85Z8F",
       "buildNumber": "1",
-      "minimumOsVersion": "15.1",
+      "minimumOsVersion": "16.0",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -57,7 +57,8 @@
           "userInterfaceStyle": "automatic"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "./plugins/with-ios-deployment-target"
     ]
   }
 }
