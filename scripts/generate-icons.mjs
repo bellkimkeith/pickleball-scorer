@@ -132,17 +132,19 @@ function splashSvg(width, height) {
 
 const targets = [
   // iOS: square, no transparency, no rounded corners (the system masks it).
-  { file: `${OUT}/icon.png`, svg: iconSvg({ background: true, scale: 0.9 }), size: 1024 },
+  // `opaque` drops the alpha channel: App Store Connect rejects a marketing
+  // icon that carries one, even when every pixel in it is fully opaque.
+  { file: `${OUT}/icon.png`, svg: iconSvg({ background: true, scale: 0.9 }), size: 1024, opaque: true },
   // Android adaptive foreground: transparent, inside the centre safe zone.
   { file: `${OUT}/adaptive-icon.png`, svg: iconSvg({ background: false, scale: 0.62 }), size: 1024 },
   // Splash mark, on the court ground.
   { file: `${OUT}/splash-icon.png`, svg: iconSvg({ background: false, scale: 0.8 }), size: 1024 },
-  { file: `${OUT}/favicon.png`, svg: iconSvg({ background: true, scale: 0.9 }), size: 64 },
+  { file: `${OUT}/favicon.png`, svg: iconSvg({ background: true, scale: 0.9 }), size: 64, opaque: true },
 ];
 
 for (const target of targets) {
-  await sharp(Buffer.from(target.svg))
-    .resize(target.size, target.size)
+  const image = sharp(Buffer.from(target.svg)).resize(target.size, target.size);
+  await (target.opaque ? image.flatten({ background: COLOR.ground }) : image)
     .png()
     .toFile(target.file);
   console.log('wrote', target.file, `${target.size}x${target.size}`);
@@ -205,6 +207,7 @@ for (const [density, launcher, foreground] of DENSITIES) {
 
 await sharp(Buffer.from(iconSvg({ background: true, scale: 0.9 })))
   .resize(1024, 1024)
+  .flatten({ background: COLOR.ground })
   .png()
   .toFile('ios/PickleScore/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png');
 console.log('wrote ios App-Icon-1024x1024@1x.png');
