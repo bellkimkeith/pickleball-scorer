@@ -70,6 +70,12 @@ function ListRowComponent({
   );
 
   if (!onPress || disabled) {
+    // A row holding its own control — a toggle, a stepper, a segmented picker —
+    // must not become a single accessibility element: on iOS that swallows the
+    // control, leaving VoiceOver able to read the label but never reach the
+    // thing it labels. Those controls carry their own labels and roles.
+    if (right) return <View accessibilityState={{ disabled }}>{body}</View>;
+
     return (
       <View accessible accessibilityState={{ disabled }} accessibilityLabel={`${label}${value ? `, ${value}` : ''}`}>
         {body}
