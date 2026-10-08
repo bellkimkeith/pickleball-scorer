@@ -1,263 +1,176 @@
-import { View, Text, ScrollView, Pressable, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Segmented, Stepper, Toggle } from '../../components/ui/Controls';
+import { BackButton } from '../../components/ui/BackButton';
+import { ListGroup, ListRow } from '../../components/ui/ListGroup';
+import { Sheet } from '../../components/ui/Sheet';
+import { CourtButton } from '../../components/ui/Button';
+import { changeLanguage } from '../../i18n';
+import { COURT } from '../../lib/theme/tokens';
+import { Language } from '../../lib/types/game';
 import { useGameStore } from '../../store/game-store';
-import { AVAILABLE_WINNING_SCORES, getAvailableSideChangeOptions } from '../../lib/constants/game-config';
-import { useDarkMode } from '../../hooks/useDarkMode';
+import { useSessionStore } from '../../store/session-store';
+
+const LANGUAGES: Language[] = ['en', 'es', 'fr', 'de'];
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const settings = useGameStore((state) => state.settings);
-  const updateSettings = useGameStore((state) => state.updateSettings);
-  const { isDarkMode } = useDarkMode();
+  const { t } = useTranslation();
+  const settings = useGameStore(state => state.settings);
+  const updateSettings = useGameStore(state => state.updateSettings);
+  const defaultCourtCount = useSessionStore(state => state.defaultCourtCount);
+  const [languageOpen, setLanguageOpen] = useState(false);
+
+  const setDefaultCourts = (count: number) => useSessionStore.setState({ defaultCourtCount: count });
 
   return (
-    <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} edges={['top']}>
-      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
-      <ScrollView className="flex-1">
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <StatusBar style="light" />
 
-      {/* Header */}
-      <View className="pb-6 px-6 flex-row items-center">
-        <Pressable
-          onPress={() => router.back()}
-          className="mr-4"
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-        >
-          <Ionicons name="arrow-back" size={28} color="#374151" />
-        </Pressable>
-        <Text className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Settings
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        <BackButton />
+
+        <Text style={{ color: COURT.ink, fontSize: 34, fontWeight: '700', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 18 }}>
+          {t('settings.title')}
         </Text>
-      </View>
 
-      <View className="px-6">
-        {/* Dark Mode Toggle */}
-        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <View className="flex-row justify-between items-center">
-            <View className="flex-1">
-              <Text className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Dark Mode
-              </Text>
-              <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Use dark theme for the app
-              </Text>
-            </View>
-            <Switch
-              value={isDarkMode}
-              onValueChange={(value) => updateSettings({ theme: value ? 'dark' : 'light' })}
-              trackColor={{ false: '#d1d5db', true: '#f97316' }}
-              thumbColor="#ffffff"
-              accessibilityLabel="Toggle dark mode"
-            />
-          </View>
-        </View>
+        <ListGroup header={t('settings.scoring')} style={{ marginHorizontal: 12 }}>
+          <ListRow
+            label={t('settings.scoringType')}
+            stacked
+            right={
+              <Segmented
+                options={[
+                  { value: 'sideout', label: t('game.sideout') },
+                  { value: 'rally', label: t('game.rally') },
+                ]}
+                value={settings.gameType}
+                onChange={value => updateSettings({ gameType: value })}
+                accessibilityLabel={t('settings.scoringType')}
+              />
+            }
+          />
+          <ListRow
+            label={t('settings.winningScore')}
+            stacked
+            right={
+              <Segmented
+                options={[
+                  { value: '11', label: '11' },
+                  { value: '15', label: '15' },
+                  { value: '21', label: '21' },
+                ]}
+                value={String(settings.winningScore)}
+                onChange={value => updateSettings({ winningScore: Number(value) as 11 | 15 | 21 })}
+                accessibilityLabel={t('settings.winningScore')}
+              />
+            }
+          />
+          <ListRow
+            label={t('settings.winByTwo')}
+            right={
+              <Toggle
+                value={settings.winByTwo}
+                onChange={value => updateSettings({ winByTwo: value })}
+                accessibilityLabel={t('settings.winByTwo')}
+              />
+            }
+          />
+          <ListRow
+            label={t('settings.sideChangeAt')}
+            right={
+              <Stepper
+                value={settings.sideChangeAt}
+                min={0}
+                max={settings.winningScore}
+                onChange={value => updateSettings({ sideChangeAt: value })}
+                accessibilityLabel={t('settings.sideChangeAt')}
+              />
+            }
+          />
+          <ListRow
+            label={t('settings.swapScores')}
+            right={
+              <Toggle
+                value={settings.swapScoresOnSideChange}
+                onChange={value => updateSettings({ swapScoresOnSideChange: value })}
+                accessibilityLabel={t('settings.swapScores')}
+              />
+            }
+          />
+        </ListGroup>
 
-        {/* Game Type */}
-        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Scoring Type
-          </Text>
-          <View className="flex-row gap-2">
-            <Pressable
-              onPress={() => updateSettings({ gameType: 'rally' })}
-              accessibilityLabel="Set rally scoring"
-              accessibilityRole="button"
-              accessibilityState={{ selected: settings.gameType === 'rally' }}
-              className={`flex-1 py-3 rounded-xl ${
-                settings.gameType === 'rally' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-              }`}
-              style={({ pressed }) => ({
-                transform: [{ scale: pressed ? 0.95 : 1 }],
-              })}
-            >
-              <Text
-                className={`text-center font-semibold ${
-                  settings.gameType === 'rally' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}
-              >
-                Rally
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => updateSettings({ gameType: 'sideout' })}
-              accessibilityLabel="Set sideout scoring"
-              accessibilityRole="button"
-              accessibilityState={{ selected: settings.gameType === 'sideout' }}
-              className={`flex-1 py-3 rounded-xl ${
-                settings.gameType === 'sideout' ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-              }`}
-              style={({ pressed }) => ({
-                transform: [{ scale: pressed ? 0.95 : 1 }],
-              })}
-            >
-              <Text
-                className={`text-center font-semibold ${
-                  settings.gameType === 'sideout' ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}
-              >
-                Sideout
-              </Text>
-            </Pressable>
-          </View>
-          <Text className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            {settings.gameType === 'rally'
-              ? 'Point scored by whoever wins the rally'
-              : 'Only serving team can score a point'}
-          </Text>
-        </View>
+        <ListGroup header={t('openPlay.title')} style={{ marginHorizontal: 12, marginTop: 20 }}>
+          <ListRow
+            label={t('settings.defaultCourts')}
+            right={
+              <Stepper
+                value={defaultCourtCount}
+                min={1}
+                max={6}
+                onChange={setDefaultCourts}
+                accessibilityLabel={t('settings.defaultCourts')}
+              />
+            }
+          />
+          <ListRow label={t('openPlay.lateArrivals')} value={t('openPlay.lateArrivalsValue')} />
+        </ListGroup>
 
-        {/* Winning Score */}
-        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Winning Score
-          </Text>
-          <View className="flex-row gap-2">
-            {AVAILABLE_WINNING_SCORES.map((score) => (
-              <Pressable
-                key={score}
-                onPress={() => updateSettings({ winningScore: score })}
-                accessibilityLabel={`Set winning score to ${score}`}
-                accessibilityRole="button"
-                accessibilityState={{ selected: settings.winningScore === score }}
-                className={`flex-1 py-3 rounded-xl ${
-                  settings.winningScore === score ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                }`}
-                style={({ pressed }) => ({
-                  transform: [{ scale: pressed ? 0.95 : 1 }],
-                })}
-              >
-                <Text
-                  className={`text-center font-semibold ${
-                    settings.winningScore === score ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}
-                >
-                  {score}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Set the score needed to win the game
-          </Text>
-        </View>
+        <ListGroup header={t('settings.sounds')} style={{ marginHorizontal: 12, marginTop: 20 }}>
+          <ListRow
+            label={t('settings.autoSounds')}
+            right={
+              <Toggle
+                value={settings.autoSoundsEnabled ?? false}
+                onChange={value => updateSettings({ autoSoundsEnabled: value })}
+                accessibilityLabel={t('settings.autoSounds')}
+              />
+            }
+          />
+          <ListRow
+            label={t('settings.autoSoundsSideOut')}
+            right={
+              <Toggle
+                value={settings.autoSoundsOnSideOut ?? false}
+                onChange={value => updateSettings({ autoSoundsOnSideOut: value })}
+                accessibilityLabel={t('settings.autoSoundsSideOut')}
+              />
+            }
+          />
+        </ListGroup>
 
-        {/* Win by 2 Toggle */}
-        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <View className="flex-row justify-between items-center">
-            <View className="flex-1">
-              <Text className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Win by 2
-              </Text>
-              <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Require a 2-point margin to win
-              </Text>
-            </View>
-            <Switch
-              value={settings.winByTwo}
-              onValueChange={(value) => updateSettings({ winByTwo: value })}
-              trackColor={{ false: '#d1d5db', true: '#16a34a' }}
-              thumbColor="#ffffff"
-              accessibilityLabel="Win by 2 points required"
-            />
-          </View>
-        </View>
-
-        {/* Side Change At */}
-        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <Text className={`text-lg font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Side Change At Score
-          </Text>
-          <View className="flex-row gap-2">
-            {getAvailableSideChangeOptions(settings.winningScore).map((score) => (
-              <Pressable
-                key={score}
-                onPress={() => updateSettings({ sideChangeAt: score })}
-                accessibilityLabel={score === 0 ? 'Disable side change' : `Change sides at score ${score}`}
-                accessibilityRole="button"
-                accessibilityState={{ selected: settings.sideChangeAt === score }}
-                className={`flex-1 py-3 rounded-xl ${
-                  settings.sideChangeAt === score ? 'bg-primary-500' : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                }`}
-                style={({ pressed }) => ({
-                  transform: [{ scale: pressed ? 0.95 : 1 }],
-                })}
-              >
-                <Text
-                  className={`text-center font-semibold ${
-                    settings.sideChangeAt === score ? 'text-white' : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                  }`}
-                >
-                  {score === 0 ? 'Off' : score}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            {settings.sideChangeAt === 0
-              ? 'No automatic side change'
-              : `Players change sides at ${settings.sideChangeAt} points`}
-          </Text>
-        </View>
-
-        {/* Swap Scores on Side Change Toggle */}
-        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <View className="flex-row justify-between items-center">
-            <View className="flex-1">
-              <Text className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Swap Scores on Side Change
-              </Text>
-              <Text className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Swap scores with colors when switching sides
-              </Text>
-            </View>
-            <Switch
-              value={settings.swapScoresOnSideChange}
-              onValueChange={(value) => updateSettings({ swapScoresOnSideChange: value })}
-              trackColor={{ false: '#d1d5db', true: '#16a34a' }}
-              thumbColor="#ffffff"
-              accessibilityLabel="Swap scores on side change"
-            />
-          </View>
-        </View>
-
-        {/* Info Section */}
-        <View className={`rounded-2xl p-4 mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-blue-50'}`}>
-          <View className="flex-row items-start">
-            <Ionicons name="information-circle" size={24} color={isDarkMode ? '#60a5fa' : '#2563eb'} />
-            <View className="flex-1 ml-3">
-              <Text className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-blue-200' : 'text-blue-900'}`}>
-                Pickleball Rules
-              </Text>
-              <Text className={`text-sm ${isDarkMode ? 'text-blue-300' : 'text-blue-800'}`}>
-                Official pickleball scoring: Only the serving team can score. In doubles, both
-                partners serve before side-out (except at start of game).
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Privacy Policy */}
-        <Pressable
-          onPress={() => router.push('/settings/privacy')}
-          className={`rounded-2xl p-4 mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
-          accessibilityLabel="View Privacy Policy"
-          accessibilityRole="button"
-        >
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <Ionicons name="shield-checkmark-outline" size={24} color="#374151" />
-              <Text className={`text-lg font-semibold ml-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Privacy Policy
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-          </View>
-        </Pressable>
-      </View>
+        <ListGroup header={t('settings.app')} style={{ marginHorizontal: 12, marginTop: 20 }}>
+          <ListRow
+            label={t('settings.language')}
+            value={t(`languages.${settings.language ?? 'en'}`)}
+            chevron
+            onPress={() => setLanguageOpen(true)}
+          />
+          <ListRow label={t('settings.rules')} chevron onPress={() => router.push('/settings/rules')} />
+          <ListRow label={t('settings.privacyPolicy')} chevron onPress={() => router.push('/settings/privacy')} />
+        </ListGroup>
       </ScrollView>
+
+      <Sheet visible={languageOpen} onClose={() => setLanguageOpen(false)} title={t('settings.language')}>
+        <View style={{ gap: 8, paddingBottom: 10 }}>
+          {LANGUAGES.map(language => (
+            <CourtButton
+              key={language}
+              title={t(`languages.${language}`)}
+              variant={settings.language === language ? 'line' : 'deep'}
+              onPress={() => {
+                updateSettings({ language });
+                changeLanguage(language);
+                setLanguageOpen(false);
+              }}
+            />
+          ))}
+        </View>
+      </Sheet>
     </SafeAreaView>
   );
 }

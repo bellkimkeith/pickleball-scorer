@@ -1,0 +1,129 @@
+{
+  "title": "Choose the visual world for Pickleball Scorer",
+  "question": "One look for the whole app (Open Play, scorer, stats, settings), shown here on the live Open Play screen. Keep the assigned direction, take my pick or the standard, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Next Up Board",
+      "kicker": "THE ROLL",
+      "lineage": "Station split-flap departure boards",
+      "thesis": "Courts are platforms, matches are departures: the queue reads like a board everyone already knows how to read.",
+      "palette": ["#cfd3d6", "#26282b", "#0a0b0c", "#f1ede3", "#ffb21e", "#39d17a"],
+      "materials": ["brushed steel ground", "matte black flap cells", "paint-white letters", "signal lamps"],
+      "viewport": "Large iOS title on a steel ground, then a black NOW PLAYING board (one row per court, names in flap cells, live clock) with Match done under each court, a NEXT UP board, then the player list with games played as step lamps.",
+      "risk": "The flap-cell texture can turn into a costume if it spreads to every screen; it must stay on the live data (names, times, scores), not the chrome.",
+      "raised": [
+        {"from": "challenger-split-flap", "raise": "Columns never move and only their contents flip, so tapping Match done cascades the four new names into that court's row."},
+        {"from": "challenger-zone-sheets", "raise": "Games played uses one strict step scale everywhere (filled lamps), never a loose badge or number soup."},
+        {"from": "challenger-tensegrity", "raise": "Every call can be traced: 'Why?' on the next match shows each player's games played, time waited and partner history."},
+        {"from": "challenger-orizuru", "raise": "Every call is a recorded, reversible step, so 'Undo call' and the session log replay the queue exactly."},
+        {"from": "challenger-tdr", "raise": "The court number and the next four names hold one fixed scale on every phone and never shrink to fit."},
+        {"from": "challenger-centre-rail", "raise": "Rules are single hairlines and states are printed marks (lamp, strike, bracket); radii stay small and consistent."}
+      ],
+      "comp": ".impeccable/mocks/decision/assigned.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Court & Paddle Rack",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Acrylic court surfaces and the paddle-stacking queue ritual",
+      "thesis": "Draw what players see: each court as a real top-down court with names in their positions, and the queue as the paddle rack they already use.",
+      "palette": ["#2d5a48", "#2c5c93", "#3a6aa3", "#f4f6f2", "#e3a33b", "#e0634a"],
+      "materials": ["court acrylic", "2-inch white lines", "paddle faces", "grip tape"],
+      "viewport": "Courts as top-down diagrams with kitchen lines and a player name in each quarter, Match done under each, then a paddle rack where the next four paddles are outlined and locked pairs are taped together.",
+      "risk": "Most literal to pickleball, so it can tip into cute or skeuomorphic; the rack also gets crowded past about 16 waiting players.",
+      "comp": ".impeccable/mocks/decision/pick.png"
+    },
+    {
+      "id": "challenger-split-flap",
+      "label": "Split-flap Concourse",
+      "verdict": "declined",
+      "lineage": "Rail concourse departure boards",
+      "thesis": "Rows as live entities ranked by time; only the flaps move.",
+      "palette": ["#0b0b0b", "#f2f2f2", "#ffb000", "#8a2a22"],
+      "materials": ["matte flaps", "steel frame", "amber row lamps"],
+      "viewport": "A full-screen board of departures.",
+      "case": "Same world as the assigned direction, so it merged instead of competing.",
+      "kept": "Its full grammar: fixed columns, character cascade, amber for delay.",
+      "risk": "Duplicate of the assigned direction."
+    },
+    {
+      "id": "challenger-zone-sheets",
+      "label": "Darkroom Exposure Record",
+      "verdict": "declined",
+      "lineage": "Printer's exposure record cards",
+      "thesis": "Translucent sheets over an eleven-step tonal ramp.",
+      "palette": ["#1a1a1a", "#8c8c8c", "#e8e8e8", "#c2187a"],
+      "materials": ["tracing paper", "hatch density"],
+      "viewport": "Overlapping sheets, hatch marks for load.",
+      "case": "Players don't recognize darkroom notation, and hatching hides who plays next.",
+      "kept": "One strict step scale for a single quantity (games played).",
+      "risk": "Unreadable courtside."
+    },
+    {
+      "id": "challenger-orizuru",
+      "label": "Orizuru Fold Sequence",
+      "verdict": "declined",
+      "lineage": "Origami crane diagrams",
+      "thesis": "One sheet through thirty-two recoverable folds.",
+      "palette": ["#d9442b", "#f3ece0", "#1b1b1b", "#c9a646"],
+      "materials": ["washi fiber", "crease lines"],
+      "viewport": "Crease pattern beside a folding crane.",
+      "case": "No link to pickleball or to queues.",
+      "kept": "Every step is recoverable and replayable.",
+      "risk": "Decorative, off-subject."
+    },
+    {
+      "id": "challenger-tensegrity",
+      "label": "Tensegrity Column",
+      "verdict": "declined",
+      "lineage": "Kinetic tension sculpture",
+      "thesis": "Every load traced to its counterforce.",
+      "palette": ["#161616", "#d6d3cc", "#c8322a", "#8e8e8e"],
+      "materials": ["carbon rods", "red cord"],
+      "viewport": "A force diagram of the session.",
+      "case": "Beautiful but abstract; organizers need names, not forces.",
+      "kept": "Traceability: every match call explains itself.",
+      "risk": "Too abstract for a quick glance."
+    },
+    {
+      "id": "challenger-tdr",
+      "label": "Info-noise Sleeve",
+      "verdict": "declined",
+      "lineage": "The Designers Republic record sleeves",
+      "thesis": "Immaculate brand noise with one shouting word.",
+      "palette": ["#000000", "#ff2d8a", "#ff6a00", "#ffffff"],
+      "materials": ["flat print", "registration marks"],
+      "viewport": "Dense marks around one giant word.",
+      "case": "The noise fights legibility in sunlight and alienates casual players.",
+      "kept": "The one essential word never shrinks.",
+      "risk": "Hostile to an operate task."
+    },
+    {
+      "id": "challenger-centre-rail",
+      "label": "Centre-rail Reference Page",
+      "verdict": "declined",
+      "lineage": "Ruled scholarly editions",
+      "thesis": "Two columns around a rail of keys, ruled at one pixel.",
+      "palette": ["#141414", "#b3321f", "#efe8da"],
+      "materials": ["ruling engine hairlines", "small caps"],
+      "viewport": "Dense two-column text with margin notes.",
+      "case": "Built for reading, not for glancing at courtside.",
+      "kept": "Hairline discipline and states shown as printed marks.",
+      "risk": "Tiny type, bookish."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": false},
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A clean iOS-style sports utility: white cards, one green tint, segmented tabs.",
+    "palette": ["#f2f2f7", "#ffffff", "#111111", "#1f8a4c"],
+    "materials": ["grouped cards", "system type"],
+    "viewport": "Courts / Queue / Players tabs, white court cards with a green Match done button, Next up as a list.",
+    "risk": "Polished but interchangeable with every scorer app, which is hard to justify for a paid app.",
+    "comp": ".impeccable/mocks/decision/canon.png"
+  },
+  "steer": true
+}

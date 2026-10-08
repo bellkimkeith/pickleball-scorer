@@ -5,6 +5,8 @@ export default function GameLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
+        // The textured court ground lives at the root; screens sit on it.
+        contentStyle: { backgroundColor: 'transparent' },
         animation: 'slide_from_right',
       }}
     >

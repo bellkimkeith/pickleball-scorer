@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pickle & Score",
     "slug": "pickleball-scorer",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -11,33 +11,35 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#22c55e"
+      "backgroundColor": "#2d5a48"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.bellkimkeith.pickleballscorer",
       "appleTeamId": "F89UG85Z8F",
       "buildNumber": "1",
-      "minimumOsVersion": "15.1",
+      "minimumOsVersion": "16.0",
       "config": {
         "usesNonExemptEncryption": false
       },
       "splash": {
         "image": "./assets/splash.png",
         "resizeMode": "cover",
-        "backgroundColor": "#22c55e"
+        "backgroundColor": "#2d5a48"
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#22c55e"
+        "backgroundColor": "#2d5a48"
       },
       "splash": {
         "image": "./assets/splash-android.png",
         "resizeMode": "cover",
-        "backgroundColor": "#22c55e"
+        "backgroundColor": "#2d5a48"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -54,7 +56,10 @@
         {
           "userInterfaceStyle": "automatic"
         }
-      ]
+      ],
+      "expo-localization",
+      "./plugins/with-ios-deployment-target",
+      "./plugins/with-ios-scene-lifecycle"
     ]
   }
 }
