@@ -114,6 +114,7 @@ export function GameSetup({ mode, visible, onComplete, onCancel }: GameSetupProp
         <View style={{ paddingHorizontal: 12, paddingTop: 22 }}>
           <CourtDiagram
             players={diagramSlots}
+            fillableSlots={mode === 'singles' ? [0, 2] : undefined}
             onSlotPress={index => setEditing(diagramIndexToSlot(index))}
           />
         </View>

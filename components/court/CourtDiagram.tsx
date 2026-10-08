@@ -31,6 +31,11 @@ export interface CourtDiagramProps {
   height?: number;
   emptyLabel?: string;
   onSlotPress?: (index: number) => void;
+  /**
+   * Which empty positions invite a name. Singles uses two of the four, and the
+   * other two must not offer a slot that quietly edits somebody else.
+   */
+  fillableSlots?: number[];
   onPlayerPress?: (id: string) => void;
   accessibilityLabel?: string;
   style?: ViewStyle;
@@ -211,6 +216,7 @@ function CourtDiagramComponent({
   height,
   emptyLabel,
   onSlotPress,
+  fillableSlots,
   onPlayerPress,
   accessibilityLabel,
   style,
@@ -300,7 +306,7 @@ function CourtDiagramComponent({
                   onPlayerPress ? () => onPlayerPress(player.id) : onSlotPress ? () => onSlotPress(index) : undefined
                 }
               />
-            ) : onSlotPress ? (
+            ) : onSlotPress && (fillableSlots ?? [0, 1, 2, 3]).includes(index) ? (
               <EmptySlot
                 onPress={() => onSlotPress(index)}
                 label={t('common.player')}
