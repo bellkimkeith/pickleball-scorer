@@ -227,7 +227,7 @@ export default function SessionScreen() {
                       title={t('openPlay.score')}
                       variant="outline"
                       onPress={() => router.push(`/(game)/doubles?sessionMatchId=${match.id}`)}
-                      style={{ width: 100 }}
+                      style={{ minWidth: 100 }}
                       height={48}
                     />
                   </View>
@@ -238,8 +238,15 @@ export default function SessionScreen() {
         </View>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', paddingHorizontal: 16, paddingTop: 22, paddingBottom: 8 }}>
-          <Text style={{ color: COURT.ink, fontSize: 20, fontWeight: '700' }}>{t('openPlay.rack')}</Text>
-          <Text style={{ color: COURT.inkMuted, fontSize: 13 }}>{t('openPlay.rackHint')}</Text>
+          <Text style={{ color: COURT.ink, fontSize: 20, fontWeight: '700', flexShrink: 1 }}>
+            {t('openPlay.rack')}
+          </Text>
+          <Text
+            numberOfLines={2}
+            style={{ color: COURT.inkMuted, fontSize: 13, flexShrink: 1, textAlign: 'right', paddingLeft: 10 }}
+          >
+            {t('openPlay.rackHint')}
+          </Text>
         </View>
 
         <View style={{ paddingHorizontal: 12 }} ref={rackRef} collapsable={false}>
@@ -272,7 +279,7 @@ export default function SessionScreen() {
           icon="arrow-undo"
           onPress={undo}
           disabled={!canUndo(session)}
-          style={{ width: 130 }}
+          style={{ minWidth: 130 }}
           height={52}
         />
       </View>
