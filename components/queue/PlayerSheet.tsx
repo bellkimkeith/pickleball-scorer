@@ -28,7 +28,9 @@ export function PlayerSheet({ playerId, onClose }: PlayerSheetProps) {
   const lock = useSessionStore(state => state.lock);
   const unlock = useSessionStore(state => state.unlock);
 
-  const [confirmRemove, setConfirmRemove] = useState(false);
+  // Kept apart from `playerId` so the dialog can outlive the sheet: the sheet
+  // closes before it opens, since iOS shows only one modal at a time.
+  const [removing, setRemoving] = useState<{ id: string; name: string } | null>(null);
   const [picking, setPicking] = useState(false);
 
   const player = session?.players.find(p => p.id === playerId) ?? null;
@@ -53,10 +55,6 @@ export function PlayerSheet({ playerId, onClose }: PlayerSheetProps) {
     p => p.id !== playerId && p.status === 'active' && !p.lockedWith,
   );
 
-  if (!player || !session) {
-    return <Sheet visible={false} onClose={onClose}>{null}</Sheet>;
-  }
-
   const close = () => {
     setPicking(false);
     onClose();
@@ -64,7 +62,28 @@ export function PlayerSheet({ playerId, onClose }: PlayerSheetProps) {
 
   return (
     <>
-      <Sheet visible={playerId !== null} onClose={close} title={player.name}>
+      <Sheet
+        visible={player !== null && session !== null}
+        onClose={close}
+        title={picking ? t('openPlay.pickPartner') : (player?.name ?? '')}
+      >
+        {!player || !session ? null : picking ? (
+          <View style={{ gap: 8, paddingBottom: 8 }}>
+            {lockCandidates.map(candidate => (
+              <CourtButton
+                key={candidate.id}
+                title={candidate.name}
+                variant="deep"
+                onPress={() => {
+                  lock(player.id, candidate.id);
+                  setPicking(false);
+                  close();
+                }}
+              />
+            ))}
+          </View>
+        ) : (
+          <>
         <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center', paddingBottom: 4 }}>
           <Paddle name={player.name} color={player.color} games={player.gamesPlayed} />
           <View style={{ flex: 1 }}>
@@ -164,7 +183,10 @@ export function PlayerSheet({ playerId, onClose }: PlayerSheetProps) {
           <CourtButton
             title={t('openPlay.removePlayer')}
             variant="dangerText"
-            onPress={() => setConfirmRemove(true)}
+            onPress={() => {
+              setRemoving({ id: player.id, name: player.name });
+              close();
+            }}
             disabled={onCourt}
           />
 
@@ -174,37 +196,21 @@ export function PlayerSheet({ playerId, onClose }: PlayerSheetProps) {
             </Text>
           )}
         </View>
-      </Sheet>
-
-      <Sheet visible={picking} onClose={() => setPicking(false)} title={t('openPlay.pickPartner')}>
-        <View style={{ gap: 8, paddingBottom: 8 }}>
-          {lockCandidates.map(candidate => (
-            <CourtButton
-              key={candidate.id}
-              title={candidate.name}
-              variant="deep"
-              onPress={() => {
-                lock(player.id, candidate.id);
-                setPicking(false);
-                close();
-              }}
-            />
-          ))}
-        </View>
+          </>
+        )}
       </Sheet>
 
       <Dialog
-        visible={confirmRemove}
-        title={t('openPlay.removeTitle', { name: player.name })}
+        visible={removing !== null}
+        title={t('openPlay.removeTitle', { name: removing?.name ?? '' })}
         message={t('openPlay.removeMessage')}
         confirmLabel={t('openPlay.removePlayer')}
         cancelLabel={t('common.cancel')}
         onConfirm={() => {
-          removeFromSession(player.id);
-          setConfirmRemove(false);
-          close();
+          if (removing) removeFromSession(removing.id);
+          setRemoving(null);
         }}
-        onCancel={() => setConfirmRemove(false)}
+        onCancel={() => setRemoving(null)}
         destructive
       />
     </>
