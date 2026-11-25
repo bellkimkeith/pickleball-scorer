@@ -12,7 +12,9 @@ export interface ProposedMatch {
 }
 
 /** Stable key for an unordered pair of player ids. */
-const key = (a: string, b: string) => [a, b].sort().join('|');
+export function pairKey(a: string, b: string): string {
+  return [a, b].sort().join('|');
+}
 
 export interface PairingHistory {
   partnered: Record<string, number>;
@@ -27,14 +29,14 @@ export function pairingHistory(session: Session): PairingHistory {
 
   for (const match of session.matches) {
     for (const team of [match.team1, match.team2]) {
-      const k = key(team[0], team[1]);
+      const k = pairKey(team[0], team[1]);
       partnered[k] = (partnered[k] ?? 0) + 1;
       lastPartner[team[0]] = team[1];
       lastPartner[team[1]] = team[0];
     }
     for (const a of match.team1) {
       for (const b of match.team2) {
-        const k = key(a, b);
+        const k = pairKey(a, b);
         opposed[k] = (opposed[k] ?? 0) + 1;
       }
     }
@@ -169,13 +171,13 @@ export function pickNextMatch(session: Session, _now: number): ProposedMatch | n
   const cost = (c: Candidate): number => {
     let score = 30 * (c.players.reduce((n, p) => n + rank.get(p.id)!, 0) - 6);
     for (const team of [c.match.team1, c.match.team2]) {
-      const k = key(team[0], team[1]);
+      const k = pairKey(team[0], team[1]);
       score += 100 * (partnered[k] ?? 0);
       if (lastPartner[team[0]] === team[1]) score += 50;
     }
     for (const a of c.match.team1) {
       for (const b of c.match.team2) {
-        score += 15 * (opposed[key(a, b)] ?? 0);
+        score += 15 * (opposed[pairKey(a, b)] ?? 0);
       }
     }
     return score;
