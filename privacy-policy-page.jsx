@@ -37,7 +37,7 @@ export default function PrivacyPolicyPage() {
               Advertising
             </h2>
             <p className="text-base text-gray-700">
-              The free version shows small banner ads from Google AdMob on a few screens (home, stats, settings and the Open Play summary), never while you score. To choose and measure ads, Google&apos;s software may collect your IP address and the approximate location it implies, information about your device and the app, how you interact with ads, and on Android the device&apos;s advertising ID. Google handles this under its own policy: <a href="https://policies.google.com/technologies/ads" className="text-blue-600 hover:text-blue-800 underline">policies.google.com/technologies/ads</a>. Ads are limited to content rated PG.
+              The free version shows small banner ads from Google AdMob on a few screens (home, stats, settings and the Open Play summary), never while you score. To choose and measure ads, Google&apos;s software may collect your IP address and the approximate location it implies, information about your device and the app, how you interact with ads, and on Android the device&apos;s advertising ID. Google handles this under its own policy: <a href="https://policies.google.com/technologies/ads" className="text-green-700 hover:text-green-900 underline">policies.google.com/technologies/ads</a>. Ads are limited to content rated PG.
             </p>
           </section>
           <section className="mb-8">
@@ -61,7 +61,7 @@ export default function PrivacyPolicyPage() {
               Removing Ads
             </h2>
             <p className="text-base text-gray-700">
-              Removing ads is an in-app purchase, monthly or lifetime, handled by the App Store or Google Play. The app never sees your payment details. Our purchase service, RevenueCat, receives an anonymous app user ID, your purchase history and basic device information so it can confirm and restore your ad-free status. It is not used for advertising. See <a href="https://www.revenuecat.com/privacy" className="text-blue-600 hover:text-blue-800 underline">RevenueCat&apos;s privacy policy</a>.
+              Removing ads is an in-app purchase, monthly or lifetime, handled by the App Store or Google Play. The app never sees your payment details. Our purchase service, RevenueCat, receives an anonymous app user ID, your purchase history and basic device information so it can confirm and restore your ad-free status. It is not used for advertising. See <a href="https://www.revenuecat.com/privacy" className="text-green-700 hover:text-green-900 underline">RevenueCat&apos;s privacy policy</a>.
             </p>
           </section>
           <section className="mb-8">
@@ -98,6 +98,14 @@ export default function PrivacyPolicyPage() {
           </section>
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              Sharing
+            </h2>
+            <p className="text-base text-gray-700">
+              When you share a result, your phone&apos;s own share sheet handles it, and you choose where it goes. The app sends nothing on its own.
+            </p>
+          </section>
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">
               Children
             </h2>
             <p className="text-base text-gray-700">
@@ -124,7 +132,7 @@ export default function PrivacyPolicyPage() {
               us at{" "}
               <a
                 href="mailto:me@bellkimkeith.com"
-                className="text-blue-600 hover:text-blue-800 underline"
+                className="text-green-700 hover:text-green-900 underline"
               >
                 me@bellkimkeith.com
               </a>
