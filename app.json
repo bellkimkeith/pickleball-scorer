@@ -69,7 +69,8 @@
             "cstr6suwn9.skadnetwork"
           ]
         }
-      ]
+      ],
+      "./plugins/with-android-admob-kotlin"
     ]
   }
 }
