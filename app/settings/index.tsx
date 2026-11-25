@@ -1,22 +1,31 @@
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Linking, Platform, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdBanner } from '../../components/ads/AdBanner';
+import { RemoveAdsSheet } from '../../components/ads/RemoveAdsSheet';
+import { Dialog } from '../../components/ui/Dialog';
 import { Segmented, Stepper, Toggle } from '../../components/ui/Controls';
 import { BackButton } from '../../components/ui/BackButton';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
 import { Sheet } from '../../components/ui/Sheet';
 import { CourtButton } from '../../components/ui/Button';
 import { changeLanguage } from '../../i18n';
+import { openAdPrivacyChoices } from '../../lib/ads/ads';
 import { COURT } from '../../lib/theme/tokens';
 import { Language } from '../../lib/types/game';
 import { useGameStore } from '../../store/game-store';
+import { useMonetizationStore } from '../../store/monetization-store';
 import { useSessionStore } from '../../store/session-store';
 
 const LANGUAGES: Language[] = ['en', 'es', 'fr', 'de'];
+
+const STORE_SUBSCRIPTIONS_URL = Platform.select({
+  ios: 'https://apps.apple.com/account/subscriptions',
+  default: 'https://play.google.com/store/account/subscriptions',
+});
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -25,6 +34,21 @@ export default function SettingsScreen() {
   const updateSettings = useGameStore(state => state.updateSettings);
   const defaultCourtCount = useSessionStore(state => state.defaultCourtCount);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const adFree = useMonetizationStore(state => state.adFree);
+  const plan = useMonetizationStore(state => state.plan);
+  const managementUrl = useMonetizationStore(state => state.managementUrl);
+  const privacyOptionsRequired = useMonetizationStore(state => state.privacyOptionsRequired);
+  const restore = useMonetizationStore(state => state.restore);
+  const [removeAdsOpen, setRemoveAdsOpen] = useState(false);
+  const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
+
+  const restorePurchases = async () => {
+    const outcome = await restore();
+    if (outcome === 'error') setRestoreMessage(t('ads.nothingToRestore'));
+    else if (outcome === 'unavailable') setRestoreMessage(t('ads.unavailable'));
+    else if (outcome === 'pending') setRestoreMessage(t('ads.pending'));
+    // success needs no message: this group turns into "Ad-free" on its own.
+  };
 
   const setDefaultCourts = (count: number) => useSessionStore.setState({ defaultCourtCount: count });
 
@@ -144,6 +168,28 @@ export default function SettingsScreen() {
           />
         </ListGroup>
 
+        <ListGroup header={t('ads.group')} style={{ marginHorizontal: 12, marginTop: 20 }}>
+          {adFree ? (
+            <ListRow
+              label={t('ads.adFree')}
+              value={t(plan === 'monthly' ? 'ads.planMonthly' : 'ads.planLifetime')}
+            />
+          ) : (
+            <ListRow label={t('ads.removeAds')} chevron onPress={() => setRemoveAdsOpen(true)} />
+          )}
+          {adFree && plan === 'monthly' && (
+            <ListRow
+              label={t('ads.manage')}
+              chevron
+              onPress={() => Linking.openURL(managementUrl ?? STORE_SUBSCRIPTIONS_URL).catch(() => {})}
+            />
+          )}
+          {!adFree && <ListRow label={t('ads.restore')} chevron onPress={restorePurchases} />}
+          {privacyOptionsRequired && (
+            <ListRow label={t('ads.privacyChoices')} chevron onPress={openAdPrivacyChoices} />
+          )}
+        </ListGroup>
+
         <ListGroup header={t('settings.app')} style={{ marginHorizontal: 12, marginTop: 20 }}>
           <ListRow
             label={t('settings.language')}
@@ -157,6 +203,16 @@ export default function SettingsScreen() {
       </ScrollView>
 
       <AdBanner placement="anchored" />
+
+      <RemoveAdsSheet visible={removeAdsOpen} onClose={() => setRemoveAdsOpen(false)} />
+
+      <Dialog
+        visible={restoreMessage !== null}
+        title={t('ads.restore')}
+        message={restoreMessage ?? undefined}
+        confirmLabel={t('common.done')}
+        onConfirm={() => setRestoreMessage(null)}
+      />
 
       <Sheet visible={languageOpen} onClose={() => setLanguageOpen(false)} title={t('settings.language')}>
         <View style={{ gap: 8, paddingBottom: 10 }}>
