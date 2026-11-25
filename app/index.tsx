@@ -1,17 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AdBanner } from '../components/ads/AdBanner';
-import { RemoveAdsSheet } from '../components/ads/RemoveAdsSheet';
+import { TopAdStrip } from '../components/ads/TopAdStrip';
 import { CourtDiagram } from '../components/court/CourtDiagram';
 import { MiniCourt } from '../components/court/MiniCourt';
 import { ListGroup, ListRow } from '../components/ui/ListGroup';
 import { COURT } from '../lib/theme/tokens';
-import { useMonetizationStore } from '../store/monetization-store';
 import { useSessionStore } from '../store/session-store';
 import { useStatsStore } from '../store/stats-store';
 
@@ -22,8 +20,6 @@ export default function HomeScreen() {
   const savedPlayers = useSessionStore(state => state.savedPlayers);
   const totalGames = useStatsStore(state => state.totalGames);
   const loadHistory = useStatsStore(state => state.loadHistory);
-  const showRemoveAds = useMonetizationStore(state => state.hydrated && !state.adFree);
-  const [removeAdsOpen, setRemoveAdsOpen] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -62,7 +58,8 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+      <TopAdStrip />
       <StatusBar style="light" />
 
       <ScrollView
@@ -142,15 +139,9 @@ export default function HomeScreen() {
             chevron
             onPress={() => router.push('/queue')}
           />
-          {showRemoveAds && (
-            <ListRow label={t('ads.removeAds')} chevron onPress={() => setRemoveAdsOpen(true)} />
-          )}
         </ListGroup>
       </ScrollView>
 
-      <AdBanner placement="anchored" />
-
-      <RemoveAdsSheet visible={removeAdsOpen} onClose={() => setRemoveAdsOpen(false)} />
     </SafeAreaView>
   );
 }

@@ -47,6 +47,19 @@ describe('bootMonetization', () => {
     expect(store.getState()).toMatchObject({ adsReady: true, privacyOptionsRequired: true });
   });
 
+  it('marks ads blocked when consent rules them out', async () => {
+    mockStartAds.mockResolvedValue({ canRequestAds: false, privacyOptionsRequired: true });
+    store.setState({ hydrated: true, adFree: false });
+    await bootMonetization();
+    expect(store.getState()).toMatchObject({ adsReady: false, adsBlocked: true });
+  });
+
+  it('does not mark ads blocked when they start', async () => {
+    store.setState({ hydrated: true, adFree: false });
+    await bootMonetization();
+    expect(store.getState().adsBlocked).toBe(false);
+  });
+
   it('starts ads when ad-free ends mid-session', async () => {
     store.setState({ hydrated: true, adFree: true, plan: 'monthly' });
     await bootMonetization();

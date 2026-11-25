@@ -5,7 +5,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AdBanner } from '../../components/ads/AdBanner';
+import { TopAdStrip } from '../../components/ads/TopAdStrip';
 import { Paddle } from '../../components/court/Paddle';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
 import { StandingsShareCard } from '../../components/queue/StandingsShareCard';
@@ -110,7 +110,8 @@ export default function SummaryScreen() {
   const max = counts.length > 0 ? Math.max(...counts) : 0;
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+      <TopAdStrip />
       <StatusBar style="light" />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
@@ -148,10 +149,6 @@ export default function SummaryScreen() {
             </Text>
           ))}
         </View>
-
-        {/* Above the paddles, not below: its place must not depend on group size,
-            or a big group pushes it down onto the Done button on a small phone. */}
-        <AdBanner placement="inline" />
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 12, paddingTop: 18 }}>
           {players.map(player => (

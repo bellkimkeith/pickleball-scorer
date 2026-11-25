@@ -22,6 +22,7 @@ async function startAdsIfShown(): Promise<void> {
   const result = await startAds();
   useMonetizationStore.setState({
     adsReady: result.canRequestAds,
+    adsBlocked: !result.canRequestAds,
     privacyOptionsRequired: result.privacyOptionsRequired,
   });
 }

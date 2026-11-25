@@ -29,6 +29,8 @@ interface MonetizationState extends AdFreeStatus {
   purchasesConfigured: boolean;
   /** Consent is settled and the ad SDK is initialised. */
   adsReady: boolean;
+  /** Consent rules out ads for this person, so no ad strip is drawn at all. */
+  adsBlocked: boolean;
   /** Google requires an entry point to change ad consent for this person. */
   privacyOptionsRequired: boolean;
   offer: OfferState;
@@ -78,6 +80,7 @@ export const useMonetizationStore = create<MonetizationState>()(
       hydrated: false,
       purchasesConfigured: false,
       adsReady: false,
+      adsBlocked: false,
       privacyOptionsRequired: false,
       offer: { status: 'idle' },
       purchasing: false,

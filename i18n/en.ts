@@ -315,5 +315,7 @@ export default {
     planMonthly: 'Monthly',
     manage: 'Manage subscription',
     privacyChoices: 'Ad privacy choices',
+    stripOffer: 'Go ad-free with Pickle & Score',
+    stripHint: 'Opens the options to remove ads',
   },
 };

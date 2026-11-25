@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AdBanner } from '../../components/ads/AdBanner';
+import { TopAdStrip } from '../../components/ads/TopAdStrip';
 import { BackButton } from '../../components/ui/BackButton';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
 import { bestDuos, DUO_MIN_GAMES } from '../../lib/queue/duos';
@@ -100,7 +100,8 @@ export default function StatsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+      <TopAdStrip />
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
@@ -234,8 +235,6 @@ export default function StatsScreen() {
           </>
         )}
       </ScrollView>
-
-      <AdBanner placement="anchored" />
     </SafeAreaView>
   );
 }

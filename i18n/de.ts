@@ -315,5 +315,7 @@ export default {
     planMonthly: 'Monatlich',
     manage: 'Abo verwalten',
     privacyChoices: 'Datenschutz bei Werbung',
+    stripOffer: 'Werbefrei mit Pickle & Score',
+    stripHint: 'Öffnet die Optionen zum Entfernen der Werbung',
   },
 };

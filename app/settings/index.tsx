@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Linking, Platform, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AdBanner } from '../../components/ads/AdBanner';
+import { TopAdStrip } from '../../components/ads/TopAdStrip';
 import { RemoveAdsSheet } from '../../components/ads/RemoveAdsSheet';
 import { Dialog } from '../../components/ui/Dialog';
 import { Segmented, Stepper, Toggle } from '../../components/ui/Controls';
@@ -55,7 +55,8 @@ export default function SettingsScreen() {
   const setDefaultCourts = (count: number) => useSessionStore.setState({ defaultCourtCount: count });
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+      <TopAdStrip />
       <StatusBar style="light" />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
@@ -213,8 +214,6 @@ export default function SettingsScreen() {
           <ListRow label={t('settings.privacyPolicy')} chevron onPress={() => router.push('/settings/privacy')} />
         </ListGroup>
       </ScrollView>
-
-      <AdBanner placement="anchored" />
 
       <RemoveAdsSheet visible={removeAdsOpen} onClose={() => setRemoveAdsOpen(false)} />
 
