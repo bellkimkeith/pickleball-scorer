@@ -112,6 +112,10 @@ export default function SummaryScreen() {
           ))}
         </View>
 
+        {/* Above the paddles, not below: its place must not depend on group size,
+            or a big group pushes it down onto the Done button on a small phone. */}
+        <AdBanner placement="inline" />
+
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 12, paddingTop: 18 }}>
           {players.map(player => (
             <Paddle
@@ -123,8 +127,6 @@ export default function SummaryScreen() {
             />
           ))}
         </View>
-
-        <AdBanner placement="inline" />
 
         <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', paddingHorizontal: 16, paddingTop: 22, paddingBottom: 8 }}>
           {t('openPlay.everyone')}
