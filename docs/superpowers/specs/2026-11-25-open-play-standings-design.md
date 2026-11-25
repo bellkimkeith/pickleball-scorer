@@ -1,7 +1,7 @@
 # Open Play standings, best duos, and a shareable standings image
 
 Date: 2026-11-25
-Status: draft for the owner's approval. The owner chose the three features; the owner asked Claude to decide the rest, so every detailed call below is Claude's and can be overridden.
+Status: approved by the owner on 2026-11-25, to ship in v1.2.0. The owner chose the three features and asked Claude to decide the rest, so every detailed call below is Claude's and can be overridden.
 Builds on: [2026-09-18-open-play-and-redesign-design.md](2026-09-18-open-play-and-redesign-design.md) (Open Play) and [2026-11-25-free-with-ads-design.md](2026-11-25-free-with-ads-design.md) (where ads may go)
 
 ## 1. Intent
@@ -146,13 +146,13 @@ The existing row ("Ana & Ben ×3") adds the pair's record that night when they h
 
 ### 4.8 Shareable standings image
 
-- The **Share** button sits in the summary's standings header (4.3), shown only when there's at least one scored game.
+- The **Share** button sits in the summary's standings header (4.3), shown only when there's at least one scored game. It opens a preview sheet showing the card, with a **Share image** button. The card is captured from that preview rather than from an off-screen copy, because an off-screen view can come out blank on iOS. It also lets people see what they're about to post.
 - A portrait 4:5 card in the same style as the game share card: court colours, with text on court-coloured plates so court lines never cross it.
   - Top plate: date · "Open Play" · duration · games · courts.
   - The ranked table: rank, name, W–L, +/-. The top three get a stronger plate. Up to 16 rows; any more players become "+N more".
   - Players without scored games are left off. The caption from 4.3 appears when some games went unscored.
   - The app name at the bottom.
-- The card is drawn off-screen at 1080 px wide, captured to a PNG in the cache folder with `react-native-view-shot`, and handed to the system share sheet with `expo-sharing`. The share sheet covers Messenger, Viber, WhatsApp and Save Image.
+- The card is captured at 1080 × 1350 px to a PNG in the cache folder with `react-native-view-shot`, and handed to the system share sheet with `expo-sharing`. The share sheet covers Messenger, Viber, WhatsApp and Save Image.
 - If capture or sharing fails, the app shares the same standings as text through `Share.share`.
 - No ads in the image.
 
@@ -160,8 +160,8 @@ The existing row ("Ana & Ben ×3") adds the pair's record that night when they h
 
 - All new text in English, Spanish, French and German (`i18n/*.ts`).
 - No change to stored data shapes. `Match.score` already exists and is optional.
-- Add the new libraries with `npx expo install react-native-view-shot expo-sharing`, so the versions match SDK 55. Both need a new native build. Check them on the iOS and Android dev builds.
-- Branching: `release/v1.2.0` is mid-release. Do this work on a new feature branch for v1.3.0, from `main` once v1.2.0 is merged.
+- Add the new libraries with `npx expo install react-native-view-shot expo-sharing`, so the versions match SDK 55. Both need a new native build. Check them on the iOS and Android dev builds. `expo install` also adds an `expo-sharing` config plugin to `app.json`. Leave it out: with no options it changes nothing, since it only matters for *receiving* shares.
+- Branching: the owner wants this in v1.2.0. It's built on `feature/open-play-standings`, branched from `release/v1.2.0`, and merged back into it.
 
 ### 4.10 Tests
 
@@ -174,6 +174,6 @@ The existing row ("Ana & Ben ×3") adds the pair's record that night when they h
 ## 5. Left to the builder
 
 - How the components are split (for example `StandingsTable`, `QuickScoreSheet`, `StandingsShareCard`), and the styling within the existing Court & Paddle tokens.
-- How the off-screen card is mounted for capture.
+- ~~How the off-screen card is mounted for capture.~~ Settled: captured from the preview sheet (4.8).
 - The Spanish, French and German wording.
 - Whether the live standings row animates when the leader changes (subtle or not at all).

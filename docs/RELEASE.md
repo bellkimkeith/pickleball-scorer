@@ -5,11 +5,17 @@ For release 1.2.0: Open Play, the Court & Paddle design, and the switch to a
 lifetime). The live app is the free v1.1.0. The ₱199 paid version planned in
 September never shipped, so nobody has paid for anything yet.
 
-Design record: `docs/superpowers/specs/2026-11-25-free-with-ads-design.md`.
+Also in 1.2.0: **Open Play standings**. Match done asks for the final score,
+with Skip. The session shows wins, losses and +/- live and on the summary. Stats
+shows the best partner pairs across sessions. The standings can be shared as an
+image. Sessions can now run up to 8 courts (was 6).
+
+Design records: `docs/superpowers/specs/2026-11-25-free-with-ads-design.md` and
+`docs/superpowers/specs/2026-11-25-open-play-standings-design.md`.
 
 ## 1. Before you build
 
-- [ ] `npm test`: 112 tests pass (queue engine, fairness simulations, tokens, sounds, stores, ads, purchases, release check, strings).
+- [ ] `npm test`: 158 tests pass (queue engine, fairness simulations, standings, duos, quick score, share fallback, tokens, sounds, stores, ads, purchases, release check, strings).
 - [ ] `npx tsc --noEmit --types react,node,jest` is clean.
       (Plain `npx tsc` aborts on a stray `node_modules/@types/react 2` folder on this machine. Deleting that folder or reinstalling `node_modules` fixes it.)
 - [ ] `npm run lint -- --no-cache` shows 0 errors. The `--no-cache` matters: a stale cache reports phantom parse errors.
@@ -89,10 +95,10 @@ Design record: `docs/superpowers/specs/2026-11-25-free-with-ads-design.md`.
 - [ ] **Target audience: 18+** (or 13+). Picking any age under 13 brings in the Families policy.
 
 ### Store listing (both)
-- [ ] Description: free, every feature included; small ads that stay out of play; remove them monthly or once for life. Lead with Open Play (fair rotation). Remove any "no ads" or "one-time purchase" wording from earlier drafts.
+- [ ] Description: free, every feature included; small ads that stay out of play; remove them monthly or once for life. Lead with Open Play (fair rotation), then the standings (W-L and +/-, best duos, shareable results). Remove any "no ads" or "one-time purchase" wording from earlier drafts.
 - [ ] New screenshots. The strongest set: the live session with two courts and
-      the paddle rack, the session summary ("everyone played 6 or 7 games"), the
-      doubles scorer, check-in, and stats. **Shoot them on an ad-free build**
+      the paddle rack, the session summary with its standings table, the quick
+      score sheet, the shared standings image, the doubles scorer, check-in, and stats. **Shoot them on an ad-free build**
       (set `adFree` or leave the units empty) so no test ad appears.
 
 ## 3. Build and submit (EAS)
@@ -168,11 +174,27 @@ emulator (API 34), using Google's test ads. Flows and screenshots live beside th
 
 Not covered by simulators, and so left for a device: real ad fill with your own units, sandbox purchases and restore, a monthly plan lapsing, and the EU consent form.
 
+**Open Play standings, 26 November 2026.** Debug builds of `feature/open-play-standings`
+were driven with Maestro on the iPhone 17 Pro simulator (iOS 26.3) and the Pixel 7 Pro
+emulator (API 34). Flows F (standings), G (Ask for scores, 8 courts) and H (German)
+and their screenshots live in `pickleball-scorer-qa-2026-11-25/flows/`, `ios-standings/`
+and `android-standings/`. Verified on both platforms:
+- Match done opens the score sheet. Winner plus a chip gives 11–7, and a 10 gives 12–10. Skip finishes without a score. A second court's sheet starts empty.
+- The live row ("Standings · Ana and Ben lead, 1–0") opens the standings sheet, with no ad. Undo straight after a scored game drops it.
+- The summary shows the standings table, the "From 1 of 2 games" caption and the frequent-partners row. The banner stays above the paddles.
+- Share opens the preview, and Share image hands a PNG to the system share sheet.
+- Stats shows the Best duos empty state. Ask for scores off makes Match done finish at once. Default courts stops at 8. The German text fits.
+- Found and fixed on the way: stacked list rows never drew their value, so the summary's "Most frequent partners" row had always been blank.
+
 Build notes from the run:
 - The repo sits in an iCloud-synced folder, so `xcodebuild -derivedDataPath ios/build` fails code signing ("resource fork, Finder information, or similar detritus not allowed"). Use the default DerivedData.
 - `expo run:android` takes the AVD name (`Pixel_7_Pro_API_34`), not `emulator-5554`.
 
 What a simulator cannot answer, and a phone still has to:
+
+- [ ] Share the Open Play standings image into Messenger, Viber or WhatsApp on a
+      real phone, on both platforms. Check that it arrives as a picture, uncropped
+      and readable, with no ad in it.
 
 - [ ] A real outdoor session in sunlight: can you read the court and the rack at
       arm's length?
