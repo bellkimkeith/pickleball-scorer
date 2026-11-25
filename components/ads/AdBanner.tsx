@@ -46,8 +46,9 @@ function AdBannerComponent({ placement }: AdBannerProps) {
     >
       <BannerAd
         unitId={bannerUnitId()}
-        size={anchored ? BannerAdSize.ANCHORED_ADAPTIVE_BANNER : BannerAdSize.INLINE_ADAPTIVE_BANNER}
-        maxHeight={anchored ? undefined : 250}
+        // Inline stays a small fixed 320x50 banner: an inline *adaptive* one grows
+        // to a quarter of the screen, which is not the small ad this app promises.
+        size={anchored ? BannerAdSize.ANCHORED_ADAPTIVE_BANNER : BannerAdSize.BANNER}
         onAdLoaded={() => setLoad('loaded')}
         onAdFailedToLoad={() => setLoad('failed')}
       />

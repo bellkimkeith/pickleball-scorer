@@ -54,7 +54,7 @@ Anti-goals (any of these counts as failure, even if everything works)
 | Home | yes | anchored adaptive banner pinned to the bottom, below the scroll area |
 | Stats | yes | same |
 | Settings (main page) | yes | same |
-| Open Play session summary | yes | inline in the scroll content, between the paddle row and the "Everyone" table (no buttons near it) |
+| Open Play session summary | yes | a standard 320×50 banner inline in the scroll content, between the paddle row and the "Everyone" table (no buttons near it). Not an inline *adaptive* banner: on device that grew to a quarter of the screen |
 | Singles / doubles scorer, game-over | no | courtside |
 | Open Play check-in, live session | no | courtside; the check-in's Start button sits at the bottom |
 | Rules, privacy, any sheet or dialog | no | |
