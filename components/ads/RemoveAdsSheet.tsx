@@ -20,13 +20,14 @@ const PURCHASE_MESSAGE: Record<PurchaseOutcome, string | null> = {
   success: 'ads.thanks',
   cancelled: null,
   pending: 'ads.pending',
+  notFound: 'ads.nothingToRestore',
   unavailable: 'ads.unavailable',
   error: 'ads.error',
 };
 
 const RESTORE_MESSAGE: Record<PurchaseOutcome, string | null> = {
   ...PURCHASE_MESSAGE,
-  error: 'ads.nothingToRestore',
+  error: 'ads.unavailable',
 };
 
 function PlanCard({

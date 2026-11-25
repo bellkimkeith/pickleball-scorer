@@ -44,8 +44,8 @@ export default function SettingsScreen() {
 
   const restorePurchases = async () => {
     const outcome = await restore();
-    if (outcome === 'error') setRestoreMessage(t('ads.nothingToRestore'));
-    else if (outcome === 'unavailable') setRestoreMessage(t('ads.unavailable'));
+    if (outcome === 'notFound') setRestoreMessage(t('ads.nothingToRestore'));
+    else if (outcome === 'unavailable' || outcome === 'error') setRestoreMessage(t('ads.unavailable'));
     else if (outcome === 'pending') setRestoreMessage(t('ads.pending'));
     // success needs no message: this group turns into "Ad-free" on its own.
   };

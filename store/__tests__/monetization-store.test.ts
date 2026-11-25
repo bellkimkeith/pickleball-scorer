@@ -16,7 +16,13 @@ jest.mock('react-native-purchases', () => ({
     restorePurchases: jest.fn(),
     addCustomerInfoUpdateListener: jest.fn(),
   },
-  PURCHASES_ERROR_CODE: { PURCHASE_CANCELLED_ERROR: '1', PAYMENT_PENDING_ERROR: '20' },
+  PURCHASES_ERROR_CODE: {
+    PURCHASE_CANCELLED_ERROR: '1',
+    STORE_PROBLEM_ERROR: '2',
+    NETWORK_ERROR: '10',
+    PAYMENT_PENDING_ERROR: '20',
+    OFFLINE_CONNECTION_ERROR: '35',
+  },
 }));
 
 const mockConfig = {
@@ -156,11 +162,27 @@ describe('monetization store', () => {
     await expect(useMonetizationStore.getState().purchase('lifetime')).resolves.toBe('unavailable');
   });
 
-  it('restore with no entitlement returns error and keeps adFree false', async () => {
+  it('restore that RevenueCat answers with no entitlement is notFound', async () => {
     configure();
     P.restorePurchases.mockResolvedValue(customerInfo());
-    await expect(useMonetizationStore.getState().restore()).resolves.toBe('error');
+    await expect(useMonetizationStore.getState().restore()).resolves.toBe('notFound');
     expect(useMonetizationStore.getState().adFree).toBe(false);
+  });
+
+  it.each([
+    ['offline', '35'],
+    ['a network error', '10'],
+    ['a store problem', '2'],
+  ])('restore during %s is unavailable, never notFound', async (_label, code) => {
+    configure();
+    P.restorePurchases.mockRejectedValue({ userCancelled: false, code });
+    await expect(useMonetizationStore.getState().restore()).resolves.toBe('unavailable');
+  });
+
+  it('purchase during a network error is unavailable', async () => {
+    await configureWithOffer();
+    P.purchasePackage.mockRejectedValue({ userCancelled: false, code: '10' });
+    await expect(useMonetizationStore.getState().purchase('monthly')).resolves.toBe('unavailable');
   });
 
   it('restore that finds the purchase marks ad-free', async () => {

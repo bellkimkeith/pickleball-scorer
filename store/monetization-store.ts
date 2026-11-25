@@ -6,7 +6,11 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { MONETIZATION_CONFIG } from '../lib/monetization/config';
 import { AdFreePlan, AdFreeStatus, statusFromCustomerInfo } from '../lib/monetization/entitlement';
 
-export type PurchaseOutcome = 'success' | 'cancelled' | 'pending' | 'unavailable' | 'error';
+/**
+ * `notFound`: RevenueCat answered, and this store account owns no ad-free purchase.
+ * `unavailable`: no answer at all (no key, offline, the store is down), so nothing is known.
+ */
+export type PurchaseOutcome = 'success' | 'cancelled' | 'pending' | 'notFound' | 'unavailable' | 'error';
 
 export interface AdFreeOption {
   plan: AdFreePlan;
@@ -34,6 +38,7 @@ interface MonetizationState extends AdFreeStatus {
   refresh: () => Promise<void>;
   loadOffer: () => Promise<void>;
   purchase: (plan: AdFreePlan) => Promise<PurchaseOutcome>;
+  /** `success`, or `notFound` when RevenueCat answers without the entitlement. */
   restore: () => Promise<PurchaseOutcome>;
 }
 
@@ -50,10 +55,17 @@ function apiKeyForPlatform(): string {
   return '';
 }
 
+const NO_ANSWER_CODES: string[] = [
+  PURCHASES_ERROR_CODE.NETWORK_ERROR,
+  PURCHASES_ERROR_CODE.OFFLINE_CONNECTION_ERROR,
+  PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR,
+];
+
 function outcomeFromError(error: unknown): PurchaseOutcome {
   const { userCancelled, code } = (error ?? {}) as { userCancelled?: boolean; code?: string };
   if (userCancelled || code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) return 'cancelled';
   if (code === PURCHASES_ERROR_CODE.PAYMENT_PENDING_ERROR) return 'pending';
+  if (code && NO_ANSWER_CODES.includes(code)) return 'unavailable';
   return 'error';
 }
 
@@ -140,9 +152,11 @@ export const useMonetizationStore = create<MonetizationState>()(
         try {
           const status = statusFromCustomerInfo(await Purchases.restorePurchases());
           set(status);
-          return status.adFree ? 'success' : 'error';
-        } catch {
-          return 'error';
+          return status.adFree ? 'success' : 'notFound';
+        } catch (error) {
+          // Offline must never read as "you never bought it".
+          const outcome = outcomeFromError(error);
+          return outcome === 'error' ? 'unavailable' : outcome;
         }
       },
     }),
