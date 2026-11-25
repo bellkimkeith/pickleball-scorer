@@ -67,3 +67,6 @@ Gemfile.lock
 # Brainstorm mockups
 .superpowers/
 .impeccable/questions/
+
+# Google Play service account key for eas submit (never commit)
+google-play-service-account.json

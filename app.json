@@ -71,6 +71,13 @@
         }
       ],
       "./plugins/with-android-admob-kotlin"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1f04a128-c052-4bdd-9f77-fc2120e27ade"
+      }
+    },
+    "owner": "bellkimkeith"
   }
 }

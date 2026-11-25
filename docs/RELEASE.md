@@ -95,11 +95,35 @@ Design record: `docs/superpowers/specs/2026-11-25-free-with-ads-design.md`.
       doubles scorer, check-in, and stats. **Shoot them on an ad-free build**
       (set `adFree` or leave the units empty) so no test ad appears.
 
-## 3. Build and submit
+## 3. Build and submit (EAS)
 
-- [ ] `npm run release:check` passes.
-- [ ] `eas.json` still carries placeholder Apple credentials. Fill them in before `eas submit`.
-- [ ] `npx expo prebuild --clean`, then build: `eas build --platform ios` and `eas build --platform android`.
+The project is linked to Expo as `@bellkimkeith/pickleball-scorer`. Builds run in
+Expo's cloud, and production builds run `npm run release:check` first
+(`eas-build-pre-install` in `package.json`), so a build with placeholder IDs
+fails before anything is uploaded.
+
+- [ ] **Android upload key, before the first Android build.** Play only accepts
+      builds signed with the upload key that 1.1.0 used, and that key is not on
+      this Mac. Upload it with `eas credentials` → Android → production →
+      Keystore → upload an existing keystore. If it is lost, ask Play Console
+      for an upload-key reset (App integrity), then let EAS make a new one.
+      Letting EAS generate a fresh key without doing either gets the upload rejected.
+- [ ] **iOS credentials:** run the first `eas build --platform ios --profile production`
+      in your own terminal. It asks you to log in to Apple once, then makes and
+      stores the distribution certificate and provisioning profile.
+- [ ] Build: `eas build --platform all --profile production`. Version numbers
+      come from EAS (`appVersionSource: remote`, `autoIncrement`), starting from
+      app.json (iOS build 1, Android versionCode 2, then counting up).
+- [ ] **Submit iOS:** `eas submit --platform ios --latest`. The first run asks
+      for an App Store Connect API key: pick the one Expo already stores for
+      your other app, or let it create one. This uploads the build. **Submitting
+      for review is still a click in App Store Connect:** pick the build, attach
+      both in-app purchases to this version, and press Submit for Review.
+- [ ] **Submit Android:** save a Google Play service-account key as
+      `google-play-service-account.json` in the repo root (git-ignored), then run
+      `eas submit --platform android --latest`. It uploads to the production
+      track as a **draft**, so you check the release in Play Console and press
+      "Send for review".
 - [ ] **Sandbox purchases on a real device before submitting:**
   - iOS: a Sandbox Apple ID (Settings → Developer → Sandbox Account). Android: a licence-tester account on an internal-testing track.
   - Buy lifetime: the banners disappear at once and stay gone after a relaunch in airplane mode.

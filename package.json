@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest",
-    "release:check": "node scripts/check-release-config.js"
+    "release:check": "node scripts/check-release-config.js",
+    "eas-build-pre-install": "if [ \"$EAS_BUILD_PROFILE\" = \"production\" ]; then node scripts/check-release-config.js; fi"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
