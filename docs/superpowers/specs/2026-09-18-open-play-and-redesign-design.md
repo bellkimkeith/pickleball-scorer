@@ -8,6 +8,7 @@ Related: [PRODUCT.md](../../../PRODUCT.md), direction contract in `.impeccable/s
 
 1. **Open Play queue.** An organizer runs a pickleball open-play session on one phone. The app calls every match so that everyone present plays the same number of games, whether they win or lose. Partners rotate unless deliberately locked.
 2. **Paid app.** The app becomes a one-time paid download (about ₱199 in the Philippines). Everything is included, with no subscriptions, paywall, upgrade prompts, or limits.
+   *Superseded on 2026-11-25 by [2026-11-25-free-with-ads-design.md](2026-11-25-free-with-ads-design.md): the app ships free with banner ads and a paid way to remove them. The paywall removal in Phase 1 still stands.*
 3. **Premium redesign.** Every screen moves to the Court & Paddle visual world: courts drawn as real top-down courts, players as paddles, and the queue as a paddle rack.
 
 Non-goals: accounts, cloud sync, sharing a live queue across phones, skill-level matching, singles open play, tablet layouts.
