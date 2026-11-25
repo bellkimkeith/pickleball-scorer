@@ -70,3 +70,6 @@ Gemfile.lock
 
 # Google Play service account key for eas submit (never commit)
 google-play-service-account.json
+
+# Browser automation scratch (screenshots, page snapshots)
+.playwright-mcp/
