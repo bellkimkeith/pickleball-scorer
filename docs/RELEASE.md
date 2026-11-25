@@ -121,6 +121,22 @@ the whole Open Play lifecycle, kill-and-resume, twelve players with long names,
 and large type all passed. The report and screenshots live beside the repo in
 `pickleball-scorer-qa-2026-09-23/`.
 
+**Ads and purchases, 25 November 2026.** Debug builds of `feature/free-with-ads` were
+driven with Maestro on the iPhone 17 Pro simulator (iOS 26.3) and the Pixel 7 Pro
+emulator (API 34), using Google's test ads. Flows and screenshots live beside the repo in
+`pickleball-scorer-qa-2026-11-25/`. Verified on both platforms, unless a check names one:
+- A test banner is pinned at the bottom of Home, Stats and Settings, and a small 320×50 banner sits inline in the Open Play summary.
+- No banner appears on the singles and doubles setup or scorer, Open Play check-in, the live session, Rules or Privacy.
+- With no RevenueCat keys, Remove ads shows "Can't reach the store…" with Try again, Restore explains the same, and nothing crashes.
+- Ad-free (simulated, iOS): no banner anywhere, no "Remove ads" row on Home, and Settings shows "Ad-free · Lifetime".
+- Offline (airplane mode, Android): a banner that cannot load leaves no box and no gap.
+
+Not covered by simulators, and so left for a device: real ad fill with your own units, sandbox purchases and restore, a monthly plan lapsing, and the EU consent form.
+
+Build notes from the run:
+- The repo sits in an iCloud-synced folder, so `xcodebuild -derivedDataPath ios/build` fails code signing ("resource fork, Finder information, or similar detritus not allowed"). Use the default DerivedData.
+- `expo run:android` takes the AVD name (`Pixel_7_Pro_API_34`), not `emulator-5554`.
+
 What a simulator cannot answer, and a phone still has to:
 
 - [ ] A real outdoor session in sunlight: can you read the court and the rack at
