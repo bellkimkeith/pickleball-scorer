@@ -38,6 +38,15 @@ describe('session changes', () => {
     expect(s.courts[0]).toBeNull();
   });
 
+  it('undo after a scored Match done puts the match back with no score', () => {
+    const called = callMatch(session(['a', 'b', 'c', 'd'].map(id => player(id))), 1, 100);
+    const id = called.matches[0].id;
+    const undone = undoLast(finishMatch(called, id, 500, [11, 7]));
+    expect(undone.matches[0].endedAt).toBeUndefined();
+    expect(undone.matches[0].score).toBeUndefined();
+    expect(undone.courts[0]).toBe(id);
+  });
+
   it('stores the score when a match was scored in the app', () => {
     let s = callMatch(session(['a', 'b', 'c', 'd'].map(id => player(id))), 1, 100);
     s = finishMatch(s, s.matches[0].id, 500, [11, 7]);

@@ -32,6 +32,8 @@ interface SessionStore {
   activeSession: Session | null;
   openPlayHistory: Session[];
   defaultCourtCount: number;
+  /** Match done asks for the final score (with Skip) instead of finishing at once. */
+  askForScores: boolean;
 
   addSavedPlayer: (name: string) => SavedPlayer;
   renameSavedPlayer: (id: string, name: string) => void;
@@ -70,6 +72,7 @@ export const useSessionStore = create<SessionStore>()(
         activeSession: null,
         openPlayHistory: [],
         defaultCourtCount: 2,
+        askForScores: true,
 
         addSavedPlayer: (name: string) => {
           const saved = get().savedPlayers;

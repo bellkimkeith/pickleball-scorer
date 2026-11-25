@@ -251,6 +251,14 @@ export default {
     done: 'Done',
     backToOpenPlay: 'Back to Open Play',
   },
+  standings: {
+    askForScores: 'Ask for scores',
+    whoWon: 'Court {{number}} · Who won?',
+    losingPoints: "Losing team's points",
+    winnerPoints: "Winning team's points",
+    saveScore: 'Save score',
+    skip: 'Skip',
+  },
   rules: {
     servingOnlyTitle: 'Only the serving team scores.',
     servingOnlyBody: 'Win the rally while serving and you get a point. Lose it and the serve passes to the other side.',

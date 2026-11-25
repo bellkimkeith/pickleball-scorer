@@ -33,6 +33,7 @@ export default function SettingsScreen() {
   const settings = useGameStore(state => state.settings);
   const updateSettings = useGameStore(state => state.updateSettings);
   const defaultCourtCount = useSessionStore(state => state.defaultCourtCount);
+  const askForScores = useSessionStore(state => state.askForScores);
   const [languageOpen, setLanguageOpen] = useState(false);
   const adFree = useMonetizationStore(state => state.adFree);
   const plan = useMonetizationStore(state => state.plan);
@@ -139,6 +140,16 @@ export default function SettingsScreen() {
                 max={6}
                 onChange={setDefaultCourts}
                 accessibilityLabel={t('settings.defaultCourts')}
+              />
+            }
+          />
+          <ListRow
+            label={t('standings.askForScores')}
+            right={
+              <Toggle
+                value={askForScores}
+                onChange={value => useSessionStore.setState({ askForScores: value })}
+                accessibilityLabel={t('standings.askForScores')}
               />
             }
           />

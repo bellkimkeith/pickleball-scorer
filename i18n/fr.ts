@@ -203,6 +203,14 @@ export default {
     done: 'Terminé',
     backToOpenPlay: 'Retour au jeu libre',
   },
+  standings: {
+    askForScores: 'Demander le score',
+    whoWon: 'Terrain {{number}} · Qui a gagné ?',
+    losingPoints: "Points de l'équipe perdante",
+    winnerPoints: "Points de l'équipe gagnante",
+    saveScore: 'Enregistrer le score',
+    skip: 'Passer',
+  },
   rules: {
     servingOnlyTitle: 'Seule l\'équipe au service marque.',
     servingOnlyBody: 'Gagnez l\'échange au service et vous marquez. Sinon, le service passe à l\'autre équipe.',

@@ -9,6 +9,7 @@ import { FlightPlayer, PaddleFlight } from '../../components/court/PaddleFlight'
 import { PaddleRack, RackPlayer } from '../../components/court/PaddleRack';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
 import { PlayerSheet } from '../../components/queue/PlayerSheet';
+import { QuickScoreSheet } from '../../components/queue/QuickScoreSheet';
 import { BackButton } from '../../components/ui/BackButton';
 import { CourtButton } from '../../components/ui/Button';
 import { Dialog } from '../../components/ui/Dialog';
@@ -29,6 +30,7 @@ export default function SessionScreen() {
 
   const session = useSessionStore(state => state.activeSession);
   const matchDone = useSessionStore(state => state.matchDone);
+  const askForScores = useSessionStore(state => state.askForScores);
   const addToSession = useSessionStore(state => state.addToSession);
   const undo = useSessionStore(state => state.undo);
   const finishSession = useSessionStore(state => state.finishSession);
@@ -37,6 +39,10 @@ export default function SessionScreen() {
   const [addOpen, setAddOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
   const [openPlayerId, setOpenPlayerId] = useState<string | null>(null);
+  // The court whose score is being asked for. Kept after the sheet closes so
+  // it can slide away with its content; `scoringOpen` is what shows it.
+  const [scoring, setScoring] = useState<{ match: Match; courtIndex: number } | null>(null);
+  const [scoringOpen, setScoringOpen] = useState(false);
   const [flight, setFlight] = useState<FlightPlayer[]>([]);
 
   // Measured at the moment a match is called, so the paddles can travel from
@@ -158,6 +164,15 @@ export default function SessionScreen() {
     id => id && session.matches.some(m => m.id === id && !m.endedAt),
   ).length;
 
+  const teamName = (team: [string, string]) => team.map(id => byId.get(id)?.name ?? '').join(' & ');
+
+  /** Finish the match, then fly the four who are next onto the freed court. */
+  const finishCourt = (courtIndex: number, matchId: string, score?: [number, number]) => {
+    const travelling = rack.next;
+    matchDone(matchId, score);
+    flyPaddlesToCourt(courtIndex, travelling);
+  };
+
   const endSessionNow = () => {
     setEndOpen(false);
     finishSession();
@@ -216,9 +231,12 @@ export default function SessionScreen() {
                     <CourtButton
                       title={t('openPlay.matchDone')}
                       onPress={() => {
-                        const travelling = rack.next;
-                        matchDone(match.id);
-                        flyPaddlesToCourt(index, travelling);
+                        if (askForScores) {
+                          setScoring({ match, courtIndex: index });
+                          setScoringOpen(true);
+                        } else {
+                          finishCourt(index, match.id);
+                        }
                       }}
                       style={{ flex: 1 }}
                       height={48}
@@ -297,6 +315,24 @@ export default function SessionScreen() {
       />
 
       <PlayerSheet playerId={openPlayerId} onClose={() => setOpenPlayerId(null)} />
+
+      {scoring && (
+        <QuickScoreSheet
+          key={scoring.match.id}
+          match={scoringOpen ? scoring.match : null}
+          courtNumber={scoring.courtIndex + 1}
+          teamNames={[teamName(scoring.match.team1), teamName(scoring.match.team2)]}
+          onSave={score => {
+            setScoringOpen(false);
+            finishCourt(scoring.courtIndex, scoring.match.id, score);
+          }}
+          onSkip={() => {
+            setScoringOpen(false);
+            finishCourt(scoring.courtIndex, scoring.match.id);
+          }}
+          onClose={() => setScoringOpen(false)}
+        />
+      )}
 
       <PaddleFlight players={flight} onDone={() => setFlight([])} />
 

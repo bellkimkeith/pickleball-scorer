@@ -203,6 +203,14 @@ export default {
     done: 'Fertig',
     backToOpenPlay: 'Zurück zum offenen Spiel',
   },
+  standings: {
+    askForScores: 'Nach dem Ergebnis fragen',
+    whoWon: 'Feld {{number}} · Wer hat gewonnen?',
+    losingPoints: 'Punkte des Verliererteams',
+    winnerPoints: 'Punkte des Siegerteams',
+    saveScore: 'Ergebnis speichern',
+    skip: 'Überspringen',
+  },
   rules: {
     servingOnlyTitle: 'Nur das aufschlagende Team punktet.',
     servingOnlyBody: 'Gewinnst du den Ballwechsel beim Aufschlag, gibt es einen Punkt. Sonst wechselt der Aufschlag.',

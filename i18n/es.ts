@@ -203,6 +203,14 @@ export default {
     done: 'Listo',
     backToOpenPlay: 'Volver al juego libre',
   },
+  standings: {
+    askForScores: 'Pedir el resultado',
+    whoWon: 'Pista {{number}} · ¿Quién ganó?',
+    losingPoints: 'Puntos del equipo perdedor',
+    winnerPoints: 'Puntos del equipo ganador',
+    saveScore: 'Guardar resultado',
+    skip: 'Omitir',
+  },
   rules: {
     servingOnlyTitle: 'Solo el equipo que saca anota.',
     servingOnlyBody: 'Si ganas el punto mientras sacas, sumas. Si lo pierdes, el saque pasa al otro lado.',

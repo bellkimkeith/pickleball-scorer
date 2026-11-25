@@ -18,6 +18,7 @@ describe('session store', () => {
       activeSession: null,
       openPlayHistory: [],
       defaultCourtCount: 2,
+      askForScores: true,
     });
   });
 
@@ -71,5 +72,23 @@ describe('session store', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     const raw = await AsyncStorage.getItem('@pickleball_open_play');
     expect(raw).toContain('"activeSession"');
+  });
+
+  it('asks for scores by default', () => {
+    expect(useSessionStore.getInitialState().askForScores).toBe(true);
+  });
+
+  it('keeps asking for scores after loading data saved before the setting existed', async () => {
+    // A fresh launch: the store starts from its defaults, then loads storage.
+    // Reset first, because every change is saved and would overwrite the old data.
+    useSessionStore.setState(useSessionStore.getInitialState(), true);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    await AsyncStorage.setItem(
+      '@pickleball_open_play',
+      JSON.stringify({ state: { defaultCourtCount: 3 }, version: 0 }),
+    );
+    await useSessionStore.persist.rehydrate();
+    expect(useSessionStore.getState().defaultCourtCount).toBe(3);
+    expect(useSessionStore.getState().askForScores).toBe(true);
   });
 });
