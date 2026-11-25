@@ -9,11 +9,11 @@ Design record: `docs/superpowers/specs/2026-11-25-free-with-ads-design.md`.
 
 ## 1. Before you build
 
-- [ ] `npm test`: 100 tests pass (queue engine, fairness simulations, tokens, sounds, stores, ads, purchases, release check, strings).
+- [ ] `npm test`: 112 tests pass (queue engine, fairness simulations, tokens, sounds, stores, ads, purchases, release check, strings).
 - [ ] `npx tsc --noEmit --types react,node,jest` is clean.
       (Plain `npx tsc` aborts on a stray `node_modules/@types/react 2` folder on this machine. Deleting that folder or reinstalling `node_modules` fixes it.)
 - [ ] `npm run lint -- --no-cache` shows 0 errors. The `--no-cache` matters: a stale cache reports phantom parse errors.
-- [ ] `npm install` needs `--legacy-peer-deps` until `jest-expo` matches SDK 55 (it is on 57, which wants React Native 0.86).
+- `.npmrc` sets `legacy-peer-deps=true` so `npm install` and EAS Build's `npm ci` get past the old `jest-expo` 57 peer conflict (it wants React Native 0.86). Remove it once `jest-expo` matches SDK 55.
 - [ ] `grep -rn "isPro\|PaywallModal" app components store lib` returns nothing.
 - [ ] **`npm run release:check` passes.** It refuses a store build while any
       AdMob ID is Google's sample, a banner unit or RevenueCat key is empty, or
@@ -64,8 +64,19 @@ Design record: `docs/superpowers/specs/2026-11-25-free-with-ads-design.md`.
       (https://developers.google.com/admob/ios/privacy/data-disclosure). Add
       RevenueCat's items: Purchase History and a User ID / Device ID, used for
       App Functionality, linked to the user, not for tracking. **Tracking: No.**
-      The app shows no tracking prompt.
+      The app shows no tracking prompt. Answer this knowingly: the Google SDK's own
+      privacy manifest lists Device ID as used for tracking, and Xcode's privacy
+      report will show that. Without tracking permission iOS blocks those
+      tracking domains and withholds the advertising identifier, so the app does
+      not track. If App Review disagrees, the fallback is the tracking prompt
+      described in spec section 4.2.
 - [ ] Privacy policy URL: the hosted page built from `privacy-policy-page.jsx` (deploy it first). Put the same URL in `config.json` → `privacyPolicyUrl`.
+- [ ] **Terms of Use (EULA) link in the App Store metadata.** Apple requires it
+      for auto-renewable subscriptions, and a missing one is a common Guideline
+      3.1.2 rejection. Showing it in the app is not enough. Add this line to the
+      end of the App Description: "Terms of Use:
+      https://www.apple.com/legal/internet-services/itunes/dev/stdeula/", or
+      enter a custom EULA in App Store Connect.
 - [ ] Age rating questionnaire: answer Yes to advertising. The rating stays 4+ with PG-limited ads.
 
 ### Google Play Console

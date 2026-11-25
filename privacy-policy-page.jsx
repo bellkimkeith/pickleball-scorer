@@ -53,7 +53,7 @@ export default function PrivacyPolicyPage() {
               Tracking on iPhone
             </h2>
             <p className="text-base text-gray-700">
-              The app does not ask to track you, and it never reads the iPhone&apos;s advertising identifier.
+              The app does not ask to track you, and it never gets the iPhone&apos;s advertising identifier.
             </p>
           </section>
           <section className="mb-8">
@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
               When You Are Ad-Free
             </h2>
             <p className="text-base text-gray-700">
-              Once you are ad-free, the ad software is not started at all, and the app no longer contacts any ad network.
+              Once you are ad-free, the app stops asking for and showing ads.
             </p>
           </section>
           <section className="mb-8">

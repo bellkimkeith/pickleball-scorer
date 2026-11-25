@@ -20,7 +20,7 @@ const SECTIONS: { heading: string; body: string }[] = [
   },
   {
     heading: 'Tracking on iPhone',
-    body: 'The app does not ask to track you, and it never reads the iPhone’s advertising identifier.',
+    body: 'The app does not ask to track you, and it never gets the iPhone’s advertising identifier.',
   },
   {
     heading: 'Removing ads',
@@ -28,7 +28,7 @@ const SECTIONS: { heading: string; body: string }[] = [
   },
   {
     heading: 'When you are ad-free',
-    body: 'Once you are ad-free, the ad software is not started at all, and the app no longer contacts any ad network.',
+    body: 'Once you are ad-free, the app stops asking for and showing ads.',
   },
   {
     heading: 'Network usage',
