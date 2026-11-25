@@ -1,0 +1,12 @@
+{
+  "revenueCat": {
+    "iosApiKey": "",
+    "androidApiKey": ""
+  },
+  "admob": {
+    "iosBannerUnitId": "",
+    "androidBannerUnitId": ""
+  },
+  "privacyPolicyUrl": "",
+  "termsOfUseUrl": "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+}
