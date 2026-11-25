@@ -7,9 +7,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdBanner } from '../../components/ads/AdBanner';
 import { Paddle } from '../../components/court/Paddle';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
+import { StandingsTable } from '../../components/queue/StandingsTable';
 import { CourtButton } from '../../components/ui/Button';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
+import { pairResults } from '../../lib/queue/duos';
 import { pairingHistory } from '../../lib/queue/engine';
+import { formatRecord, sessionStandings } from '../../lib/queue/standings';
 import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
 import { useSessionStore } from '../../store/session-store';
 
@@ -41,9 +44,12 @@ export default function SummaryScreen() {
     [session],
   );
 
+  const standings = useMemo(() => (session ? sessionStandings(session) : null), [session]);
+
   const topPairs = useMemo(() => {
-    if (!session) return [] as { a: string; b: string; count: number }[];
+    if (!session) return [] as { a: string; b: string; count: number; record: string | null }[];
     const { partnered } = pairingHistory(session);
+    const results = pairResults([session]);
     const byId = new Map(session.players.map(p => [p.id, p.name]));
     return Object.entries(partnered)
       .filter(([, count]) => count > 1)
@@ -51,11 +57,17 @@ export default function SummaryScreen() {
       .slice(0, 3)
       .map(([key, count]) => {
         const [a, b] = key.split('|');
-        return { a: byId.get(a) ?? a, b: byId.get(b) ?? b, count };
+        const result = results[key];
+        return {
+          a: byId.get(a) ?? a,
+          b: byId.get(b) ?? b,
+          count,
+          record: result && result.games > 0 ? formatRecord(result) : null,
+        };
       });
   }, [session]);
 
-  if (!session) {
+  if (!session || !standings) {
     return (
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
@@ -128,55 +140,85 @@ export default function SummaryScreen() {
           ))}
         </View>
 
-        <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', paddingHorizontal: 16, paddingTop: 22, paddingBottom: 8 }}>
-          {t('openPlay.everyone')}
-        </Text>
-        <View
-          style={{
-            marginHorizontal: 12,
-            borderRadius: 14,
-            backgroundColor: `${COURT.line}0f`,
-            borderWidth: 1,
-            borderColor: `${COURT.line}14`,
-            overflow: 'hidden',
-          }}
-        >
-          {players.map((player, index) => (
-            <View key={player.id}>
-              {index > 0 && <View style={{ height: 1, backgroundColor: `${COURT.line}14`, marginLeft: 14 }} />}
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, height: 48 }}>
-                <View
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: 6,
-                    backgroundColor: PADDLE_FACE[player.color],
-                  }}
-                />
-                <Text style={{ color: COURT.ink, fontSize: 16, flex: 1 }} numberOfLines={1}>
-                  {player.name}
-                </Text>
-                {player.queueCount > player.gamesPlayed && (
-                  <Text style={{ color: COURT.inkMuted, fontSize: 13 }}>
-                    {t('openPlay.arrived', { time: clockTime(player.arrivedAt) })}
-                  </Text>
-                )}
-                <Text
-                  style={{
-                    color: COURT.ink,
-                    fontSize: 16,
-                    fontWeight: '700',
-                    fontVariant: ['tabular-nums'],
-                    minWidth: 22,
-                    textAlign: 'right',
-                  }}
-                >
-                  {player.gamesPlayed}
-                </Text>
-              </View>
+        {standings.scoredGames > 0 ? (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'baseline',
+                justifyContent: 'space-between',
+                paddingHorizontal: 16,
+                paddingTop: 22,
+                paddingBottom: 8,
+              }}
+            >
+              <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700' }}>{t('standings.title')}</Text>
             </View>
-          ))}
-        </View>
+            <View style={{ marginHorizontal: 12 }}>
+              <StandingsTable
+                standings={standings}
+                noteFor={id => {
+                  const player = session.players.find(p => p.id === id);
+                  return player && player.queueCount > player.gamesPlayed
+                    ? t('openPlay.arrived', { time: clockTime(player.arrivedAt) })
+                    : undefined;
+                }}
+              />
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', paddingHorizontal: 16, paddingTop: 22, paddingBottom: 8 }}>
+              {t('openPlay.everyone')}
+            </Text>
+            <View
+              style={{
+                marginHorizontal: 12,
+                borderRadius: 14,
+                backgroundColor: `${COURT.line}0f`,
+                borderWidth: 1,
+                borderColor: `${COURT.line}14`,
+                overflow: 'hidden',
+              }}
+            >
+              {players.map((player, index) => (
+                <View key={player.id}>
+                  {index > 0 && <View style={{ height: 1, backgroundColor: `${COURT.line}14`, marginLeft: 14 }} />}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, height: 48 }}>
+                    <View
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 6,
+                        backgroundColor: PADDLE_FACE[player.color],
+                      }}
+                    />
+                    <Text style={{ color: COURT.ink, fontSize: 16, flex: 1 }} numberOfLines={1}>
+                      {player.name}
+                    </Text>
+                    {player.queueCount > player.gamesPlayed && (
+                      <Text style={{ color: COURT.inkMuted, fontSize: 13 }}>
+                        {t('openPlay.arrived', { time: clockTime(player.arrivedAt) })}
+                      </Text>
+                    )}
+                    <Text
+                      style={{
+                        color: COURT.ink,
+                        fontSize: 16,
+                        fontWeight: '700',
+                        fontVariant: ['tabular-nums'],
+                        minWidth: 22,
+                        textAlign: 'right',
+                      }}
+                    >
+                      {player.gamesPlayed}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
 
         <ListGroup style={{ marginHorizontal: 12, marginTop: 20 }}>
           <ListRow
@@ -186,7 +228,11 @@ export default function SummaryScreen() {
               topPairs.length === 0
                 ? t('openPlay.noRepeats')
                 : topPairs
-                    .map(pair => t('openPlay.repeatedPair', { a: pair.a, b: pair.b, count: pair.count }))
+                    .map(pair =>
+                      pair.record
+                        ? t('standings.repeatedPairRecord', { a: pair.a, b: pair.b, count: pair.count, record: pair.record })
+                        : t('openPlay.repeatedPair', { a: pair.a, b: pair.b, count: pair.count }),
+                    )
                     .join(', ')
             }
           />

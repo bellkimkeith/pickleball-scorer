@@ -10,11 +10,14 @@ import { PaddleRack, RackPlayer } from '../../components/court/PaddleRack';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
 import { PlayerSheet } from '../../components/queue/PlayerSheet';
 import { QuickScoreSheet } from '../../components/queue/QuickScoreSheet';
+import { StandingsTable } from '../../components/queue/StandingsTable';
 import { BackButton } from '../../components/ui/BackButton';
 import { CourtButton } from '../../components/ui/Button';
 import { Dialog } from '../../components/ui/Dialog';
+import { Sheet } from '../../components/ui/Sheet';
 import { COURT } from '../../lib/theme/tokens';
 import { availablePlayers, canUndo, pickNextMatch } from '../../lib/queue/engine';
+import { formatRecord, sessionStandings, standingsLeaders } from '../../lib/queue/standings';
 import { Match, SessionPlayer } from '../../lib/types/queue';
 import { useSessionStore } from '../../store/session-store';
 
@@ -43,6 +46,7 @@ export default function SessionScreen() {
   // it can slide away with its content; `scoringOpen` is what shows it.
   const [scoring, setScoring] = useState<{ match: Match; courtIndex: number } | null>(null);
   const [scoringOpen, setScoringOpen] = useState(false);
+  const [standingsOpen, setStandingsOpen] = useState(false);
   const [flight, setFlight] = useState<FlightPlayer[]>([]);
 
   // Measured at the moment a match is called, so the paddles can travel from
@@ -164,6 +168,16 @@ export default function SessionScreen() {
     id => id && session.matches.some(m => m.id === id && !m.endedAt),
   ).length;
 
+  const standings = sessionStandings(session);
+  const leaders = standingsLeaders(standings);
+  const leadLine = (() => {
+    if (leaders.length === 0) return null;
+    const record = formatRecord(leaders[0]);
+    if (leaders.length === 1) return t('standings.leadsOne', { name: leaders[0].name, record });
+    if (leaders.length === 2) return t('standings.leadsTwo', { a: leaders[0].name, b: leaders[1].name, record });
+    return t('standings.leadsMany', { count: leaders.length, record });
+  })();
+
   const teamName = (team: [string, string]) => team.map(id => byId.get(id)?.name ?? '').join(' & ');
 
   /** Finish the match, then fly the four who are next onto the freed court. */
@@ -203,6 +217,21 @@ export default function SessionScreen() {
             games: t('openPlay.gamesCount', { count: finishedGames }),
           })}
         </Text>
+
+        {leadLine && (
+          <Pressable
+            onPress={() => setStandingsOpen(true)}
+            accessibilityRole="button"
+            accessibilityLabel={leadLine}
+            hitSlop={6}
+            style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, marginTop: -8, paddingBottom: 18 }}
+          >
+            <Text style={{ color: COURT.ink, fontSize: 15, fontWeight: '600', flexShrink: 1 }} numberOfLines={1}>
+              {leadLine}
+            </Text>
+            <Text style={{ color: COURT.inkMuted, fontSize: 17, fontWeight: '600', marginLeft: 6 }}>›</Text>
+          </Pressable>
+        )}
 
         <View style={{ paddingHorizontal: 12, gap: 20 }}>
           {session.courts.map((matchId, index) => {
@@ -315,6 +344,10 @@ export default function SessionScreen() {
       />
 
       <PlayerSheet playerId={openPlayerId} onClose={() => setOpenPlayerId(null)} />
+
+      <Sheet visible={standingsOpen} onClose={() => setStandingsOpen(false)} title={t('standings.title')}>
+        <StandingsTable standings={standings} />
+      </Sheet>
 
       {scoring && (
         <QuickScoreSheet
