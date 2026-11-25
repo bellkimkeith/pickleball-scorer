@@ -335,6 +335,13 @@ The paddle silhouette is the system's one true shape, defined once in `lib/theme
 - **Sheet:** Bottom sheet on court-surface green, 22pt top corners, a 38x5 line-white 25%-alpha grab handle, an optional 26pt/700 title paired with an outline Done button, and a scrolling body at the 16pt gutter. Scrim `#00000099`. Max height 80%.
 - **Dialog:** Centred card on court-surface green, 22pt radius, 22pt padding, everything centre-aligned. An optional illustration (typically a `CourtDiagram` showing a change of ends) sits above a 24pt/800 title, then a 15pt muted message, then a stretched primary and an outline cancel 8pt below it. Scrim `#000000aa`.
 
+### Top Ad Strip
+- **Where:** the first child of Home, Stats, Settings and the Open Play summary, inside a `SafeAreaView` with only the bottom edge. Never on a courtside screen.
+- **Look:** a structure on the ground, so it takes `court-outer-deep`, runs up behind the status bar, and ends in a 1pt line-white 8%-alpha hairline. There is no shadow. It is a fixed 58pt slot.
+- **Offer:** a 30pt line-white badge with a deep-green `ban` icon, a 16pt/700 line-white label kept to one line (`maxFontSizeMultiplier` 1.3), and a chevron. It is pressed like a list row: 70% opacity and a light haptic.
+- **Ad:** a standard 320×50 banner centred in the slot. It cross-fades in over the offer (240ms, exponential ease-out; instant under Reduce Motion) only once it has loaded.
+- **Absent:** the strip collapses to the status-bar inset alone, so the screen looks exactly as it did before the strip existed.
+
 ### Navigation
 - **Style:** Headerless. `expo-router` stack with `slide_from_right`, headers off, and transparent content so the root ground shows through. Each screen provides its own back affordance (`BackButton`) and its own 34pt title.
 - **Scorer toolbar:** A bottom bar on deep court green with a 1pt 8%-alpha top hairline, items laid out `space-around` at minimum 60x44 with a 24pt icon above a 12pt/600 label, 4pt apart. Danger items take the coral ink; disabled items drop to 40%.

@@ -51,17 +51,21 @@ Anti-goals (any of these counts as failure, even if everything works)
 
 | Screen | Ad | Placement |
 |---|---|---|
-| Home | yes | anchored adaptive banner pinned to the bottom, below the scroll area |
-| Stats | yes | same |
-| Settings (main page) | yes | same |
-| Open Play session summary | yes | a standard 320×50 banner inline in the scroll content, between the fairness card and the paddle row. Its place must not depend on group size, or a big group pushes it onto the Done button on a small phone. Not an inline *adaptive* banner: on device that grew to a quarter of the screen |
+| Home | yes | the top ad strip (below) |
+| Stats | yes | the top ad strip |
+| Settings (main page) | yes | the top ad strip |
+| Open Play session summary | yes | the top ad strip |
 | Singles / doubles scorer, game-over | no | courtside |
 | Open Play check-in, live session | no | courtside; the check-in's Start button sits at the bottom |
 | Rules, privacy, any sheet or dialog | no | |
 
-Banner rules:
-- Draw nothing until an ad has loaded. Never draw an empty slot. If loading fails (offline, no fill), the banner disappears.
-- A hairline divider and an 8pt gap separate the banner from the content above it. The bottom safe area stays below it.
+**The top ad strip** (changed 2026-11-26, modelled on Reclub at the owner's request; `components/ads/TopAdStrip.tsx`):
+- One strip at the very top of the screen, directly under the status bar, on `court-outer-deep` running up behind the status bar, with a hairline below it. Content always starts below the strip and scrolls under its bottom edge; nothing ever covers it.
+- A fixed 58pt slot holding a standard 320×50 banner. The offer and the ad share the slot exactly, so nothing below it ever moves. A full-width anchored *adaptive* banner would earn a little more, but its height varies by phone, which would make the strip jump.
+- **The offer comes first.** The strip opens with "Go ad-free with Pickle & Score ›", which opens the Remove Ads sheet. After 4 seconds an ad is requested, and the offer stays up until that ad has actually loaded, then cross-fades (240ms ease-out, instant with Reduce Motion). The ad is never mounted behind the offer while it is showing.
+- The offer's turn comes each time Stats, Settings or the summary opens, and once per launch on Home, which stays mounted under every other screen. Re-showing it on every return to Home would re-request ads far more often than AdMob wants.
+- If an ad fails (offline, no fill), the offer stays in the slot, so it is never empty. It retries when the screen comes back into view or the app returns to the foreground. A failed automatic refresh keeps the ad already showing.
+- The strip draws nothing until the remembered ad-free status has loaded, so a paying user never sees it flash. It is gone for ad-free users, where consent rules out ads, and when no ad unit is configured. In those cases the screen keeps just the status-bar inset.
 - One banner unit per platform. Ads limited to content rated PG. Not treated as child-directed.
 
 ### 4.2 Consent and tracking
@@ -84,12 +88,12 @@ Banner rules:
 - RevenueCat's customer-info listener updates the store live: a purchase, a restore, an expiry or a refund.
 
 ### 4.5 Ways in
-- **Home:** one row, "Remove ads", in the existing list (next to Stats and Saved players). Hidden once ad-free.
+- **The top ad strip's offer** (4.1), on every screen that shows ads. It replaced the Home "Remove ads" row on 2026-11-26.
 - **Settings:** an "Ads" group.
   - Not yet ad-free: "Remove ads" (opens the sheet), "Restore purchases".
   - Ad-free: "Ad-free" with the value "Lifetime" or "Monthly". On monthly, add "Manage subscription", which opens `customerInfo.managementURL`, or the store's subscriptions page if that is missing.
   - "Ad privacy choices", only when 4.2 says it is required.
-- Nothing else. No prompts after games or sessions, and no "remove ads" label next to the banner.
+- Nothing else. No prompts after games or sessions. The offer lives in the ad's own slot and is never placed beside a showing ad.
 
 ### 4.6 The Remove Ads sheet (uses the existing `Sheet`)
 
