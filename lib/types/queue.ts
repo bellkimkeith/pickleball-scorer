@@ -73,7 +73,7 @@ export interface Session {
   id: string;
   startedAt: number;
   endedAt?: number;
-  /** 1..6 */
+  /** 1..MAX_COURTS (8), see lib/queue/engine.ts */
   courtCount: number;
   players: SessionPlayer[];
   /** Called and finished matches, in call order. */

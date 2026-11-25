@@ -1,4 +1,4 @@
-import { addPlayer, fillIdleCourts, finishMatch, pickNextMatch } from '../engine';
+import { addPlayer, fillIdleCourts, finishMatch, MAX_COURTS, pickNextMatch } from '../engine';
 import { player, session } from './helpers';
 
 function run(playerCount: number, courtCount: number, rounds: number) {
@@ -19,6 +19,10 @@ function run(playerCount: number, courtCount: number, rounds: number) {
 }
 
 describe('simulated sessions', () => {
+  it('allows up to 8 courts', () => {
+    expect(MAX_COURTS).toBe(8);
+  });
+
   it('keeps everyone within one game when matches take the same time (one court)', () => {
     const s = run(8, 1, 20);
     const counts = s.players.map(p => p.gamesPlayed);
@@ -31,6 +35,7 @@ describe('simulated sessions', () => {
       [9, 2],
       [13, 3],
       [24, 6],
+      [32, MAX_COURTS],
     ] as const) {
       let s = session(
         Array.from({ length: players }, (_, i) => player(`p${i}`)),

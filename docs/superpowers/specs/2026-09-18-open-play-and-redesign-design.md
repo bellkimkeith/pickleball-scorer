@@ -83,7 +83,7 @@ interface Session {
   id: string;
   startedAt: number;
   endedAt?: number;
-  courtCount: number;                 // 1..6
+  courtCount: number;                 // 1..8 (MAX_COURTS; raised from 6 on 2026-11-26)
   players: SessionPlayer[];
   matches: Match[];                   // called and finished, in call order
   courts: (string | null)[];          // match id on each court, or null
@@ -127,7 +127,7 @@ Pure functions with no React or storage, so they can be unit tested:
 8. **Too few players.** If fewer than 4 players are available, return `null`. The court shows "Waiting for players".
 
 Required properties, each covered by tests:
-- **Lowest counts first.** No available player is left out while an available player with a higher `queueCount` is picked, except to keep a locked pair together. Tested by simulation with 4–24 players, 1–6 courts and random finish order.
+- **Lowest counts first.** No available player is left out while an available player with a higher `queueCount` is picked, except to keep a locked pair together. Tested by simulation with 4–32 players, 1–8 courts and random finish order.
 - **Equal games when matches take equal time.** When every match lasts the same time, `max(gamesPlayed) − min(gamesPlayed) ≤ 1` holds after every round of calls, among players present since the start. Uneven match lengths can briefly widen the gap: for example, with 8 players on 2 courts, the first four to finish may be the only ones free. The first property still holds in that case.
 - **Late arrivals.** A late arrival is picked no later than the match after the lowest-count players who were already waiting.
 - **Locked pairs.** Locked partners are always on the same team, and a locked pair never splits while both are available.
@@ -207,7 +207,7 @@ Routes: `app/queue/index.tsx` (check-in), `app/queue/session.tsx` (live), `app/q
    - Saved players shown as `md` paddles: filled when checked in, ghost when not. Tap to toggle.
    - "Add a new name" creates a saved player.
    - Saved groups show as chips; tapping one checks in all its players.
-   - Rows for Courts (stepper, 1–6, defaulting to `defaultCourtCount`), Fixed pairs, and Late arrivals (shows the rule; the rule itself is not configurable in this release).
+   - Rows for Courts (stepper, 1–8, defaulting to `defaultCourtCount`), Fixed pairs, and Late arrivals (shows the rule; the rule itself is not configurable in this release).
    - The Start button shows the player count and is disabled below 4 players.
 2. **Live session**
    - Large title and a live meta line (players, courts, games).

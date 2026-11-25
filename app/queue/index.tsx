@@ -12,6 +12,7 @@ import { Stepper } from '../../components/ui/Controls';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
 import { Dialog } from '../../components/ui/Dialog';
 import { Sheet } from '../../components/ui/Sheet';
+import { MAX_COURTS } from '../../lib/queue/engine';
 import { COURT } from '../../lib/theme/tokens';
 import { useSessionStore } from '../../store/session-store';
 
@@ -167,7 +168,7 @@ export default function CheckInScreen() {
               <Stepper
                 value={courts}
                 min={1}
-                max={6}
+                max={MAX_COURTS}
                 onChange={setCourts}
                 accessibilityLabel={t('openPlay.courts')}
               />

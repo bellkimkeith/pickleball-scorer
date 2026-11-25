@@ -6,6 +6,9 @@ import {
   SessionPlayer,
 } from '../types/queue';
 
+/** The most courts a session can run at once. */
+export const MAX_COURTS = 8;
+
 export interface ProposedMatch {
   team1: [string, string];
   team2: [string, string];

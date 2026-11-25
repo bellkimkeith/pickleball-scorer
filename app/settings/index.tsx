@@ -14,6 +14,7 @@ import { Sheet } from '../../components/ui/Sheet';
 import { CourtButton } from '../../components/ui/Button';
 import { changeLanguage } from '../../i18n';
 import { openAdPrivacyChoices } from '../../lib/ads/ads';
+import { MAX_COURTS } from '../../lib/queue/engine';
 import { COURT } from '../../lib/theme/tokens';
 import { Language } from '../../lib/types/game';
 import { useGameStore } from '../../store/game-store';
@@ -137,7 +138,7 @@ export default function SettingsScreen() {
               <Stepper
                 value={defaultCourtCount}
                 min={1}
-                max={6}
+                max={MAX_COURTS}
                 onChange={setDefaultCourts}
                 accessibilityLabel={t('settings.defaultCourts')}
               />
