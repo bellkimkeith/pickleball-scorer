@@ -40,6 +40,9 @@ function ListRowComponent({
   const labelBlock = (
     <View style={{ flex: stacked ? undefined : 1 }}>
       <Text style={{ color, fontSize: 17, fontWeight: '500' }}>{label}</Text>
+      {stacked && value && (
+        <Text style={{ color: COURT.inkMuted, fontSize: 15, marginTop: 4, lineHeight: 20 }}>{value}</Text>
+      )}
       {disabled && disabledReason && (
         <Text style={{ color: COURT.inkMuted, fontSize: 12, marginTop: 2 }}>{disabledReason}</Text>
       )}
