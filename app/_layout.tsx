@@ -7,6 +7,7 @@ import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import { useGameStore } from '../store/game-store';
 import { COURT } from '../lib/theme/tokens';
 import { initI18n, changeLanguage } from '../i18n';
+import { bootMonetization } from '../lib/monetization/boot';
 import '../global.css';
 
 LogBox.ignoreLogs(['SafeAreaView has been deprecated']);
@@ -18,6 +19,8 @@ export default function RootLayout() {
   useEffect(() => {
     initI18n(settings.language).then(() => {
       setI18nReady(true);
+      // Ads and purchases settle in the background; the first screen never waits on them.
+      void bootMonetization();
     });
   }, []);
 
