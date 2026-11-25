@@ -53,26 +53,34 @@ function PlanCard({
       accessibilityRole="button"
       accessibilityLabel={`${name}, ${price}. ${note}`}
       accessibilityState={{ disabled }}
-      style={({ pressed }) => ({
-        minHeight: 64,
-        borderRadius: 14,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        opacity: disabled ? 0.45 : 1,
-        transform: [{ scale: pressed && !disabled ? 0.98 : 1 }],
-        ...(lifetime
-          ? { backgroundColor: COURT.line }
-          : { backgroundColor: COURT.deep, borderWidth: 1, borderColor: `${COURT.line}1f` }),
-      })}
     >
-      <View style={{ flex: 1 }}>
-        <Text style={{ color, fontSize: 18, fontWeight: '800' }}>{name}</Text>
-        <Text style={{ color, fontSize: 13, fontWeight: '600', opacity: 0.75, marginTop: 2 }}>{note}</Text>
-      </View>
-      <Text style={{ color, fontSize: 18, fontWeight: '800', fontVariant: ['tabular-nums'] }}>{price}</Text>
+      {/* The look sits on a View inside the Pressable, never on the Pressable:
+          NativeWind drops a Pressable's function style, which left these cards
+          without their fill (DESIGN.md, Buttons > Implementation). */}
+      {({ pressed }) => (
+        <View
+          style={{
+            minHeight: 64,
+            borderRadius: 14,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            opacity: disabled ? 0.45 : 1,
+            transform: [{ scale: pressed && !disabled ? 0.98 : 1 }],
+            ...(lifetime
+              ? { backgroundColor: COURT.line }
+              : { backgroundColor: COURT.deep, borderWidth: 1, borderColor: `${COURT.line}1f` }),
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={{ color, fontSize: 18, fontWeight: '800' }}>{name}</Text>
+            <Text style={{ color, fontSize: 13, fontWeight: '600', opacity: 0.75, marginTop: 2 }}>{note}</Text>
+          </View>
+          <Text style={{ color, fontSize: 18, fontWeight: '800', fontVariant: ['tabular-nums'] }}>{price}</Text>
+        </View>
+      )}
     </Pressable>
   );
 }
