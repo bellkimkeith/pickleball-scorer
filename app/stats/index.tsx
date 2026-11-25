@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdBanner } from '../../components/ads/AdBanner';
 import { BackButton } from '../../components/ui/BackButton';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
 import { GameRecord } from '../../lib/storage/game-history';
@@ -194,6 +195,8 @@ export default function StatsScreen() {
           </>
         )}
       </ScrollView>
+
+      <AdBanner placement="anchored" />
     </SafeAreaView>
   );
 }

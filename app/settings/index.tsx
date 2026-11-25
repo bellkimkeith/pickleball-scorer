@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdBanner } from '../../components/ads/AdBanner';
 import { Segmented, Stepper, Toggle } from '../../components/ui/Controls';
 import { BackButton } from '../../components/ui/BackButton';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
@@ -154,6 +155,8 @@ export default function SettingsScreen() {
           <ListRow label={t('settings.privacyPolicy')} chevron onPress={() => router.push('/settings/privacy')} />
         </ListGroup>
       </ScrollView>
+
+      <AdBanner placement="anchored" />
 
       <Sheet visible={languageOpen} onClose={() => setLanguageOpen(false)} title={t('settings.language')}>
         <View style={{ gap: 8, paddingBottom: 10 }}>

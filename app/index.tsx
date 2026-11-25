@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdBanner } from '../components/ads/AdBanner';
 import { CourtDiagram } from '../components/court/CourtDiagram';
 import { MiniCourt } from '../components/court/MiniCourt';
 import { ListGroup, ListRow } from '../components/ui/ListGroup';
@@ -139,6 +140,8 @@ export default function HomeScreen() {
           />
         </ListGroup>
       </ScrollView>
+
+      <AdBanner placement="anchored" />
     </SafeAreaView>
   );
 }

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdBanner } from '../../components/ads/AdBanner';
 import { Paddle } from '../../components/court/Paddle';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
 import { CourtButton } from '../../components/ui/Button';
@@ -122,6 +123,8 @@ export default function SummaryScreen() {
             />
           ))}
         </View>
+
+        <AdBanner placement="inline" />
 
         <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', paddingHorizontal: 16, paddingTop: 22, paddingBottom: 8 }}>
           {t('openPlay.everyone')}
