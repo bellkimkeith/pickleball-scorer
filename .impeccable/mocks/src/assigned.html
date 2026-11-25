@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel-1:#d7dadd; --steel-2:#c9cdd1; --steel-ink:#1d2226; --steel-mute:#5b636a;
+    --flap:#151617; --flap-lo:#26282b; --paint:#f1ede3; --paint-dim:#8d8a82;
+    --amber:#ffb21e; --green:#39d17a; --red:#b0463c; --rule:#3a3d41;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:390px;height:844px;overflow:hidden}
+  body{font-family:-apple-system,system-ui,sans-serif;color:var(--steel-ink);
+    background:
+      repeating-linear-gradient(90deg,#ffffff0d 0 1px,transparent 1px 3px),
+      linear-gradient(180deg,var(--steel-1),var(--steel-2));}
+  .status{height:47px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 28px 6px 34px;font-weight:600;font-size:16px}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:6px 16px 0}
+  .nav a{font-size:17px;color:var(--steel-ink);text-decoration:none}
+  .nav .end{font-weight:600}
+  h1{font-size:34px;font-weight:700;letter-spacing:.2px;padding:4px 16px 0}
+  .meta{padding:2px 16px 12px;font-size:15px;color:var(--steel-mute);display:flex;gap:6px;align-items:center}
+  .meta .lamp{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px #39d17a33}
+
+  .board{margin:0 10px 10px;background:var(--flap-lo);border-radius:7px;padding:8px 8px 10px;
+    box-shadow:0 1px 0 #ffffff80 inset,0 8px 18px -10px #0008, 0 0 0 1px #0b0c0d}
+  .bh{display:grid;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;color:var(--paint-dim);padding:2px 4px 6px;border-bottom:1px solid var(--rule)}
+  .now .bh,.now .row{grid-template-columns:44px 1fr 62px}
+  .row{display:grid;align-items:center;padding:8px 4px;border-bottom:1px solid var(--rule)}
+  .row:last-child{border-bottom:0}
+  .fl{display:inline-flex;gap:1.5px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;color:var(--paint);text-transform:uppercase}
+  .fl i{font-style:normal;display:inline-flex;justify-content:center;align-items:center;width:.66em;height:1.28em;border-radius:1.5px;position:relative;
+    background:linear-gradient(180deg,#1b1c1e 0,#111213 48.5%,#000 48.5%,#000 51.5%,#0d0e0f 51.5%,#070808 100%);box-shadow:0 1px 0 #ffffff14 inset,0 1px 1px #0009}
+  .fl i.sp{background:transparent;width:.34em}
+  .court .fl{font-size:34px}
+  .team{display:flex;flex-direction:column;gap:3px}
+  .team .fl{font-size:17px}
+  .vs{font-family:'Big Shoulders Display';font-size:10px;letter-spacing:.2em;color:var(--paint-dim);padding-left:2px}
+  .time .fl{font-size:17px}
+  .time{justify-self:end}
+  .acts{display:flex;gap:6px;padding:0 0 8px}
+  .btn{flex:1;height:48px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px}
+  .btn.p{background:var(--paint);color:var(--flap)}
+  .btn.s{flex:0 0 96px;background:transparent;color:var(--paint);box-shadow:0 0 0 1px #4a4c4f inset}
+
+  .next .bh,.next .nrow{grid-template-columns:52px 1fr 70px}
+  .nrow{display:grid;align-items:center;padding:9px 4px;border-bottom:1px solid var(--rule)}
+  .nrow:last-child{border-bottom:0}
+  .nrow .fl{font-size:15px}
+  .st{justify-self:end;font-family:'Big Shoulders Display';font-weight:700;font-size:13px;letter-spacing:.1em;display:flex;align-items:center;gap:6px}
+  .st.ready{color:var(--green)} .st.hold{color:var(--amber)}
+  .st b{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor}
+  .why{font-size:12px;color:var(--paint-dim);padding:6px 4px 0;display:flex;justify-content:space-between}
+  .why u{color:var(--paint);text-decoration:none;border-bottom:1px solid #6a6c6f}
+
+  .sec{display:flex;justify-content:space-between;align-items:baseline;padding:6px 18px 6px;font-size:13px;color:var(--steel-mute)}
+  .sec b{font-size:20px;font-weight:700;color:var(--steel-ink)}
+  .roster{margin:0 10px;background:#eef0f2;border-radius:10px;box-shadow:0 0 0 1px #b8bdc2}
+  .pl{display:grid;grid-template-columns:1fr auto 62px;align-items:center;gap:10px;padding:0 14px;height:46px;border-bottom:1px solid #d3d7db;font-size:16px}
+  .pl:last-child{border:0}
+  .steps{display:flex;gap:3px}
+  .steps s{width:9px;height:14px;border-radius:1.5px;background:#c3c8cd}
+  .steps s.on{background:var(--flap)}
+  .tag{font-size:12px;font-weight:600;color:var(--steel-mute);text-align:right}
+  .tag.am{color:#9a6400}
+  .pn{display:flex;align-items:center;gap:8px}
+  .pn small{font-size:11px;font-weight:600;color:#9a6400;background:#ffb21e2e;padding:1px 6px;border-radius:4px}
+  .pn em{font-style:normal;font-size:12px;color:var(--steel-mute)}
+  .dock{position:absolute;left:0;width:390px;bottom:0;padding:10px 16px 30px;background:linear-gradient(180deg,#c9cdd100,#c9cdd1 30%)}
+  .dock div{height:50px;border-radius:8px;background:var(--flap);color:var(--paint);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:17px;gap:8px}
+</style></head>
+<body>
+  <div class="status"><span>7:42</span><span>●●● ▮</span></div>
+  <div class="nav"><a>‹ Home</a><a class="end">End session</a></div>
+  <h1>Open Play</h1>
+  <div class="meta"><span class="lamp"></span>Live · 12 players · 2 courts · 14 games</div>
+
+  <div class="board now">
+    <div class="bh"><span>CT</span><span>NOW PLAYING</span><span style="text-align:right">TIME</span></div>
+    <div class="row">
+      <div class="court"><span class="fl" data-t="1"></span></div>
+      <div class="team"><span class="fl" data-t="MARIA CARLO"></span><span class="vs">VS</span><span class="fl" data-t="BEA JUN"></span></div>
+      <div class="time"><span class="fl" data-t="08:14"></span></div>
+    </div>
+    <div class="acts"><div class="btn p">Match done</div><div class="btn s">Score</div></div>
+    <div class="row" style="border-top:1px solid var(--rule)">
+      <div class="court"><span class="fl" data-t="2"></span></div>
+      <div class="team"><span class="fl" data-t="PAOLO NIKKI"></span><span class="vs">VS</span><span class="fl" data-t="RICO TIN"></span></div>
+      <div class="time"><span class="fl" data-t="03:02"></span></div>
+    </div>
+    <div class="acts" style="padding-bottom:0"><div class="btn p">Match done</div><div class="btn s">Score</div></div>
+  </div>
+
+  <div class="board next">
+    <div class="bh"><span>ORDER</span><span>NEXT UP</span><span style="text-align:right">STATUS</span></div>
+    <div class="nrow"><span class="fl" data-t="1ST"></span><span class="fl" data-t="KAT MIGS"></span><span class="st ready"><b></b>READY</span></div>
+    <div class="nrow"><span class="vs" style="padding-left:4px">VS</span><span class="fl" data-t="JAM JOY"></span><span></span></div>
+    <div class="why"><span>Fewest games first · Kat &amp; Migs locked</span><u>Why?</u></div>
+  </div>
+
+  <div class="sec"><b>Players</b><span>games played</span></div>
+  <div class="roster">
+    <div class="pl"><span class="pn">Jam</span><span class="steps"><s class="on"></s><s class="on"></s><s class="on"></s><s></s><s></s><s></s></span><span class="tag">waiting</span></div>
+    <div class="pl"><span class="pn">Kat <em><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-1px;margin-right:2px"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Migs</em></span><span class="steps"><s class="on"></s><s class="on"></s><s class="on"></s><s></s><s></s><s></s></span><span class="tag">waiting</span></div>
+    <div class="pl"><span class="pn">Joy <small>Late</small></span><span class="steps"><s class="on"></s><s></s><s></s><s></s><s></s><s></s></span><span class="tag">waiting</span></div>
+    <div class="pl"><span class="pn">Leo</span><span class="steps"><s class="on"></s><s class="on"></s><s class="on"></s><s></s><s></s><s></s></span><span class="tag am">sitting out</span></div>
+  </div>
+
+  <div class="dock"><div>＋ Add player</div></div>
+
+<script>
+document.querySelectorAll('.fl').forEach(el=>{
+  el.innerHTML=[...el.dataset.t].map(c=>c===' '?'<i class="sp"></i>':'<i>'+c+'</i>').join('');
+});
+</script>
+</body></html>

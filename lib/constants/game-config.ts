@@ -38,5 +38,4 @@ export const DEFAULT_GAME_SETTINGS: GameSettings = {
   sideChangeAt: getDefaultSideChangeAt(11),
   swapScoresOnSideChange: true,
   gameType: 'sideout',
-  theme: 'light',
 };

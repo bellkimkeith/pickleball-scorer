@@ -6,27 +6,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Pickleball-themed color palette
-        primary: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
+        // Court & Paddle palette (lib/theme/tokens.ts holds the same values
+        // for SVG fills and other places NativeWind classes cannot reach).
+        court: {
+          outer: '#2d5a48',
+          deep: '#1f4134',
+          surface: '#23473a',
+          inner: '#2c5c93',
+          kitchen: '#3a6aa3',
+          line: '#f4f6f2',
+          lineText: '#1d3d31',
         },
-        secondary: {
-          500: '#3b82f6',
-          600: '#2563eb',
+        ink: {
+          DEFAULT: '#f4f6f2',
+          muted: '#b9cfc5',
         },
-        accent: {
-          yellow: '#fbbf24',
-          orange: '#f97316',
+        deep: '#10231c',
+        danger: '#ffb4a6',
+        ball: '#e9e24a',
+        paddle: {
+          ochre: '#e3a33b',
+          coral: '#e0634a',
+          paper: '#f2efe8',
+          sky: '#8fc3e6',
+          carbon: '#2f3130',
+          lilac: '#b9a6e0',
+          sand: '#d9c39a',
+          teal: '#4fb3a5',
         },
-        team1: '#16a34a',
-        team2: '#f97316',
-        // Dark mode backgrounds
-        'bg-dark': '#111827',
-        'bg-light': '#f9fafb',
+
       },
     },
   },

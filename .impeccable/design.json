@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-22T00:00:00Z",
+  "title": "Design System: Pickleball Scorer",
+  "extensions": {
+    "colorMeta": {
+      "court-outer": {
+        "role": "neutral",
+        "displayName": "Outer Court Green",
+        "canonical": "#2d5a48",
+        "purpose": "The screen ground, applied once at the root behind the grit tile.",
+        "tonalRamp": ["#0c1a14", "#132a20", "#1f4134", "#2d5a48", "#3d745d", "#5a9280", "#8ab7a8", "#c3dbd2"]
+      },
+      "court-outer-deep": {
+        "role": "neutral",
+        "displayName": "Deep Court Green",
+        "canonical": "#1f4134",
+        "purpose": "Structures resting on the ground: the paddle rack and the scorer toolbar.",
+        "tonalRamp": ["#08130e", "#0f2119", "#173328", "#1f4134", "#2b5645", "#43765f", "#74a190", "#b3cec3"]
+      },
+      "court-surface": {
+        "role": "neutral",
+        "displayName": "Court Surface Green",
+        "canonical": "#23473a",
+        "purpose": "Sheets and dialogs, the only surfaces allowed to float.",
+        "tonalRamp": ["#0a1611", "#12261e", "#1a362b", "#23473a", "#305e4d", "#487d68", "#79a795", "#b8d2c8"]
+      },
+      "court-inner": {
+        "role": "secondary",
+        "displayName": "Court Blue",
+        "canonical": "#2c5c93",
+        "purpose": "The playing surface inside the lines, in every court drawing.",
+        "tonalRamp": ["#0a1624", "#132740", "#1d3f63", "#2c5c93", "#3b76b8", "#6197cf", "#95bbe2", "#cadef1"]
+      },
+      "court-kitchen": {
+        "role": "secondary",
+        "displayName": "Kitchen Blue",
+        "canonical": "#3a6aa3",
+        "purpose": "The non-volley zone, 7ft either side of the net. The mark that makes it a pickleball court.",
+        "tonalRamp": ["#0d1a28", "#172c45", "#254768", "#3a6aa3", "#4d84c3", "#74a2d6", "#a3c3e6", "#d2e1f3"]
+      },
+      "court-line": {
+        "role": "primary",
+        "displayName": "Line White",
+        "canonical": "#f4f6f2",
+        "purpose": "The 2-inch court line, and the only bright fill in the system: primary buttons, selected segments, the on-toggle, court pills, the NEXT UP tab.",
+        "tonalRamp": ["#26281f", "#3d4136", "#5c614f", "#7e8471", "#a3a996", "#c6cbbb", "#e2e6dc", "#f4f6f2"]
+      },
+      "court-line-text": {
+        "role": "primary",
+        "displayName": "Court Line Text",
+        "canonical": "#1d3d31",
+        "purpose": "Text and icons on a line-white fill; contrast-tested against #f4f6f2.",
+        "tonalRamp": ["#081310", "#0f2319", "#163024", "#1d3d31", "#2a5744", "#3f7c62", "#71a693", "#b2d0c4"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#f4f6f2",
+        "purpose": "Primary text and icons on the green ground. Same value as the court line.",
+        "tonalRamp": ["#26281f", "#3d4136", "#5c614f", "#7e8471", "#a3a996", "#c6cbbb", "#e2e6dc", "#f4f6f2"]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "#b9cfc5",
+        "purpose": "Meta lines, row values, captions, disabled reasons. Test-enforced to 4.5:1 on the ground.",
+        "tonalRamp": ["#1d2d26", "#2c443a", "#3f6154", "#557f70", "#7ba193", "#9bbcaf", "#b9cfc5", "#dceae3"]
+      },
+      "deep": {
+        "role": "neutral",
+        "displayName": "Deep",
+        "canonical": "#10231c",
+        "purpose": "Secondary button fill: near-black green.",
+        "tonalRamp": ["#050b09", "#0a1712", "#10231c", "#173328", "#204636", "#2e644d", "#5a9280", "#a8ccbe"]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Danger Coral",
+        "canonical": "#ffb4a6",
+        "purpose": "Text-only destructive labels (End, Remove). Never a fill.",
+        "tonalRamp": ["#3d1a13", "#5c281d", "#7f382a", "#a54b3a", "#c9664f", "#e58972", "#ffb4a6", "#ffdcd5"]
+      },
+      "ball": {
+        "role": "tertiary",
+        "displayName": "Ball Yellow",
+        "canonical": "#e9e24a",
+        "purpose": "The serving marker and the doubles server number, and nothing else. A test asserts no paddle face uses it.",
+        "tonalRamp": ["#26240a", "#3d3a10", "#5c5719", "#7e7822", "#a39b2e", "#c6bd3a", "#e9e24a", "#f4f0a0"]
+      },
+      "clock-well": {
+        "role": "secondary",
+        "displayName": "Clock Well",
+        "canonical": "#0f2a4a",
+        "purpose": "The dark chip on the net holding the elapsed-match clock.",
+        "tonalRamp": ["#050e19", "#0a1c31", "#0f2a4a", "#163c69", "#1e5089", "#2c6cb0", "#5f96d0", "#a9c8e8"]
+      },
+      "clock-ink": {
+        "role": "secondary",
+        "displayName": "Clock Ink",
+        "canonical": "#dce8f5",
+        "purpose": "Clock digits, and the active-session line on home.",
+        "tonalRamp": ["#1c2733", "#2c3d50", "#3f5670", "#577392", "#7995b3", "#9db5cd", "#c0d3e5", "#dce8f5"]
+      },
+      "paddle-guard": {
+        "role": "neutral",
+        "displayName": "Edge Guard",
+        "canonical": "#17181a",
+        "purpose": "The rubber edge guard stroked around every paddle face.",
+        "tonalRamp": ["#0a0b0c", "#17181a", "#242629", "#36383d", "#4c4f55", "#6c7077", "#9b9fa6", "#cfd2d7"]
+      },
+      "paddle-grip": {
+        "role": "neutral",
+        "displayName": "Grip Wrap",
+        "canonical": "#191919",
+        "purpose": "The handle wrap under the paddle face.",
+        "tonalRamp": ["#0c0c0c", "#191919", "#262626", "#383838", "#4f4f4f", "#707070", "#a0a0a0", "#d2d2d2"]
+      },
+      "paddle-grip-text": {
+        "role": "neutral",
+        "displayName": "Grip Text",
+        "canonical": "#ffffff",
+        "purpose": "Games played, printed on the grip wrap.",
+        "tonalRamp": ["#262626", "#3d3d3d", "#5c5c5c", "#7e7e7e", "#a3a3a3", "#c6c6c6", "#e2e2e2", "#ffffff"]
+      },
+      "pair-tape": {
+        "role": "tertiary",
+        "displayName": "Pair Tape",
+        "canonical": "#e9d8a6",
+        "purpose": "Masking-tape tan, drawn at -6 degrees across two paddles locked as a pair.",
+        "tonalRamp": ["#2b2410", "#453a1b", "#645427", "#867233", "#a89240", "#c6b36d", "#e9d8a6", "#f6eed2"]
+      },
+      "face-ochre": {
+        "role": "tertiary",
+        "displayName": "Ochre",
+        "canonical": "#e3a33b",
+        "purpose": "Paddle face 1 of 8. Player identity only. Paired text #2b1d05.",
+        "tonalRamp": ["#2b1d05", "#4a3209", "#6d4a0f", "#946416", "#bc801f", "#e3a33b", "#eebe74", "#f7dcb1"]
+      },
+      "face-coral": {
+        "role": "tertiary",
+        "displayName": "Coral",
+        "canonical": "#e0634a",
+        "purpose": "Paddle face 2 of 8. Player identity only. Paired text #2a0c05.",
+        "tonalRamp": ["#2a0c05", "#48160b", "#6b2212", "#93301c", "#bb4429", "#e0634a", "#ec9180", "#f6c6bb"]
+      },
+      "face-paper": {
+        "role": "tertiary",
+        "displayName": "Paper",
+        "canonical": "#f2efe8",
+        "purpose": "Paddle face 3 of 8. Player identity only. Paired text #1d2a24.",
+        "tonalRamp": ["#26241d", "#3d3a32", "#5c584e", "#7e7a6f", "#a39e92", "#c6c1b5", "#e0dcd2", "#f2efe8"]
+      },
+      "face-sky": {
+        "role": "tertiary",
+        "displayName": "Sky",
+        "canonical": "#8fc3e6",
+        "purpose": "Paddle face 4 of 8. Player identity only. Paired text #0d2638.",
+        "tonalRamp": ["#0d2638", "#153c58", "#1f547a", "#2b6d9d", "#4a8cbc", "#6da8d3", "#8fc3e6", "#c3ddf2"]
+      },
+      "face-carbon": {
+        "role": "tertiary",
+        "displayName": "Carbon",
+        "canonical": "#2f3130",
+        "purpose": "Paddle face 5 of 8. Player identity only. The one dark face; paired text #f1f1ef.",
+        "tonalRamp": ["#141514", "#1f211f", "#2f3130", "#434644", "#5c605d", "#7d817e", "#a9aca9", "#d5d7d5"]
+      },
+      "face-lilac": {
+        "role": "tertiary",
+        "displayName": "Lilac",
+        "canonical": "#8a93bd",
+        "purpose": "Paddle face 6 of 8. Player identity only. Paired text #150e26. Darkened from the spec's #b9a6e0 to clear 4.5:1.",
+        "tonalRamp": ["#150e26", "#221a3b", "#332954", "#473b70", "#5f548f", "#7472a5", "#8a93bd", "#bfc5dd"]
+      },
+      "face-sand": {
+        "role": "tertiary",
+        "displayName": "Sand",
+        "canonical": "#cbb389",
+        "purpose": "Paddle face 7 of 8. Player identity only. Paired text #241c0d. Deepened from the spec's #d9c39a to clear 4.5:1.",
+        "tonalRamp": ["#241c0d", "#3c2f17", "#583f21", "#78582e", "#9a763f", "#b5955f", "#cbb389", "#e5d8bd"]
+      },
+      "face-teal": {
+        "role": "tertiary",
+        "displayName": "Teal",
+        "canonical": "#3f9e91",
+        "purpose": "Paddle face 8 of 8. Player identity only. Paired text #04201a. Deepened from the spec's #4fb3a5 to clear 4.5:1.",
+        "tonalRamp": ["#04201a", "#093329", "#12493c", "#1d6354", "#2b806f", "#3f9e91", "#72bdb2", "#addbd4"]
+      }
+    },
+    "typographyMeta": {
+      "score-call": {
+        "displayName": "Score Call",
+        "purpose": "The spoken score, serving side first. 92pt on the scorer, 104pt in the win modal, 72pt on the share card. Always tabular."
+      },
+      "screen-title": {
+        "displayName": "Screen Title",
+        "purpose": "One per screen, left-aligned at the 16pt text gutter, with a muted 15pt meta line under it."
+      },
+      "modal-title": {
+        "displayName": "Modal Title",
+        "purpose": "Dialog titles at 24pt/800 centred; sheet titles at 26pt/700 left-aligned beside a Done button."
+      },
+      "section-title": {
+        "displayName": "Section Title",
+        "purpose": "In-screen section heads such as Rack, with a 13pt muted hint on the same baseline."
+      },
+      "row-label": {
+        "displayName": "Row Label",
+        "purpose": "List rows; player names on court take the same size at 700."
+      },
+      "button-label": {
+        "displayName": "Button Label",
+        "purpose": "All button titles, with an optional 13pt/600 subtitle above at 70% opacity."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Meta lines, descriptions, dialog messages, empty states."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Captions, and uppercase grouped-list headers."
+      },
+      "signage": {
+        "displayName": "Signage",
+        "purpose": "Painted-signage micro-type: court-number pills and the NEXT UP rack tab. Labels containers only, never sits above a title."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "court-slot-entry",
+        "value": "SlideInDown.springify().damping(17).delay(index * 60)",
+        "purpose": "Names walking onto a called match: four court slots, staggered 60ms by slot index."
+      },
+      {
+        "name": "rack-enter",
+        "value": "FadeIn.duration(200)",
+        "purpose": "A paddle arriving in the next-four row of the rack."
+      },
+      {
+        "name": "rack-exit",
+        "value": "SlideOutUp.springify().damping(20)",
+        "purpose": "A paddle leaving the rack as its match is called."
+      },
+      {
+        "name": "reduce-motion-fallback",
+        "value": "FadeIn.duration(180)",
+        "purpose": "Every entry animation downgrades to this when AccessibilityInfo reports Reduce Motion."
+      },
+      {
+        "name": "press-scale",
+        "value": "transform: scale(0.97)",
+        "purpose": "Button press, on the inner View, with a light haptic."
+      },
+      {
+        "name": "screen-push",
+        "value": "slide_from_right",
+        "purpose": "The expo-router stack transition; sheets slide up, dialogs fade."
+      }
+    ],
+    "breakpoints": [],
+    "geometry": [
+      { "name": "court-aspect", "value": "2.2 (44ft x 20ft)", "purpose": "CourtDiagram's default aspect ratio when no explicit height is given." },
+      { "name": "kitchen-band", "value": "15.91% of length, each side of the net (7ft)", "purpose": "The non-volley zone." },
+      { "name": "service-court", "value": "34.09% of length, each side (15ft)", "purpose": "The area the centre line runs through." },
+      { "name": "court-line-weight", "value": "2px", "purpose": "Border, net, centre lines and kitchen lines, drawn as positioned views." },
+      { "name": "paddle-viewbox", "value": "200 x 200", "purpose": "The shared paddle silhouette box in lib/theme/paddle-shape.ts." },
+      { "name": "paddle-guard-width", "value": "9 units", "purpose": "The rubber edge-guard stroke around the face outline." }
+    ],
+    "texture": [
+      {
+        "name": "court-grit",
+        "value": "assets/textures/court-grit.png — 64x64 tileable, seeded noise, ~6% light and ~6% dark grain at 4-9% alpha",
+        "purpose": "Stands in for the sand aggregate in acrylic court paint. Applied once as a repeating ImageBackground at the root of app/_layout.tsx; screens stay transparent."
+      }
+    ],
+    "notCanonized": [
+      {
+        "item": "Ionicons glyph-font icons",
+        "where": "components/ui/Button.tsx, Toolbar.tsx, ListGroup.tsx, Controls.tsx, app/index.tsx",
+        "note": "The build draws its icons from the Ionicons font. Recorded as what ships, not as a system rule; a new surface should not treat an icon font as the house choice."
+      },
+      {
+        "item": "Rack-to-court shared-element move",
+        "where": "direction contract, Signature interaction",
+        "note": "Not built. What ships is a staggered SlideInDown entry on the court plus an independent SlideOutUp rack exit."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (Line)",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "The one bright action per screen: line-white fill, deep-green label, 50pt tall.",
+      "html": "<button class=\"ds-btn-line\">Match done</button>",
+      "css": ".ds-btn-line { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 50px; padding: 0 16px; border: none; border-radius: 12px; background: #f4f6f2; color: #1d3d31; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; font-size: 16px; font-weight: 700; transition: transform 0.12s ease, opacity 0.12s ease; } .ds-btn-line:hover { opacity: 0.92; } .ds-btn-line:focus-visible { outline: 2px solid #e9e24a; outline-offset: 2px; } .ds-btn-line:active { transform: scale(0.97); } .ds-btn-line:disabled { opacity: 0.45; }"
+    },
+    {
+      "name": "Secondary Button (Deep)",
+      "kind": "button",
+      "refersTo": "button-deep",
+      "description": "Additive dock action on near-black green with a hairline border and a leading icon.",
+      "html": "<button class=\"ds-btn-deep\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg>Add player</button>",
+      "css": ".ds-btn-deep { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 16px; border: 1px solid rgba(244,246,242,0.12); border-radius: 12px; background: #10231c; color: #f4f6f2; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; font-size: 16px; font-weight: 700; transition: transform 0.12s ease, background 0.12s ease; } .ds-btn-deep:hover { background: #17332a; } .ds-btn-deep:focus-visible { outline: 2px solid #f4f6f2; outline-offset: 2px; } .ds-btn-deep:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Tertiary Button (Outline)",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "The lesser of two paired actions: transparent with a 1.5pt line-white border at 55% alpha.",
+      "html": "<button class=\"ds-btn-outline\">Score</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 16px; border: 1.5px solid rgba(244,246,242,0.55); border-radius: 12px; background: transparent; color: #f4f6f2; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; font-size: 16px; font-weight: 700; transition: transform 0.12s ease, background 0.12s ease; } .ds-btn-outline:hover { background: rgba(244,246,242,0.08); } .ds-btn-outline:focus-visible { outline: 2px solid #f4f6f2; outline-offset: 2px; } .ds-btn-outline:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Destructive Button (Danger Text)",
+      "kind": "button",
+      "refersTo": "button-danger-text",
+      "description": "Destructive confirmation as coral text on no fill. This system has no filled red button.",
+      "html": "<button class=\"ds-btn-danger\">End session</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; height: 50px; padding: 0 16px; border: none; border-radius: 12px; background: transparent; color: #ffb4a6; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; font-size: 16px; font-weight: 700; transition: transform 0.12s ease, background 0.12s ease; } .ds-btn-danger:hover { background: rgba(255,180,166,0.10); } .ds-btn-danger:focus-visible { outline: 2px solid #ffb4a6; outline-offset: 2px; } .ds-btn-danger:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Grouped List",
+      "kind": "card",
+      "refersTo": "list-group",
+      "description": "Settings rows in a 14pt tinted group under an uppercase header, with inset hairline dividers.",
+      "html": "<div class=\"ds-list\"><div class=\"ds-list-head\">Scoring</div><div class=\"ds-list-body\"><div class=\"ds-row\"><span class=\"ds-row-label\">Winning score</span><span class=\"ds-row-value\">11</span></div><div class=\"ds-row\"><span class=\"ds-row-label\">Win by two</span><span class=\"ds-row-value\">On</span></div><div class=\"ds-row ds-row-danger\"><span class=\"ds-row-label\">Reset all stats</span></div></div></div>",
+      "css": ".ds-list { font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; } .ds-list-head { color: #b9cfc5; font-size: 13px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; padding: 0 16px 6px; } .ds-list-body { background: rgba(244,246,242,0.06); border: 1px solid rgba(244,246,242,0.08); border-radius: 14px; overflow: hidden; } .ds-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 8px 14px; color: #f4f6f2; cursor: pointer; } .ds-row + .ds-row { border-top: 1px solid rgba(244,246,242,0.08); margin-left: 14px; } .ds-row:hover { background: rgba(244,246,242,0.08); } .ds-row:focus-visible { outline: 2px solid #f4f6f2; outline-offset: -2px; } .ds-row-label { font-size: 17px; font-weight: 500; } .ds-row-value { color: #b9cfc5; font-size: 15px; } .ds-row-danger .ds-row-label { color: #ffb4a6; }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "chip",
+      "refersTo": "segmented-selected",
+      "description": "A line-white 8% track with the selected segment as a line-white slab with deep-green label.",
+      "html": "<div class=\"ds-seg\" role=\"tablist\"><button class=\"ds-seg-item ds-seg-on\" role=\"tab\" aria-selected=\"true\">Doubles</button><button class=\"ds-seg-item\" role=\"tab\" aria-selected=\"false\">Singles</button></div>",
+      "css": ".ds-seg { display: inline-flex; gap: 0; padding: 3px; border-radius: 10px; background: rgba(244,246,242,0.08); font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; } .ds-seg-item { flex: 1; min-height: 38px; padding: 0 14px; border: none; border-radius: 8px; background: transparent; color: #b9cfc5; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; } .ds-seg-item:hover { color: #f4f6f2; } .ds-seg-item:focus-visible { outline: 2px solid #f4f6f2; outline-offset: 2px; } .ds-seg-on { background: #f4f6f2; color: #1d3d31; }"
+    },
+    {
+      "name": "Toggle",
+      "kind": "input",
+      "refersTo": "segmented-selected",
+      "description": "51x31 round track, line-white when on with an outer-court-green knob.",
+      "html": "<button class=\"ds-toggle ds-toggle-on\" role=\"switch\" aria-checked=\"true\" aria-label=\"Win by two\"><span class=\"ds-toggle-knob\"></span></button>",
+      "css": ".ds-toggle { display: flex; align-items: center; width: 51px; height: 31px; padding: 2px; border: none; border-radius: 999px; background: rgba(244,246,242,0.15); cursor: pointer; transition: background 0.18s ease; } .ds-toggle-knob { width: 27px; height: 27px; border-radius: 999px; background: #dfe7e2; transition: transform 0.18s ease, background 0.18s ease; } .ds-toggle-on { background: #f4f6f2; } .ds-toggle-on .ds-toggle-knob { background: #2d5a48; transform: translateX(20px); } .ds-toggle:focus-visible { outline: 2px solid #f4f6f2; outline-offset: 2px; }"
+    },
+    {
+      "name": "Stepper",
+      "kind": "input",
+      "refersTo": "list-row",
+      "description": "Tinted pill with minus and plus either side of a tabular value.",
+      "html": "<div class=\"ds-stepper\"><button class=\"ds-stepper-btn\" aria-label=\"Fewer\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M5 12h14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg></button><span class=\"ds-stepper-value\">2</span><button class=\"ds-stepper-btn\" aria-label=\"More\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg></button></div>",
+      "css": ".ds-stepper { display: inline-flex; align-items: center; border-radius: 10px; overflow: hidden; background: rgba(244,246,242,0.08); font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; } .ds-stepper-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 38px; border: none; background: transparent; color: #f4f6f2; cursor: pointer; } .ds-stepper-btn:hover { background: rgba(244,246,242,0.08); } .ds-stepper-btn:focus-visible { outline: 2px solid #f4f6f2; outline-offset: -2px; } .ds-stepper-btn:disabled { opacity: 0.35; } .ds-stepper-value { min-width: 32px; text-align: center; color: #f4f6f2; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Court Diagram",
+      "kind": "custom",
+      "refersTo": "court-diagram",
+      "description": "The signature surface: a top-down 44:20 court with kitchen bands, net, centre lines, a court-number pill, a clock on the net, and four named slots with the server pilled in line-white.",
+      "html": "<div class=\"ds-court\"><span class=\"ds-court-pill\">COURT 2</span><span class=\"ds-court-kitchen ds-court-kitchen-l\"></span><span class=\"ds-court-kitchen ds-court-kitchen-r\"></span><span class=\"ds-court-nvz ds-court-nvz-l\"></span><span class=\"ds-court-nvz ds-court-nvz-r\"></span><span class=\"ds-court-centre ds-court-centre-l\"></span><span class=\"ds-court-centre ds-court-centre-r\"></span><span class=\"ds-court-net\"></span><span class=\"ds-slot ds-slot-tl ds-slot-serving\"><i class=\"ds-ball\"></i>Ann</span><span class=\"ds-slot ds-slot-bl\"><i class=\"ds-dot ds-dot-coral\"></i>Ben</span><span class=\"ds-slot ds-slot-tr\"><i class=\"ds-dot ds-dot-sky\"></i>Cass</span><span class=\"ds-slot ds-slot-br\"><i class=\"ds-dot ds-dot-paper\"></i>Dee</span><span class=\"ds-court-clock\">14:02</span></div>",
+      "css": ".ds-court { position: relative; width: 100%; max-width: 330px; aspect-ratio: 2.2; background: #2c5c93; border: 2px solid #f4f6f2; border-radius: 4px; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; } .ds-court-kitchen { position: absolute; top: 0; bottom: 0; width: 15.91%; background: #3a6aa3; } .ds-court-kitchen-l { left: 34.09%; } .ds-court-kitchen-r { right: 34.09%; } .ds-court-nvz { position: absolute; top: 0; bottom: 0; width: 2px; background: #f4f6f2; } .ds-court-nvz-l { left: 34.09%; } .ds-court-nvz-r { right: 34.09%; } .ds-court-centre { position: absolute; top: 50%; height: 2px; width: 34.09%; background: #f4f6f2; } .ds-court-centre-l { left: 0; } .ds-court-centre-r { right: 0; } .ds-court-net { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: #f4f6f2; } .ds-court-pill { position: absolute; left: 50%; top: -11px; transform: translateX(-50%); background: #f4f6f2; color: #1d3d31; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; } .ds-slot { position: absolute; display: inline-flex; align-items: center; gap: 6px; max-width: 130px; color: #f4f6f2; font-size: 17px; font-weight: 700; } .ds-slot-tl { left: 10px; top: 14px; } .ds-slot-bl { left: 10px; bottom: 14px; } .ds-slot-tr { right: 10px; top: 14px; flex-direction: row-reverse; } .ds-slot-br { right: 10px; bottom: 14px; flex-direction: row-reverse; } .ds-slot-serving { background: #f4f6f2; color: #1d3d31; border-radius: 999px; padding: 4px 10px; } .ds-dot { width: 10px; height: 10px; border-radius: 999px; } .ds-dot-coral { background: #e0634a; } .ds-dot-sky { background: #8fc3e6; } .ds-dot-paper { background: #f2efe8; } .ds-ball { width: 12px; height: 12px; border-radius: 999px; background: #e9e24a; } .ds-court-clock { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); background: #0f2a4a; color: #dce8f5; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Paddle",
+      "kind": "custom",
+      "refersTo": "court-diagram",
+      "description": "A player as a paddle: name on the face in its paired text colour, games played on the grip wrap, outlined when next up. Silhouette from lib/theme/paddle-shape.ts.",
+      "html": "<div class=\"ds-paddle\"><svg viewBox=\"54 12 92 200\" width=\"68\" height=\"148\" aria-hidden=\"true\"><path d=\"M 93 124 L 107 124 L 107 176 C 110 177, 112 179, 112 182 L 112 187 C 112 189, 111 190, 109 190 L 91 190 C 89 190, 88 189, 88 187 L 88 182 C 88 179, 90 177, 93 176 Z\" fill=\"#191919\"/><path d=\"M 76 20 L 124 20 C 133 20, 140 27, 140 36 L 140 94 C 140 103, 136 109, 128 112 C 117 116, 108 121, 108 132 L 92 132 C 92 121, 83 116, 72 112 C 64 109, 60 103, 60 94 L 60 36 C 60 27, 67 20, 76 20 Z\" fill=\"none\" stroke=\"#f4f6f2\" stroke-width=\"14\" stroke-linejoin=\"round\" opacity=\"0.9\"/><path d=\"M 76 20 L 124 20 C 133 20, 140 27, 140 36 L 140 94 C 140 103, 136 109, 128 112 C 117 116, 108 121, 108 132 L 92 132 C 92 121, 83 116, 72 112 C 64 109, 60 103, 60 94 L 60 36 C 60 27, 67 20, 76 20 Z\" fill=\"#17181a\" stroke=\"#17181a\" stroke-width=\"9\" stroke-linejoin=\"round\"/><path d=\"M 76 20 L 124 20 C 133 20, 140 27, 140 36 L 140 94 C 140 103, 136 109, 128 112 C 117 116, 108 121, 108 132 L 92 132 C 92 121, 83 116, 72 112 C 64 109, 60 103, 60 94 L 60 36 C 60 27, 67 20, 76 20 Z\" fill=\"#e3a33b\"/></svg><span class=\"ds-paddle-name\">Ann</span><span class=\"ds-paddle-games\">4</span></div>",
+      "css": ".ds-paddle { position: relative; width: 68px; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; cursor: pointer; transition: opacity 0.12s ease; } .ds-paddle:hover { opacity: 0.85; } .ds-paddle:focus-visible { outline: 2px solid #f4f6f2; outline-offset: 3px; } .ds-paddle-name { position: absolute; left: 0; right: 0; top: 33%; text-align: center; color: #2b1d05; font-size: 13px; font-weight: 700; } .ds-paddle-games { position: absolute; left: 0; right: 0; top: 73%; text-align: center; color: #ffffff; font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Paddle Rack",
+      "kind": "custom",
+      "refersTo": "tile-mode",
+      "description": "The waiting queue as a rack on deep court green: a NEXT UP tab, the next four as full paddles, everyone else as small heads in a wrapping row.",
+      "html": "<div class=\"ds-rack\"><span class=\"ds-rack-tab\">NEXT UP</span><div class=\"ds-rack-next\"><span class=\"ds-rack-slab ds-face-ochre\">Ann</span><span class=\"ds-rack-slab ds-face-coral\">Ben</span><span class=\"ds-rack-slab ds-face-sky\">Cass</span><span class=\"ds-rack-slab ds-face-paper\">Dee</span></div><div class=\"ds-rack-waiting\"><span class=\"ds-rack-head ds-face-teal\">Eve</span><span class=\"ds-rack-head ds-face-sand\">Fin</span><span class=\"ds-rack-head ds-face-lilac\">Gus</span></div></div>",
+      "css": ".ds-rack { position: relative; background: #1f4134; border-radius: 14px; padding: 28px 10px 12px; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; } .ds-rack-tab { position: absolute; left: 10px; top: 0; background: #f4f6f2; color: #1d3d31; border-radius: 0 0 6px 6px; padding: 2px 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.6px; } .ds-rack-next { display: flex; gap: 8px; } .ds-rack-slab { display: flex; align-items: flex-start; justify-content: center; width: 68px; height: 96px; padding-top: 28px; border: 3px solid #f4f6f2; border-radius: 10px 10px 4px 4px; box-sizing: border-box; font-size: 13px; font-weight: 700; } .ds-rack-waiting { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; } .ds-rack-head { display: flex; align-items: center; justify-content: center; width: 48px; height: 58px; border-radius: 8px 8px 3px 3px; font-size: 10px; font-weight: 700; } .ds-face-ochre { background: #e3a33b; color: #2b1d05; } .ds-face-coral { background: #e0634a; color: #2a0c05; } .ds-face-sky { background: #8fc3e6; color: #0d2638; } .ds-face-paper { background: #f2efe8; color: #1d2a24; } .ds-face-teal { background: #3f9e91; color: #04201a; } .ds-face-sand { background: #cbb389; color: #241c0d; } .ds-face-lilac { background: #8a93bd; color: #150e26; }"
+    },
+    {
+      "name": "Score Call",
+      "kind": "custom",
+      "refersTo": "dialog",
+      "description": "The score as it is spoken: serving side first, huge tabular numerals, the doubles server number in ball yellow.",
+      "html": "<div class=\"ds-scorecall\"><div class=\"ds-scorecall-row\"><span class=\"ds-scorecall-big\">7</span><span class=\"ds-scorecall-dash\">–</span><span class=\"ds-scorecall-big ds-scorecall-recv\">4</span><span class=\"ds-scorecall-dash\">–</span><span class=\"ds-scorecall-server\">2</span></div><div class=\"ds-scorecall-caption\">Ann serving, right side</div></div>",
+      "css": ".ds-scorecall { font-family: -apple-system, 'SF Pro Display', Roboto, system-ui, sans-serif; text-align: center; } .ds-scorecall-row { display: flex; align-items: baseline; justify-content: center; gap: 12px; } .ds-scorecall-big { color: #f4f6f2; font-size: 92px; font-weight: 800; line-height: 96px; letter-spacing: -3px; font-variant-numeric: tabular-nums; } .ds-scorecall-recv { color: #cfe0d8; } .ds-scorecall-dash { color: #b9cfc5; font-size: 38px; } .ds-scorecall-server { color: #e9e24a; font-size: 52px; font-weight: 800; font-variant-numeric: tabular-nums; } .ds-scorecall-caption { color: #b9cfc5; font-size: 15px; margin-top: 6px; }"
+    },
+    {
+      "name": "Dialog",
+      "kind": "custom",
+      "refersTo": "dialog",
+      "description": "In-world alert on court-surface green: centred title, muted message, stretched primary, outline cancel.",
+      "html": "<div class=\"ds-dialog-scrim\"><div class=\"ds-dialog\"><h2 class=\"ds-dialog-title\">Change ends</h2><p class=\"ds-dialog-msg\">You have reached 6 points. Swap sides before the next serve.</p><button class=\"ds-dialog-confirm\">Got it</button><button class=\"ds-dialog-cancel\">Not now</button></div></div>",
+      "css": ".ds-dialog-scrim { display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,0.67); } .ds-dialog { width: 100%; max-width: 320px; background: #23473a; border-radius: 22px; padding: 22px; text-align: center; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; } .ds-dialog-title { margin: 0; color: #f4f6f2; font-size: 24px; font-weight: 800; } .ds-dialog-msg { margin: 6px 0 0; color: #b9cfc5; font-size: 15px; line-height: 21px; } .ds-dialog-confirm { display: block; width: 100%; height: 50px; margin-top: 18px; border: none; border-radius: 12px; background: #f4f6f2; color: #1d3d31; font-size: 16px; font-weight: 700; cursor: pointer; } .ds-dialog-confirm:hover { opacity: 0.92; } .ds-dialog-confirm:active { transform: scale(0.97); } .ds-dialog-cancel { display: block; width: 100%; height: 50px; margin-top: 8px; border: 1.5px solid rgba(244,246,242,0.55); border-radius: 12px; background: transparent; color: #f4f6f2; font-size: 16px; font-weight: 700; cursor: pointer; } .ds-dialog-cancel:hover { background: rgba(244,246,242,0.08); } .ds-dialog-confirm:focus-visible, .ds-dialog-cancel:focus-visible { outline: 2px solid #e9e24a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Scorer Toolbar",
+      "kind": "nav",
+      "refersTo": "toolbar",
+      "description": "Bottom bar on deep court green with a hairline top edge; 24pt icon over a 12pt label, danger items in coral.",
+      "html": "<nav class=\"ds-toolbar\"><button class=\"ds-toolbar-item\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\"><path d=\"M9 14 4 9l5-5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M4 9h9a7 7 0 1 1 0 14H8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Undo</span></button><button class=\"ds-toolbar-item\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\"><path d=\"M4 7h16M4 12h16M4 17h10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Rules</span></button><button class=\"ds-toolbar-item ds-toolbar-danger\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6L6 18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>End</span></button></nav>",
+      "css": ".ds-toolbar { display: flex; justify-content: space-around; background: #1f4134; border-top: 1px solid rgba(244,246,242,0.08); padding: 12px 0 24px; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; } .ds-toolbar-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 44px; border: none; background: transparent; color: #f4f6f2; font-size: 12px; font-weight: 600; cursor: pointer; } .ds-toolbar-item:hover { opacity: 0.8; } .ds-toolbar-item:focus-visible { outline: 2px solid #f4f6f2; outline-offset: 2px; } .ds-toolbar-item:disabled { opacity: 0.4; } .ds-toolbar-danger { color: #ffb4a6; }"
+    },
+    {
+      "name": "Mode Tile",
+      "kind": "card",
+      "refersTo": "tile-mode",
+      "description": "Home's mode chooser: a 128pt tinted tile with a mini-court line drawing above a 19pt title and muted description.",
+      "html": "<button class=\"ds-tile\"><span class=\"ds-minicourt\"><i class=\"ds-minicourt-net\"></i><i class=\"ds-minidot ds-minidot-a\"></i><i class=\"ds-minidot ds-minidot-b\"></i><i class=\"ds-minidot ds-minidot-c\"></i><i class=\"ds-minidot ds-minidot-d\"></i></span><span class=\"ds-tile-text\"><span class=\"ds-tile-title\">Doubles</span><span class=\"ds-tile-desc\">Four players, sideout scoring</span></span></button>",
+      "css": ".ds-tile { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; width: 100%; max-width: 200px; height: 128px; padding: 14px; border: 1px solid rgba(244,246,242,0.12); border-radius: 16px; background: rgba(244,246,242,0.06); color: #f4f6f2; font-family: -apple-system, 'SF Pro Text', Roboto, system-ui, sans-serif; cursor: pointer; transition: background 0.15s ease; } .ds-tile:hover { background: rgba(244,246,242,0.12); } .ds-tile:focus-visible { outline: 2px solid #f4f6f2; outline-offset: 2px; } .ds-minicourt { position: relative; display: block; width: 46px; height: 32px; background: #2c5c93; border: 2px solid #f4f6f2; border-radius: 2px; } .ds-minicourt-net { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #f4f6f2; } .ds-minidot { position: absolute; width: 7px; height: 7px; border-radius: 999px; } .ds-minidot-a { background: #e3a33b; left: 16%; top: 22%; } .ds-minidot-b { background: #e0634a; left: 16%; bottom: 22%; } .ds-minidot-c { background: #8fc3e6; right: 16%; top: 22%; } .ds-minidot-d { background: #f2efe8; right: 16%; bottom: 22%; } .ds-tile-text { display: block; } .ds-tile-title { display: block; font-size: 19px; font-weight: 700; } .ds-tile-desc { display: block; color: #b9cfc5; font-size: 13px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Courtside, Looking Down",
+    "overview": "The whole app is the thing it is about. The screen ground is outer-court green with the faint grit of sand aggregate rolled into acrylic paint; a match is a real top-down court at real proportions with each name standing in its playing position; the waiting queue is the paddle rack every open-play group already leans against the fence. Nothing is a metaphor for the game — it is a drawing of the game, at a glance, in sun or under court lights. The category default this replaced was white cards, a green button and a plain list of names.\n\nDensity is courtside-legible, not dashboard-dense. One screen carries a 34pt title, a small meta line, one court diagram per court, a full-width white action, and the rack. Scores get to be enormous (92–104pt, tabular) because the organiser reads them from arm's length between rallies. Everything else is quiet: text is line-white or a desaturated mint-grey on green, containers are the ground tinted a few percent lighter rather than a new material.\n\nColour is rationed hard. Green is the world, blue is the court, line-white is the only bright fill, and saturation is reserved almost entirely for the eight paddle faces — one per player, so a person can find themselves on court, in the rack and in the summary without reading. The build carries no shadows at all and no display typeface; depth comes from tonal layering and the type does its work through size and weight alone.",
+    "keyCharacteristics": [
+      "One appearance only: no light/dark switch, same world in either system setting",
+      "Real court geometry (44:20, 7ft kitchen) rather than a rounded box",
+      "Line-white (#f4f6f2) as the single bright fill, on court lines and primary buttons alike",
+      "Eight paddle faces as the only saturated colour, one per player, all test-enforced to 4.5:1",
+      "Completely flat: zero shadow declarations in the shipped code",
+      "System type only; huge tabular numerals for scores"
+    ],
+    "rules": [
+      { "name": "The One Appearance Rule", "body": "There is no light mode and no dark mode. The court world is identical in either system setting, the status bar is always light, and there is no colour-scheme hook anywhere in the source. Any future surface that branches on appearance is wrong.", "section": "colors" },
+      { "name": "The Line-White Rule", "body": "court-line is the only bright fill in the system. If a new surface needs emphasis, it gets line-white or it gets nothing; do not introduce a second accent fill.", "section": "colors" },
+      { "name": "The Ball Rule", "body": "ball marks the serve and the server number. It is never a background, a border, a highlight or a paddle face — and a unit test enforces the last of those.", "section": "colors" },
+      { "name": "The Own Face Rule", "body": "A player keeps one paddle colour for the whole session, in the rack, on court, and in the summary. Paddle colour is identity, never status; status is carried by outline, ghost and tape instead.", "section": "colors" },
+      { "name": "The Tint-Not-Material Rule", "body": "Containers on the ground are line-white at 6–12% alpha with a 8–12% alpha hairline border, not a new colour. Green stays the only ground.", "section": "colors" },
+      { "name": "The Tabular Score Rule", "body": "Any digit that changes in place — score, clock, games played, stepper value — is set in tabular numerals so nothing shifts sideways as it counts.", "section": "typography" },
+      { "name": "The Signage-Labels-Containers Rule", "body": "Uppercase tracked micro-type belongs on the tab or pill that names a structure. It never sits above a title as a category line: screen titles are followed by a sentence-case meta line, never preceded by a label.", "section": "typography" },
+      { "name": "The Real Proportions Rule", "body": "A court is drawn at 44ft x 20ft with a 7ft kitchen each side of the net. Never fit a court to a convenient box; give it a height or let the aspect ratio decide.", "section": "layout" },
+      { "name": "The Two-Gutter Rule", "body": "Text lives at 16pt from the edge, drawings at 12pt. The drawing is always the wider element.", "section": "layout" },
+      { "name": "The No-Shadow Rule", "body": "Nothing casts a shadow. If an element needs to feel above its neighbour, deepen it (court-outer-deep), tint it (line-white alpha), or put it behind a scrim.", "section": "elevation" },
+      { "name": "The One Ground Rule", "body": "The grit texture and the green ground are applied once, at the root. Every screen background and every navigator contentStyle stays transparent.", "section": "elevation" },
+      { "name": "The Sharp Court Rule", "body": "Court geometry gets 2–4pt corners. Rounding a court into a card destroys the one thing this world is built on.", "section": "shapes" },
+      { "name": "The One Silhouette Rule", "body": "The paddle shape comes from lib/theme/paddle-shape.ts. The icon generator and the app read the same constants; never redraw it locally.", "section": "shapes" },
+      { "name": "The Inner-View Rule", "body": "Under NativeWind, a Pressable's style callback is dropped. Visual styling must live on a View inside the Pressable, with press state held in React state. This has broken twice; do not put a background, border or radius on a Pressable directly.", "section": "components" }
+    ],
+    "dos": [
+      "Do style every screen from lib/theme/tokens.ts directly. NativeWind is still installed, but no screen uses its classes and none should.",
+      "Do let CourtDiagram keep its 44:20 aspect ratio unless you have a reason to pass an explicit height.",
+      "Do give a new player-facing colour a paired text colour that clears 4.5:1, and add it to lib/theme/__tests__/tokens.test.ts so it stays that way.",
+      "Do put the one bright line-white fill on the single most important action per screen, and nowhere else.",
+      "Do use tabular numerals for every value that changes in place.",
+      "Do keep screen and navigator backgrounds transparent so the root grit ground shows through.",
+      "Do put press-state visuals on an inner View, per the Inner-View Rule.",
+      "Do read Reduce Motion from AccessibilityInfo and crossfade instead of moving.",
+      "Do draw paddles from lib/theme/paddle-shape.ts so the app and the generated icons stay identical."
+    ],
+    "donts": [
+      "Don't add a light/dark switch, a colour-scheme branch, or a theme toggle. The one appearance is the system.",
+      "Don't add a shadow or an elevation value. The build has none; depth is tonal.",
+      "Don't introduce a display typeface or a webfont. The system face is the only face.",
+      "Don't add a second bright accent fill or a filled destructive button; destructive stays coral text.",
+      "Don't spend ball yellow on anything but the serve marker and the server number.",
+      "Don't give a paddle face to status. Faces are identity; use outline, ghost and tape for state.",
+      "Don't round court geometry past 4pt or fit a court into an arbitrary box.",
+      "Don't re-apply the grit texture, or paint an opaque background, inside a screen.",
+      "Don't use emoji as icons."
+    ]
+  }
+}

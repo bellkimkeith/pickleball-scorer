@@ -3,6 +3,7 @@ import { GameState, GameSettings, SinglesGameState, DoublesGameState, ServingSid
 import { ScoringRules } from '../lib/utils/scoring-rules';
 import { DEFAULT_GAME_SETTINGS, getDefaultSideChangeAt } from '../lib/constants/game-config';
 import * as Haptics from 'expo-haptics';
+import { SoundManager } from '../lib/audio/SoundManager';
 
 interface GameStore {
   // State
@@ -22,6 +23,7 @@ interface GameStore {
   sideOut: () => void;
   undoLastAction: () => void;
   resetGame: () => void;
+  discardGame: () => void;
   markSidesChanged: (swapScores: boolean) => void;
   endGame: () => void;
   updateSettings: (settings: Partial<GameSettings>) => void;
@@ -97,6 +99,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const newState = ScoringRules.scorePoint(gameState, settings, scoringTeam);
 
+    // Play auto-sound for the scoring team
+    if (settings.autoSoundsEnabled) {
+      const team = scoringTeam
+        ?? (newState.score1 > gameState.score1 ? 1
+          : newState.score2 > gameState.score2 ? 2
+          : undefined);
+      if (team) {
+        SoundManager.playTeamSound(team);
+      }
+    }
+
     // Check for game over
     if (ScoringRules.isGameOver(newState.score1, newState.score2, settings)) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -107,10 +120,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   sideOut: () => {
-    const { gameState } = get();
+    const { gameState, settings } = get();
     if (!gameState) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    // Play auto-sound on side out for the team that just lost the serve
+    if (settings.autoSoundsOnSideOut) {
+      const losingTeam = gameState.mode === 'singles'
+        ? gameState.servingPlayer
+        : gameState.servingTeam;
+      SoundManager.playTeamSound(losingTeam);
+    }
 
     const newState = ScoringRules.handleSideOut(gameState);
     set({ gameState: newState });
@@ -295,6 +316,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ gameState: null, isGameActive: false });
   },
 
+  /**
+   * Drop a game the user walked away from, with no haptic: leaving a scorer is
+   * not an action they asked to feel. A game left behind would otherwise show
+   * up in place of the next Open Play match and have its score saved against it.
+   */
+  discardGame: () => {
+    set({ gameState: null, isGameActive: false });
+  },
+
   endGame: () => {
     const { gameState } = get();
     if (!gameState) return;
@@ -308,12 +338,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   updateSettings: (newSettings) => {
     set((state) => {
       const updatedSettings = { ...state.settings, ...newSettings };
-      
-      // Ensure theme is valid
-      if (updatedSettings.theme !== 'light' && updatedSettings.theme !== 'dark') {
-        updatedSettings.theme = state.settings.theme; // keep previous
-      }
-      
+
+
       // If winningScore changed, update sideChangeAt to the default for that score
       if (newSettings.winningScore && newSettings.winningScore !== state.settings.winningScore) {
         updatedSettings.sideChangeAt = getDefaultSideChangeAt(newSettings.winningScore);

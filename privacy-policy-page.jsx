@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "Privacy Policy - Pickleball Scorer",
+  title: "Privacy Policy - Pickle & Score",
   description:
-    "Privacy Policy for Pickleball Scorer app. A fully offline pickleball scoring application that collects no user data.",
+    "Privacy Policy for the Pickle & Score app: what the app keeps on your device, and what its ads and in-app purchases involve.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -13,79 +13,97 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="text-sm text-gray-500 mb-2">
-            Pickleball Scorer
+            Pickle &amp; Score
           </p>
           <p className="text-sm text-gray-500 mb-8">
-            Last updated: February 16, 2026
+            Last updated: November 25, 2026
           </p>
 
           <p className="text-base text-gray-700 mb-8">
-            Pickleball Scorer is a fully offline application. Your privacy is
-            important to us, and we want to be transparent about our practices.
+            Pickle &amp; Score keeps your games on your phone. The free version
+            shows small ads; this page explains exactly what that involves.
           </p>
 
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
-              Data Collection
+              What the App Keeps
             </h2>
             <p className="text-base text-gray-700">
-              This app does not collect, store, transmit, or share any personal
-              data or usage information. All game data (scores, player names, and
-              settings) is stored locally on your device and is never sent to any
-              server.
+              Everything the app saves (scores, player names, sessions, custom sounds and settings) stays on your device. There are no accounts, and none of it is sent anywhere.
             </p>
           </section>
-
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              Advertising
+            </h2>
+            <p className="text-base text-gray-700">
+              The free version shows small banner ads from Google AdMob on a few screens (home, stats, settings and the Open Play summary), never while you score. To choose and measure ads, Google&apos;s software may collect your IP address and the approximate location it implies, information about your device and the app, how you interact with ads, and on Android the device&apos;s advertising ID. Google handles this under its own policy: <a href="https://policies.google.com/technologies/ads" className="text-blue-600 hover:text-blue-800 underline">policies.google.com/technologies/ads</a>. Ads are limited to content rated PG.
+            </p>
+          </section>
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              Your Consent
+            </h2>
+            <p className="text-base text-gray-700">
+              In the EEA, the UK and Switzerland the app asks for your consent before showing personalised ads. You can change your choice at any time under Settings → Ads → Ad privacy choices.
+            </p>
+          </section>
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              Tracking on iPhone
+            </h2>
+            <p className="text-base text-gray-700">
+              The app does not ask to track you, and it never gets the iPhone&apos;s advertising identifier.
+            </p>
+          </section>
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              Removing Ads
+            </h2>
+            <p className="text-base text-gray-700">
+              Removing ads is an in-app purchase, monthly or lifetime, handled by the App Store or Google Play. The app never sees your payment details. Our purchase service, RevenueCat, receives an anonymous app user ID, your purchase history and basic device information so it can confirm and restore your ad-free status. It is not used for advertising. See <a href="https://www.revenuecat.com/privacy" className="text-blue-600 hover:text-blue-800 underline">RevenueCat&apos;s privacy policy</a>.
+            </p>
+          </section>
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              When You Are Ad-Free
+            </h2>
+            <p className="text-base text-gray-700">
+              Once you are ad-free, the app stops asking for and showing ads.
+            </p>
+          </section>
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
               Network Usage
             </h2>
             <p className="text-base text-gray-700">
-              This app does not make any network requests. It functions entirely
-              offline and does not require an internet connection.
+              The app goes online only to load ads and to check or make purchases. Scoring, Open Play and everything else work fully offline.
             </p>
           </section>
-
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
-              Analytics
+              Your Audio Files
             </h2>
             <p className="text-base text-gray-700">
-              This app does not use any analytics services, tracking tools, or
-              advertising frameworks.
+              If you add your own soundboard clips, the system file picker asks you to choose a file, and a copy is saved inside the app on your device. Those clips are never uploaded, shared or included in the images you share.
             </p>
           </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">
-              Third-Party Services
-            </h2>
-            <p className="text-base text-gray-700">
-              This app does not integrate with any third-party services that
-              collect user data.
-            </p>
-          </section>
-
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
               Device Permissions
             </h2>
             <p className="text-base text-gray-700">
-              This app does not request access to your camera, contacts,
-              location, or any other sensitive device features.
+              The app does not use your camera, contacts or precise location. The only time it touches your files is when you pick an audio clip yourself.
             </p>
           </section>
-
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
-              Children&apos;s Privacy
+              Children
             </h2>
             <p className="text-base text-gray-700">
-              This app is safe for users of all ages. Since no data is collected,
-              there are no concerns regarding children&apos;s privacy.
+              The app is not directed at children under 13, and its ads are limited to content rated PG.
             </p>
           </section>
-
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
               Changes to This Policy

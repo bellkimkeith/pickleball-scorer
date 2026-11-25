@@ -1,3 +1,5 @@
+import { CustomSound } from '../audio/custom-sounds';
+
 export type GameMode = 'singles' | 'doubles';
 
 export type ServingSide = 'left' | 'right';
@@ -63,7 +65,7 @@ export interface ScoreEvent {
 
 export type GameType = 'sideout' | 'rally';
 
-export type ThemeMode = 'light' | 'dark';
+export type Language = 'en' | 'es' | 'fr' | 'de';
 
 export interface GameSettings {
   winningScore: 11 | 15 | 21;
@@ -71,5 +73,10 @@ export interface GameSettings {
   sideChangeAt: number;
   swapScoresOnSideChange: boolean;
   gameType: GameType;
-  theme: ThemeMode;
+  language?: Language;
+  autoSoundsEnabled?: boolean;
+  autoSoundsOnSideOut?: boolean;
+  team1Sound?: string;
+  team2Sound?: string;
+  customSounds?: CustomSound[];
 }
