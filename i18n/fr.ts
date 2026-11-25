@@ -221,6 +221,10 @@ export default {
     leadsTwo: 'Classement · {{a}} et {{b}} en tête, {{record}}',
     leadsMany: 'Classement · {{count}} à égalité en tête, {{record}}',
     repeatedPairRecord: '{{a}} et {{b}} ({{count}}×, {{record}})',
+    bestDuos: 'Meilleurs duos',
+    duosEmpty: 'Les duos apparaissent ici après {{count}} matchs ensemble avec un score.',
+    duoName: '{{a}} et {{b}}',
+    duoValue: '{{record}} · {{rate}} % · {{plusMinus}}',
   },
   rules: {
     servingOnlyTitle: 'Seule l\'équipe au service marque.',

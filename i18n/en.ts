@@ -269,6 +269,10 @@ export default {
     leadsTwo: 'Standings · {{a}} and {{b}} lead, {{record}}',
     leadsMany: 'Standings · {{count}} tied for first, {{record}}',
     repeatedPairRecord: '{{a}} & {{b}} ({{count}}×, {{record}})',
+    bestDuos: 'Best duos',
+    duosEmpty: 'Pairs show up here after {{count}} scored games together.',
+    duoName: '{{a}} & {{b}}',
+    duoValue: '{{record}} · {{rate}}% · {{plusMinus}}',
   },
   rules: {
     servingOnlyTitle: 'Only the serving team scores.',

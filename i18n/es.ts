@@ -221,6 +221,10 @@ export default {
     leadsTwo: 'Clasificación · {{a}} y {{b}} van en cabeza, {{record}}',
     leadsMany: 'Clasificación · {{count}} empatados en cabeza, {{record}}',
     repeatedPairRecord: '{{a}} y {{b}} ({{count}}×, {{record}})',
+    bestDuos: 'Mejores parejas',
+    duosEmpty: 'Las parejas aparecen aquí tras {{count}} partidos juntos con resultado.',
+    duoName: '{{a}} y {{b}}',
+    duoValue: '{{record}} · {{rate}} % · {{plusMinus}}',
   },
   rules: {
     servingOnlyTitle: 'Solo el equipo que saca anota.',

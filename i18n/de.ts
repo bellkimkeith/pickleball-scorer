@@ -221,6 +221,10 @@ export default {
     leadsTwo: 'Tabelle · {{a}} und {{b}} führen, {{record}}',
     leadsMany: 'Tabelle · {{count}} gleichauf vorn, {{record}}',
     repeatedPairRecord: '{{a}} & {{b}} ({{count}}×, {{record}})',
+    bestDuos: 'Beste Duos',
+    duosEmpty: 'Paare erscheinen hier nach {{count}} gemeinsamen Spielen mit Ergebnis.',
+    duoName: '{{a}} & {{b}}',
+    duoValue: '{{record}} · {{rate}} % · {{plusMinus}}',
   },
   rules: {
     servingOnlyTitle: 'Nur das aufschlagende Team punktet.',

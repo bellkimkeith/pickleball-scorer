@@ -7,6 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdBanner } from '../../components/ads/AdBanner';
 import { BackButton } from '../../components/ui/BackButton';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
+import { bestDuos, DUO_MIN_GAMES } from '../../lib/queue/duos';
+import { formatPlusMinus, formatRecord } from '../../lib/queue/standings';
 import { GameRecord } from '../../lib/storage/game-history';
 import { COURT } from '../../lib/theme/tokens';
 import { useSessionStore } from '../../store/session-store';
@@ -33,10 +35,19 @@ export default function StatsScreen() {
   const currentStreak = useStatsStore(state => state.currentStreak);
   const loadHistory = useStatsStore(state => state.loadHistory);
   const openPlayHistory = useSessionStore(state => state.openPlayHistory);
+  const activeSession = useSessionStore(state => state.activeSession);
+  const savedPlayers = useSessionStore(state => state.savedPlayers);
 
   useEffect(() => {
     loadHistory();
   }, [loadHistory]);
+
+  const hasOpenPlay = activeSession !== null || openPlayHistory.length > 0;
+  // Newest first, so a player who is no longer saved shows their latest name.
+  const duos = useMemo(
+    () => bestDuos([...(activeSession ? [activeSession] : []), ...openPlayHistory], savedPlayers),
+    [activeSession, openPlayHistory, savedPlayers],
+  );
 
   const lastTwenty = useMemo(() => recentGames.slice(0, 20), [recentGames]);
   const wonOfLast = lastTwenty.filter(game => game.winner === 1).length;
@@ -192,6 +203,34 @@ export default function StatsScreen() {
                 />
               ))}
             </ListGroup>
+          </>
+        )}
+        {hasOpenPlay && (
+          <>
+            <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700', paddingHorizontal: 16, paddingTop: 22, paddingBottom: 8 }}>
+              {t('standings.bestDuos')}
+            </Text>
+            {duos.length === 0 ? (
+              <View style={{ marginHorizontal: 12, padding: 16, borderRadius: 14, backgroundColor: `${COURT.line}0f` }}>
+                <Text style={{ color: COURT.inkMuted, fontSize: 15 }}>
+                  {t('standings.duosEmpty', { count: DUO_MIN_GAMES })}
+                </Text>
+              </View>
+            ) : (
+              <ListGroup style={{ marginHorizontal: 12 }}>
+                {duos.map(duo => (
+                  <ListRow
+                    key={duo.ids.join('|')}
+                    label={t('standings.duoName', { a: duo.names[0], b: duo.names[1] })}
+                    value={t('standings.duoValue', {
+                      record: formatRecord(duo),
+                      rate: Math.round(duo.winRate * 100),
+                      plusMinus: formatPlusMinus(duo.plusMinus),
+                    })}
+                  />
+                ))}
+              </ListGroup>
+            )}
           </>
         )}
       </ScrollView>
