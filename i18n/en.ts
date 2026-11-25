@@ -273,6 +273,11 @@ export default {
     duosEmpty: 'Pairs show up here after {{count}} scored games together.',
     duoName: '{{a}} & {{b}}',
     duoValue: '{{record}} · {{rate}}% · {{plusMinus}}',
+    share: 'Share',
+    shareTitle: 'Share standings',
+    shareImage: 'Share image',
+    cardTitle: 'Open Play standings',
+    moreCount: '+{{count}} more',
   },
   rules: {
     servingOnlyTitle: 'Only the serving team scores.',

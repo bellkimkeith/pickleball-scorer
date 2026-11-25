@@ -1,18 +1,22 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useMemo, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useMemo, useRef, useState } from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdBanner } from '../../components/ads/AdBanner';
 import { Paddle } from '../../components/court/Paddle';
 import { NameInputSheet } from '../../components/queue/NameInputSheet';
+import { StandingsShareCard } from '../../components/queue/StandingsShareCard';
 import { StandingsTable } from '../../components/queue/StandingsTable';
 import { CourtButton } from '../../components/ui/Button';
 import { ListGroup, ListRow } from '../../components/ui/ListGroup';
+import { Sheet } from '../../components/ui/Sheet';
 import { pairResults } from '../../lib/queue/duos';
 import { pairingHistory } from '../../lib/queue/engine';
-import { formatRecord, sessionStandings } from '../../lib/queue/standings';
+import { formatRecord, sessionStandings, standingsText } from '../../lib/queue/standings';
+import { shareViewAsImage } from '../../lib/share/share-image';
 import { COURT, PADDLE_FACE } from '../../lib/theme/tokens';
 import { useSessionStore } from '../../store/session-store';
 
@@ -38,6 +42,8 @@ export default function SummaryScreen() {
   );
   const saveGroup = useSessionStore(state => state.saveGroup);
   const [namingGroup, setNamingGroup] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const shareCardRef = useRef<View>(null);
 
   const players = useMemo(
     () => (session ? [...session.players].sort((a, b) => b.gamesPlayed - a.gamesPlayed) : []),
@@ -78,6 +84,25 @@ export default function SummaryScreen() {
     );
   }
 
+  const sessionDate = new Date(session.startedAt).toLocaleDateString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+  const finishedCount = session.matches.filter(m => m.endedAt).length;
+  const shareMeta = [
+    sessionDate,
+    duration(session.startedAt, session.endedAt ?? Date.now()),
+    t('openPlay.gamesCount', { count: finishedCount }),
+    t('openPlay.courtsCount', { count: session.courtCount }),
+  ].join(' · ');
+
+  const shareStandings = () =>
+    shareViewAsImage(
+      shareCardRef.current,
+      standingsText(standings, `${t('standings.cardTitle')} · ${sessionDate}`, t('home.title')),
+    );
+
   const onTime = session.players.filter(p => p.queueCount === p.gamesPlayed);
   const late = session.players.filter(p => p.queueCount > p.gamesPlayed);
   const counts = onTime.map(p => p.gamesPlayed);
@@ -95,7 +120,7 @@ export default function SummaryScreen() {
         <Text style={{ color: COURT.inkMuted, fontSize: 15, paddingHorizontal: 16, paddingTop: 2, paddingBottom: 16 }}>
           {t('openPlay.summaryMeta', {
             duration: duration(session.startedAt, session.endedAt ?? Date.now()),
-            games: t('openPlay.gamesCount', { count: session.matches.filter(m => m.endedAt).length }),
+            games: t('openPlay.gamesCount', { count: finishedCount }),
             courts: t('openPlay.courtsCount', { count: session.courtCount }),
           })}
         </Text>
@@ -153,6 +178,16 @@ export default function SummaryScreen() {
               }}
             >
               <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '700' }}>{t('standings.title')}</Text>
+              <Pressable
+                onPress={() => setSharing(true)}
+                accessibilityRole="button"
+                accessibilityLabel={t('standings.shareTitle')}
+                hitSlop={10}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
+              >
+                <Ionicons name="share-outline" size={17} color={COURT.ink} />
+                <Text style={{ color: COURT.ink, fontSize: 17, fontWeight: '600' }}>{t('standings.share')}</Text>
+              </Pressable>
             </View>
             <View style={{ marginHorizontal: 12 }}>
               <StandingsTable
@@ -243,6 +278,17 @@ export default function SummaryScreen() {
       <View style={{ padding: 16, paddingBottom: 30 }}>
         <CourtButton title={t('openPlay.done')} onPress={() => router.replace('/')} height={52} />
       </View>
+
+      <Sheet visible={sharing} onClose={() => setSharing(false)} title={t('standings.shareTitle')}>
+        <StandingsShareCard ref={shareCardRef} standings={standings} meta={shareMeta} />
+        <CourtButton
+          title={t('standings.shareImage')}
+          icon="share-outline"
+          onPress={shareStandings}
+          style={{ marginTop: 14 }}
+          height={52}
+        />
+      </Sheet>
 
       <NameInputSheet
         visible={namingGroup}

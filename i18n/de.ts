@@ -225,6 +225,11 @@ export default {
     duosEmpty: 'Paare erscheinen hier nach {{count}} gemeinsamen Spielen mit Ergebnis.',
     duoName: '{{a}} & {{b}}',
     duoValue: '{{record}} · {{rate}} % · {{plusMinus}}',
+    share: 'Teilen',
+    shareTitle: 'Tabelle teilen',
+    shareImage: 'Bild teilen',
+    cardTitle: 'Open-Play-Tabelle',
+    moreCount: '+{{count}} weitere',
   },
   rules: {
     servingOnlyTitle: 'Nur das aufschlagende Team punktet.',

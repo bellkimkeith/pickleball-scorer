@@ -225,6 +225,11 @@ export default {
     duosEmpty: 'Las parejas aparecen aquí tras {{count}} partidos juntos con resultado.',
     duoName: '{{a}} y {{b}}',
     duoValue: '{{record}} · {{rate}} % · {{plusMinus}}',
+    share: 'Compartir',
+    shareTitle: 'Compartir clasificación',
+    shareImage: 'Compartir imagen',
+    cardTitle: 'Clasificación de Open Play',
+    moreCount: '+{{count}} más',
   },
   rules: {
     servingOnlyTitle: 'Solo el equipo que saca anota.',

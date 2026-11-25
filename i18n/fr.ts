@@ -225,6 +225,11 @@ export default {
     duosEmpty: 'Les duos apparaissent ici après {{count}} matchs ensemble avec un score.',
     duoName: '{{a}} et {{b}}',
     duoValue: '{{record}} · {{rate}} % · {{plusMinus}}',
+    share: 'Partager',
+    shareTitle: 'Partager le classement',
+    shareImage: "Partager l'image",
+    cardTitle: 'Classement Open Play',
+    moreCount: '+{{count}} autres',
   },
   rules: {
     servingOnlyTitle: 'Seule l\'équipe au service marque.',
