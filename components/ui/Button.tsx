@@ -14,6 +14,8 @@ export interface CourtButtonProps {
   subtitle?: string;
   icon?: keyof typeof Ionicons.glyphMap;
   disabled?: boolean;
+  /** For a button that is one of a set of choices: tells screen readers which is picked. */
+  selected?: boolean;
   height?: number;
   haptic?: boolean;
   style?: ViewStyle;
@@ -50,6 +52,7 @@ function CourtButtonComponent({
   subtitle,
   icon,
   disabled = false,
+  selected,
   height = 50,
   haptic = true,
   style,
@@ -73,7 +76,7 @@ function CourtButtonComponent({
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
-      accessibilityState={{ disabled }}
+      accessibilityState={selected === undefined ? { disabled } : { disabled, selected }}
       style={style}
     >
       <View

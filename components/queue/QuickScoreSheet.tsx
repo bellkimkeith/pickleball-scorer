@@ -60,6 +60,7 @@ export function QuickScoreSheet({ match, courtNumber, teamNames, onSave, onSkip,
             key={team}
             title={teamNames[team - 1]}
             variant={winner === team ? 'line' : 'outline'}
+            selected={winner === team}
             onPress={() => setWinner(team)}
             style={{ flex: 1 }}
             height={56}

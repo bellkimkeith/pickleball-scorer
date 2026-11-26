@@ -15,7 +15,7 @@ Design records: `docs/superpowers/specs/2026-11-25-free-with-ads-design.md` and
 
 ## 1. Before you build
 
-- [ ] `npm test`: 161 tests pass (queue engine, fairness simulations, standings, duos, quick score, share fallback, tokens, sounds, stores, ads, purchases, release check, strings).
+- [ ] `npm test`: 164 tests pass (queue engine, fairness simulations, standings, duos, quick score, share fallback, tokens, sounds, stores, ads, purchases, release check, strings).
 - [ ] `npx tsc --noEmit --types react,node,jest` is clean.
       (Plain `npx tsc` aborts on a stray `node_modules/@types/react 2` folder on this machine. Deleting that folder or reinstalling `node_modules` fixes it.)
 - [ ] `npm run lint -- --no-cache` shows 0 errors. The `--no-cache` matters: a stale cache reports phantom parse errors.

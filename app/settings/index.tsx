@@ -232,6 +232,7 @@ export default function SettingsScreen() {
               key={language}
               title={t(`languages.${language}`)}
               variant={settings.language === language ? 'line' : 'deep'}
+              selected={settings.language === language}
               onPress={() => {
                 updateSettings({ language });
                 changeLanguage(language);

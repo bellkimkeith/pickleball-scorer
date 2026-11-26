@@ -148,7 +148,11 @@ export default function SessionScreen() {
     return { next, waiting, resting, pairs };
   }, [session, t]);
 
-  if (!session) return null;
+  // Only a finished match changes the standings, so they are worked out when the
+  // session changes, not on every tick of the court clocks.
+  const standings = useMemo(() => (session ? sessionStandings(session) : null), [session]);
+
+  if (!session || !standings) return null;
 
   const activePlayers = session.players.filter(p => p.status !== 'left');
   const finishedGames = session.matches.filter(m => m.endedAt).length;
@@ -168,7 +172,6 @@ export default function SessionScreen() {
     id => id && session.matches.some(m => m.id === id && !m.endedAt),
   ).length;
 
-  const standings = sessionStandings(session);
   const leaders = standingsLeaders(standings);
   const leadLine = (() => {
     if (leaders.length === 0) return null;
