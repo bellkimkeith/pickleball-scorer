@@ -76,7 +76,10 @@ export const StandingsShareCard = forwardRef<View, StandingsShareCardProps>(func
                 backgroundColor: row.rank !== null && row.rank <= 3 ? PODIUM : 'transparent',
               }}
             >
-              <Text style={[cell, { width: 20, fontWeight: '800', textAlign: 'left' }]}>{row.rank}</Text>
+              {/* 26pt fits a bold two-digit rank ("10" to "16") at 15pt; 20 wrapped it onto two lines. */}
+              <Text style={[cell, { width: 26, fontWeight: '800', textAlign: 'left' }]} numberOfLines={1}>
+                {row.rank}
+              </Text>
               <Text style={{ color: COURT.ink, fontSize, fontWeight: '600', flex: 1 }} numberOfLines={1}>
                 {row.name}
               </Text>
