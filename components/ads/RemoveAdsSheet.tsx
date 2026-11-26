@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { memo, useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MONETIZATION_CONFIG } from '../../lib/monetization/config';
 import { AdFreePlan } from '../../lib/monetization/entitlement';
@@ -165,7 +165,7 @@ function RemoveAdsSheetComponent({ visible, onClose }: RemoveAdsSheetProps) {
         />
 
         <Text style={{ color: COURT.inkMuted, fontSize: 12, lineHeight: 17, textAlign: 'center' }}>
-          {t('ads.legal')}
+          {t(Platform.OS === 'ios' ? 'ads.legalIos' : 'ads.legalAndroid')}
         </Text>
         <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 18 }}>
           <Text
